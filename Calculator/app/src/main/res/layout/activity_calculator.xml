@@ -45,7 +45,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_7"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="8"
@@ -53,7 +54,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_8"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="9"
@@ -61,14 +63,16 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_9"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="/"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_div"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="4"
@@ -76,7 +80,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_4"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="5"
@@ -84,7 +89,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_5"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="6"
@@ -92,14 +98,16 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_6"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="x"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_mult"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="1"
@@ -107,7 +115,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_1"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="2"
@@ -115,7 +124,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_2"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="3"
@@ -123,14 +133,16 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_3"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="-"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_rest"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="."
@@ -138,7 +150,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_punt"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="0"
@@ -146,7 +159,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_0"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="="
@@ -154,14 +168,16 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_equal"
             android:layout_rowWeight="1"
-            android:backgroundTint="@color/colorPrimary" />
+            android:backgroundTint="@color/colorPrimary"
+            android:textSize="@dimen/buttonsize" />
 
         <Button
             android:text="+"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btn_sum"
-            android:layout_rowWeight="1" />
+            android:layout_rowWeight="1"
+            android:textSize="@dimen/buttonsize" />
     </GridLayout>
 
     <Button

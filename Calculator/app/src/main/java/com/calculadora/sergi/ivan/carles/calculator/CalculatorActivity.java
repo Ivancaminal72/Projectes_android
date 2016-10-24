@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 public class CalculatorActivity extends AppCompatActivity {
 
-    private String sNum1 = "", sNum2= "";
-    private long Num1 = 0, Num2 = 0;
+    private String sNum1 = "", sNum2= "",sOp="";
+    private float Resultado = 0;
     private Button btn_0;
     private Button btn_1;
     private Button btn_2;
@@ -202,36 +202,61 @@ public class CalculatorActivity extends AppCompatActivity {
         btn_punt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(is_num_one){
+                    sNum1 += ".";
+                    screen.setText(sNum1);
+                }
+                else{
+                    sNum2 += ".";
+                    screen.setText(sNum2);
+                }
             }
         });
 
         btn_div.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sOp = "div";
+                screen.setText("");
+                listen_all(false);
             }
         });
 
         btn_mult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sOp = "mult";
+                screen.setText("");
+                listen_all(false);
             }
         });
 
         btn_rest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sOp = "rest";
+                screen.setText("");
+                listen_all(false);
             }
         });
 
         btn_sum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sOp = "sum";
+                screen.setText("");
+                listen_all(false);
             }
         });
 
         btn_equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                switch(sOp){
+                    case "div":
+                        Resultado =9999;
+                        screen.setText()
+                }
             }
         });
 
