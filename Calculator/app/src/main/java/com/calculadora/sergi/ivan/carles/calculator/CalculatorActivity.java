@@ -62,7 +62,7 @@ public class CalculatorActivity extends AppCompatActivity {
                 if (Math.round(Resultado) == Resultado) {
                     screen.setText(String.valueOf((int)Resultado));
                 } else {
-                    screen.setText(String.valueOf(Resultado));
+                    screen.setText(String.valueOf(Resultado).replace(".",","););
                 }
                 sNum2 = "";
             }
