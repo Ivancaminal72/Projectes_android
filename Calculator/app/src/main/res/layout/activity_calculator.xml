@@ -182,8 +182,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/btn_equal"
             android:layout_rowWeight="1"
-            android:backgroundTint="@color/colorPrimary"
-            android:textSize="@dimen/buttonsize" />
+            android:textSize="@dimen/buttonsize"
+            android:background="@android:color/holo_blue_dark" />
 
         <Button
             android:text="+"

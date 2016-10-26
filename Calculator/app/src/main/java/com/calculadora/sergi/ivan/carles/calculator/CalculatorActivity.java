@@ -60,9 +60,9 @@ public class CalculatorActivity extends AppCompatActivity {
                         break;
                 }
                 if (Math.round(Resultado) == Resultado) {
-                    screen.setText(String.valueOf((int)Resultado));
+                    screen.setText(String.format("%f",(int)Resultado));
                 } else {
-                    screen.setText(String.valueOf(Resultado).replace(".",","););
+                    screen.setText(String.format("%f",Resultado));
                 }
                 sNum2 = "";
             }
@@ -71,6 +71,9 @@ public class CalculatorActivity extends AppCompatActivity {
         btn_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                screen.setText("");
+                sNum1 = "";
+                sNum2 = "";
             }
         });
     }
