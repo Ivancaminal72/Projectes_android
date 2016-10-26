@@ -71,9 +71,6 @@ public class CalculatorActivity extends AppCompatActivity {
         btn_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                screen.setText("");
-                sNum1 = "";
-                sNum2 = "";
             }
         });
     }
