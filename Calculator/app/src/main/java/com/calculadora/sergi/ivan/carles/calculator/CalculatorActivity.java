@@ -60,7 +60,7 @@ public class CalculatorActivity extends AppCompatActivity {
                         break;
                 }
                 if (Math.round(Resultado) == Resultado) {
-                    screen.setText(String.format("%f",(int)Resultado));
+                    screen.setText(String.format("%d",(int)Resultado));
                 } else {
                     screen.setText(String.format("%f",Resultado));
                 }
