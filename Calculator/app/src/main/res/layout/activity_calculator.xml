@@ -183,7 +183,7 @@
             android:id="@+id/btn_equal"
             android:layout_rowWeight="1"
             android:textSize="@dimen/buttonsize"
-            android:background="@android:color/holo_blue_dark" />
+            style="@style/Widget.AppCompat.Button.Colored" />
 
         <Button
             android:text="+"

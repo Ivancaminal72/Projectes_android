@@ -1,0 +1,9 @@
+
+Molt bé:
+- Codi concís, clar.
+- Fa el que toca.
+- Layout molt bé (he canviat l'estil del botó una mica per fer-ho encara millor,
+  era qüestió de canviar l'estil del botó a "colored" i no pas canviar el fons).
+
+A millorar:
+- Res.
