@@ -1,2 +1,2 @@
 # Projecte_final
-Projecte_final
+Versións Aplicació Artista
