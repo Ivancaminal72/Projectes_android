@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "88582801858",
+    "firebase_url": "https://votty-85023.firebaseio.com",
+    "project_id": "votty-85023",
+    "storage_bucket": "votty-85023.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88582801858:android:95057f3967c87f64",
+        "android_client_info": {
+          "package_name": "sergi.ivan.carles.artist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "88582801858-3caogressm40cr7c2p37eujs67vn8eld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAepSApC3ck0VwA7TSwBojVoxvDbb5K-_U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
