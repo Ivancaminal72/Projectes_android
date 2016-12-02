@@ -14,6 +14,7 @@ public class Group {
 
     public Group(String name, String[] songkeys) {
         this.name = name;
+        this.songkeys = new String[GROUP_MAX_SIZE];
         arraycopy(songkeys,0,this.songkeys,0,GROUP_MAX_SIZE);
         this.points = new int[]{0,0,0,0};
     }
