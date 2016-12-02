@@ -21,11 +21,9 @@ public class ActualEventActivity extends AppCompatActivity {
 
         groups = new ArrayList<>();
         for(int i=0; i<20; i++){
-            String[] songkeys = new String[]{"sk1", "sk1", "sk1", "sk1"};
+            String[] songkeys = new String[]{"sk1", "sk1", "sk1", "sk1", "blah"};
             groups.add(new Group("grupX",songkeys));
         }
-
-
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("act_vote");
