@@ -11,23 +11,25 @@ import java.util.ArrayList;
 
 public class ActualEventActivity extends AppCompatActivity {
 
-    private ArrayList<Pair> act_group;
+    private ArrayList<Group> groups;
+    private Group act_group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actual_event);
 
-        act_group = new ArrayList<>();
-        act_group.add(new Pair<>("SongKey1", 0));
-        act_group.add(new Pair<>("SongKey2", 0));
-        act_group.add(new Pair<>("SongKey3", 0));
-        act_group.add(new Pair<>("SongKey4", 0));
+        groups = new ArrayList<>();
+        for(int i=0; i<20; i++){
+            String[] songkeys = new String[]{"sk1", "sk1", "sk1", "sk1"};
+            groups.add(new Group("grupX",songkeys));
+        }
+
+
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Artist1");
-
+        DatabaseReference myRef = database.getReference("act_vote");
         myRef.setValue(act_group);
-
         Log.i("info", "group sent");
     }
 }
