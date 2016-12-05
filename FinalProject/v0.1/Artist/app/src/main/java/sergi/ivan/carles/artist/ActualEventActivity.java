@@ -21,13 +21,13 @@ public class ActualEventActivity extends AppCompatActivity {
 
         groups = new ArrayList<>();
         for(int i=0; i<20; i++){
-            String[] songkeys = new String[]{"sk1", "sk1", "sk1", "sk1", "blah"};
+            String[] songkeys = new String[]{"sk1", "sk1", "sk1", "sk1"};
             groups.add(new Group("grupX",songkeys));
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("act_vote");
-        myRef.setValue(act_group);
+        myRef.setValue(groups.get(1).toJson());
         Log.i("info", "group sent");
     }
 }

@@ -1,5 +1,9 @@
 package sergi.ivan.carles.artist;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.Arrays;
 import static java.lang.System.arraycopy;
 
 /**
@@ -19,7 +23,21 @@ public class Group {
         this.points = new int[]{0,0,0,0};
     }
 
-    public String getName() {
-        return name;
+    public String toJson(){
+        try{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", this.name);
+            JSONArray jsonSongs = new JSONArray(Arrays.asList(this.songkeys));
+            JSONArray jsonPoints = new JSONArray(Arrays.asList(this.points));
+            jsonObject.put("songkeys",jsonSongs);
+            jsonObject.put("points", jsonPoints);
+            return jsonObject.toString();
+        }
+
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
