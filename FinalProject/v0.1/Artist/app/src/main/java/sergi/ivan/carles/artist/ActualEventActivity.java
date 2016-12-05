@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class ActualEventActivity extends AppCompatActivity {
 
     private ArrayList<Group> groups;
-    private Group act_group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +25,7 @@ public class ActualEventActivity extends AppCompatActivity {
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("act_vote");
+        DatabaseReference myRef = database.getReference("act_group");
         myRef.setValue(groups.get(1).toJson());
         Log.i("info", "group sent");
     }
