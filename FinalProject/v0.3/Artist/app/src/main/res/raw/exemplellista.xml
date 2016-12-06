@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Major Version</key><integer>1</integer>
+	<key>Minor Version</key><integer>1</integer>
+	<key>Date</key><date>2016-11-22T20:24:58Z</date>
+	<key>Application Version</key><string>12.4.3.1</string>
+	<key>Features</key><integer>5</integer>
+	<key>Show Content Ratings</key><true/>
+	<key>Music Folder</key><string>file://localhost/C:/Users/Ivan/Music/iTunes/iTunes%20Media/</string>
+	<key>Library Persistent ID</key><string>A238B63D0AD66E0B</string>
+	<key>Tracks</key>
+	<dict>
+		<key>1611</key>
+		<dict>
+			<key>Track ID</key><integer>1611</integer>
+			<key>Name</key><string>byob</string>
+			<key>Artist</key><string>*****</string>
+			<key>Album</key><string>https://soundcloud.com/mixfeed</string>
+			<key>Genre</key><string>free dl / mix feed / zero day</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>10408783</integer>
+			<key>Total Time</key><integer>259683</integer>
+			<key>Year</key><integer>2015</integer>
+			<key>BPM</key><integer>122</integer>
+			<key>Date Modified</key><date>2016-11-13T15:50:34Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>12m (Re b menor) Dbm</string>
+			<key>Skip Count</key><integer>1</integer>
+			<key>Skip Date</key><date>2016-11-13T15:45:40Z</date>
+			<key>Persistent ID</key><string>40E8AD6C5DFF5E67</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/alok%20&#38;%20sevenn%20-%20byob.mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1613</key>
+		<dict>
+			<key>Track ID</key><integer>1613</integer>
+			<key>Name</key><string>Bleeding Love (CATTELANI Remix)</string>
+			<key>Artist</key><string>*****!</string>
+			<key>Genre</key><string>TEMAZO</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>10504490</integer>
+			<key>Total Time</key><integer>256966</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T15:18:28Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>7M (Fa Major) F</string>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Artist</key><string>Leona Lewis</string>
+			<key>Sort Name</key><string>Bleeding Love (CATTELANI Remix)</string>
+			<key>Persistent ID</key><string>6D006A44DAF1744F</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Bleeding%20Love%20(CATTELANI%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1617</key>
+		<dict>
+			<key>Track ID</key><integer>1617</integer>
+			<key>Name</key><string>Carlos Fas &#38; Vicente Fas - "Los Machos" </string>
+			<key>Artist</key><string>****</string>
+			<key>Genre</key><string>*Inici*</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>16262736</integer>
+			<key>Total Time</key><integer>393665</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>Date Modified</key><date>2016-11-13T15:37:01Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>6m (Sol menor) Gm</string>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>50038AF254CE7E75</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Carlos%20Fas%20&#38;%20Vicente%20Fas%20-%20-Los%20Machos-.mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1619</key>
+		<dict>
+			<key>Track ID</key><integer>1619</integer>
+			<key>Name</key><string>Closer (Chunky Dip &#38; Trillogee Bootleg) [Extended]</string>
+			<key>Artist</key><string>****!</string>
+			<key>Composer</key><string>Chunky Dip &#38; Trillogee</string>
+			<key>Genre</key><string>Kick n Bass</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>10126327</integer>
+			<key>Total Time</key><integer>213812</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T15:47:02Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>5M (Mi b Major) Eb </string>
+			<key>Normalization</key><integer>7806</integer>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Composer</key><string>Chunky Dip &#38; Trillogee</string>
+			<key>Persistent ID</key><string>E1BCF9BF51064918</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Closer%20(Chunky%20Dip%20&#38;%20Trillogee%20Bootleg)%20%5BExtended%5D.mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1621</key>
+		<dict>
+			<key>Track ID</key><integer>1621</integer>
+			<key>Name</key><string>David Guetta, Chris Willis &#38; Cedric Gervais - Would I Lie To You (Rajobos Bootleg)</string>
+			<key>Artist</key><string>*****!</string>
+			<key>Genre</key><string>####</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>12605741</integer>
+			<key>Total Time</key><integer>315088</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T15:30:25Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>6m (Sol menor) Gm</string>
+			<key>Persistent ID</key><string>7BD90B0854BA8ECB</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/David%20Guetta,%20Chris%20Willis%20&#38;%20Cedric%20Gervais%20-%20Would%20I%20Lie%20To%20You%20(Rajobos%20Bootleg).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1623</key>
+		<dict>
+			<key>Track ID</key><integer>1623</integer>
+			<key>Name</key><string>DG ft. Zara Larsson - This One's 4You ( J.Beren &#38; Tomi CC Rmx )</string>
+			<key>Artist</key><string>****!</string>
+			<key>Genre</key><string>*Inici*</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>7506589</integer>
+			<key>Total Time</key><integer>187611</integer>
+			<key>Date Modified</key><date>2016-11-13T15:15:37Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>8m (La menor) Am</string>
+			<key>Persistent ID</key><string>423ED1B607D96FAE</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/DG%20ft.%20Zara%20Larsson%20-%20This%20One's%204You%20(%20J.Beren%20&#38;%20Tomi%20CC%20Rmx%20).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1625</key>
+		<dict>
+			<key>Track ID</key><integer>1625</integer>
+			<key>Name</key><string>DJ Snake Ft Justin Bieber - Let Me Love You (Juan Alcaraz Remix)</string>
+			<key>Artist</key><string>****</string>
+			<key>Album Artist</key><string>Juan Alcaraz</string>
+			<key>Composer</key><string>Juan Alcaraz</string>
+			<key>Album</key><string>Juan Alcaraz</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>8871584</integer>
+			<key>Total Time</key><integer>210364</integer>
+			<key>Date Modified</key><date>2016-11-13T15:21:48Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>6m (Sol menor) Gm </string>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>942701A78A24C90B</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/DJ%20Snake%20Ft%20Justin%20Bieber%20-%20Let%20Me%20Love%20You%20(Juan%20Alcaraz%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1627</key>
+		<dict>
+			<key>Track ID</key><integer>1627</integer>
+			<key>Name</key><string>Fizo Faouez - Gypsy ( Original Mix 2016 )</string>
+			<key>Artist</key><string>****</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>6910000</integer>
+			<key>Total Time</key><integer>172695</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T16:01:45Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>12M (Mi Major) E</string>
+			<key>Persistent ID</key><string>E11DEEAC2311A23D</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Fizo%20Faouez%20-%20Gypsy%20(%20Original%20Mix%202016%20).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1629</key>
+		<dict>
+			<key>Track ID</key><integer>1629</integer>
+			<key>Name</key><string>Samba (Original mix) (OK)</string>
+			<key>Artist</key><string>***!</string>
+			<key>Album Artist</key><string>Javi Reina, Roberto Sansixto</string>
+			<key>Album</key><string>Zoombeats</string>
+			<key>Genre</key><string>####</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>10795701</integer>
+			<key>Total Time</key><integer>258768</integer>
+			<key>Date Modified</key><date>2016-11-13T16:09:00Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>11M (La Major) A</string>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>51EC67DFC1527CE3</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Javi%20Reina,%20Roberto%20Sansixto%20-%20Samba%20(Original%20mix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1631</key>
+		<dict>
+			<key>Track ID</key><integer>1631</integer>
+			<key>Name</key><string>Juan Magan Ft Luciana - Baila Conmigo (Juan Alcaraz Remix)</string>
+			<key>Artist</key><string>****</string>
+			<key>Album Artist</key><string>Juan Alcaraz</string>
+			<key>Composer</key><string>Juan Alcaraz</string>
+			<key>Album</key><string>Juan Alcaraz</string>
+			<key>Genre</key><string>Melbourne Bounce</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>9551630</integer>
+			<key>Total Time</key><integer>233012</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T16:04:02Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>11m (Sol b menor) Gbm</string>
+			<key>Skip Count</key><integer>1</integer>
+			<key>Skip Date</key><date>2016-11-13T16:01:14Z</date>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>DA0154A557A0C8B5</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Juan%20Magan%20Ft%20Luciana%20-%20Baila%20Conmigo%20(Juan%20Alcaraz%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1633</key>
+		<dict>
+			<key>Track ID</key><integer>1633</integer>
+			<key>Name</key><string>Lipps Inc. - Funkytown (Carlos Fas &#38; Vicente Fas Private Remix)</string>
+			<key>Artist</key><string>***</string>
+			<key>Genre</key><string>*Inici*</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>13293109</integer>
+			<key>Total Time</key><integer>332225</integer>
+			<key>Date Modified</key><date>2016-11-13T15:19:10Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>6m (Sol menor) Gm </string>
+			<key>Normalization</key><integer>5575</integer>
+			<key>Persistent ID</key><string>5EFD7AB94AB07B6F</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Lipps%20Inc.%20-%20Funkytown%20(Carlos%20Fas%20&#38;%20Vicente%20Fas%20Private%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1635</key>
+		<dict>
+			<key>Track ID</key><integer>1635</integer>
+			<key>Name</key><string>Locos Por Juana - The Cure ft. Collie Buddz (MAAHEZ Remix)</string>
+			<key>Artist</key><string>***!!</string>
+			<key>Album Artist</key><string>Locos Por Juana</string>
+			<key>Composer</key><string>MAAHEZ</string>
+			<key>Genre</key><string>####</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>7253061</integer>
+			<key>Total Time</key><integer>184058</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>Date Modified</key><date>2016-11-13T15:26:21Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>192</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>6m (Sol menor) Gm</string>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Album Artist</key><string>Locos Por Juana</string>
+			<key>Sort Composer</key><string>MAAHEZ</string>
+			<key>Persistent ID</key><string>8C47E80485581F3D</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Locos%20Por%20Juana%20-%20The%20Cure%20ft.%20Collie%20Buddz%20(MAAHEZ%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1637</key>
+		<dict>
+			<key>Track ID</key><integer>1637</integer>
+			<key>Name</key><string>Lukas Graham - 7 Years (GEROX Festival Remix)</string>
+			<key>Artist</key><string>****!</string>
+			<key>Genre</key><string>####</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>11862727</integer>
+			<key>Total Time</key><integer>285074</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T15:25:21Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>6m (Sol menor) Gm</string>
+			<key>Normalization</key><integer>10118</integer>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>E57F81507F9506E6</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Lukas%20Graham%20-%207%20Years%20(GEROX%20Festival%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1639</key>
+		<dict>
+			<key>Track ID</key><integer>1639</integer>
+			<key>Name</key><string>Marry Me (CATTELANI Remix)</string>
+			<key>Artist</key><string>****!</string>
+			<key>Genre</key><string>####</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>12859776</integer>
+			<key>Total Time</key><integer>309054</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T15:13:21Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>9M (Sol Major) G</string>
+			<key>Skip Count</key><integer>2</integer>
+			<key>Skip Date</key><date>2016-11-13T15:13:23Z</date>
+			<key>Normalization</key><integer>8855</integer>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Sort Artist</key><string>Jason Derulo</string>
+			<key>Sort Name</key><string>Marry Me (CATTELANI Remix)</string>
+			<key>Persistent ID</key><string>14699957C3685A4D</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Marry%20Me%20(CATTELANI%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1641</key>
+		<dict>
+			<key>Track ID</key><integer>1641</integer>
+			<key>Name</key><string>Myris - Triton [TastyTunes]</string>
+			<key>Artist</key><string>*****</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>8105373</integer>
+			<key>Total Time</key><integer>202579</integer>
+			<key>Year</key><integer>2016</integer>
+			<key>BPM</key><integer>128</integer>
+			<key>Date Modified</key><date>2016-11-13T16:00:53Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>11m (Sol b menor) Gbm</string>
+			<key>Rating</key><integer>80</integer>
+			<key>Album Rating</key><integer>80</integer>
+			<key>Album Rating Computed</key><true/>
+			<key>Persistent ID</key><string>C9D209FD787D0C04</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Myris%20-%20Triton%20%5BTastyTunes%5D.mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1643</key>
+		<dict>
+			<key>Track ID</key><integer>1643</integer>
+			<key>Name</key><string>Promiscuous (Kastra Remix)</string>
+			<key>Artist</key><string>****</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>12392740</integer>
+			<key>Total Time</key><integer>262948</integer>
+			<key>Date Modified</key><date>2016-11-13T15:44:54Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>3m (Si b menor) Bbm</string>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>7C058D427DE80ADA</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/Promiscuous%20(Kastra%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+		<key>1645</key>
+		<dict>
+			<key>Track ID</key><integer>1645</integer>
+			<key>Name</key><string>You ft. Katelyn Tarver (Wavers Remix)</string>
+			<key>Artist</key><string>\*****</string>
+			<key>Album</key><string>You</string>
+			<key>Kind</key><string>Archivo de audio MPEG</string>
+			<key>Size</key><integer>12038051</integer>
+			<key>Total Time</key><integer>258821</integer>
+			<key>Date Modified</key><date>2016-11-13T16:05:50Z</date>
+			<key>Date Added</key><date>2016-11-12T08:29:00Z</date>
+			<key>Bit Rate</key><integer>320</integer>
+			<key>Sample Rate</key><integer>44100</integer>
+			<key>Comments</key><string>11M (La Major) A </string>
+			<key>Skip Count</key><integer>1</integer>
+			<key>Skip Date</key><date>2016-11-13T14:42:49Z</date>
+			<key>Normalization</key><integer>6469</integer>
+			<key>Artwork Count</key><integer>1</integer>
+			<key>Persistent ID</key><string>C5F8AE8D3E9FA62F</string>
+			<key>Track Type</key><string>File</string>
+			<key>Location</key><string>file://localhost/C:/Users/Ivan/Downloads/%5BRidge%20Records%5DYou%20ft.%20Katelyn%20Tarver%20(Wavers%20Remix).mp3</string>
+			<key>File Folder Count</key><integer>-1</integer>
+			<key>Library Folder Count</key><integer>-1</integer>
+		</dict>
+	</dict>
+	<key>Playlists</key>
+	<array>
+		<dict>
+			<key>Name</key><string>Downloads</string>
+			<key>Description</key><string></string>
+			<key>Playlist ID</key><integer>4065</integer>
+			<key>Playlist Persistent ID</key><string>1D7A922956A46227</string>
+			<key>All Items</key><true/>
+			<key>Playlist Items</key>
+			<array>
+				<dict>
+					<key>Track ID</key><integer>1639</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1623</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1613</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1633</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1625</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1637</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1635</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1621</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1617</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1619</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1643</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1611</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1627</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1641</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1631</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1645</integer>
+				</dict>
+				<dict>
+					<key>Track ID</key><integer>1629</integer>
+				</dict>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
