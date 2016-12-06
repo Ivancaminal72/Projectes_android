@@ -12,15 +12,24 @@ import java.util.ArrayList;
 public class ActualEventActivity extends AppCompatActivity {
 
     private ArrayList<Group> groups;
+    private ArrayList<Song> songList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actual_event);
 
+        //Random songList generation
+        songList = new ArrayList<>();
+        for(int i=0; i<10; i++){
+            Song importedSong = new Song(i,"Nombre Canción","Nombre del artista");
+            songList.add(importedSong);
+        }
+
+        //Random voting groups generation
         groups = new ArrayList<>();
         for(int i=0; i<20; i++){
-            String[] songkeys = new String[]{"sk1", "sk1", "sk1", "sk1"};
+            Integer[] songkeys = new Integer[]{1, 2, 3, 4};
             groups.add(new Group("grupX",songkeys));
         }
 

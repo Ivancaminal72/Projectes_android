@@ -15,13 +15,13 @@ import static java.lang.System.arraycopy;
 public class Group {
     private static final int GROUP_MAX_SIZE = 4;
     private String name;
-    private String [] songkeys;
+    private Integer [] songids;
     private ArrayList<Integer> points;
 
-    public Group(String name, String[] songkeys) {
+    public Group(String name, Integer[] songkeys) {
         this.name = name;
-        this.songkeys = new String[GROUP_MAX_SIZE];
-        arraycopy(songkeys,0,this.songkeys,0,GROUP_MAX_SIZE);
+        this.songids = new Integer[GROUP_MAX_SIZE];
+        arraycopy(songkeys,0,this.songids,0,GROUP_MAX_SIZE);
         this.points = new ArrayList<>(Arrays.asList(1,2,1,2));
     }
 
@@ -29,7 +29,7 @@ public class Group {
         try{
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("name", this.name);
-            JSONArray jsonSongs = new JSONArray(Arrays.asList(this.songkeys));
+            JSONArray jsonSongs = new JSONArray(Arrays.asList(this.songids));
             JSONArray jsonPoints = new JSONArray(this.points);
             jsonObject.put("songkeys",jsonSongs);
             jsonObject.put("points", jsonPoints);
