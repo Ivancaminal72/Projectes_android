@@ -16,6 +16,9 @@ public class Song {
         this.artist = artist;
     }
 
+    public Integer getSongId() {
+        return songId;
+    }
     public String getName() {
         return name;
     }
