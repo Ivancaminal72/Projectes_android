@@ -7,78 +7,90 @@
     tools:context="sergi.ivan.carles.artist.ActualEventActivity">
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/view_group"
+        android:text="@string/none_group_selected"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:elegantTextHeight="false" />
+        android:elegantTextHeight="false"
+        android:textSize="20sp"
+        android:textColor="?android:attr/textColorPrimary" />
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/view_song1"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/view_group"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView2"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="?android:attr/textColorPrimary"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/view_song2"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/view_song1"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView3"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="?android:attr/textColorPrimary"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/view_song3"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
-        android:layout_below="@+id/textView3"
+        android:layout_below="@+id/view_song2"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView6"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="?android:attr/textColorPrimary"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/view_song4"
         android:layout_width="wrap_content"
         android:layout_height="25dp"
-        android:layout_below="@+id/textView6"
+        android:layout_below="@+id/view_song3"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView7"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="?android:attr/textColorPrimary"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
     <Button
+        android:id="@+id/btn_vote"
         android:text="Vote"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:layout_below="@+id/textView7"
+        android:layout_below="@+id/view_song4"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/button2"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:background="@android:color/holo_green_dark" />
+        android:background="@android:color/holo_green_dark"
+        android:textColor="?android:attr/textColorPrimaryInverse"
+        android:textSize="18sp" />
 
     <ListView
         android:id="@+id/group_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/button2"
+        android:layout_below="@+id/btn_vote"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 </RelativeLayout>

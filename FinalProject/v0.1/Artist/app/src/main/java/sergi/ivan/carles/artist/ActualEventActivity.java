@@ -3,8 +3,11 @@ package sergi.ivan.carles.artist;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -22,6 +25,11 @@ public class ActualEventActivity extends AppCompatActivity {
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
     private ListView group_list;
+    private TextView view_group;
+    private TextView view_song1;
+    private TextView view_song2;
+    private TextView view_song3;
+    private TextView view_song4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +51,29 @@ public class ActualEventActivity extends AppCompatActivity {
         }
 
         //Set layout
+        view_group = (TextView) findViewById(R.id.view_group);
+        view_song1 = (TextView) findViewById(R.id.view_song1);
+        view_song2 = (TextView) findViewById(R.id.view_song2);
+        view_song3 = (TextView) findViewById(R.id.view_song3);
+        view_song4 = (TextView) findViewById(R.id.view_song4);
         group_list = (ListView) findViewById(R.id.group_list);
         group_list.setAdapter(new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
                 getGroupsNames()
         ));
+        group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                view_group.setText(groups.get(position).getName());
+                Integer[] selected_songids = groups.get(position).getSongids();
+                view_song1.setText(songs.get(selected_songids[0]).getName());
+                view_song2.setText(songs.get(selected_songids[1]).getName());
+                view_song3.setText(songs.get(selected_songids[2]).getName());
+                view_song4.setText(songs.get(selected_songids[3]).getName());
 
+            }
+        });
 
 
         //Send the selected group to firebase database
