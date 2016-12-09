@@ -21,6 +21,8 @@ public class ActualEventActivity extends AppCompatActivity {
 
     private String newPost;
     private ArrayList<Integer> points;
+    private ArrayList<String> songs;
+    private ArrayList<String> artists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +40,17 @@ public class ActualEventActivity extends AppCompatActivity {
                 //todo: Mostrar cançons i puntuació actual al layout
                 try {
                     JSONObject jsonObject = new JSONObject(newPost);
-                    JSONArray jArr = jsonObject.getJSONArray("points");
+                    JSONArray jArrPoints = jsonObject.getJSONArray("points");
+                    JSONArray jArrSongs = jsonObject.getJSONArray("songs");
+                    JSONArray jArrArtists = jsonObject.getJSONArray("artists");
                     points = new ArrayList<>();
-                    for (int i=0; i < jArr.length(); i++) {
-                        points.add(jArr.getInt(i));
-                        Log.i("info", points.get(i).toString());
+                    songs = new ArrayList<>();
+                    artists = new ArrayList<>();
+                    for (int i=0; i < jArrPoints.length(); i++) {
+                        points.add(jArrPoints.getInt(i));
+                        songs.add(jArrSongs.getString(i));
+                        artists.add(jArrArtists.getString(i));
+                        Log.i("info", points.get(i).toString() + "  "+songs.get(i)+ "   "+artists.get(i));
                     }
 
                 } catch (JSONException e) {
