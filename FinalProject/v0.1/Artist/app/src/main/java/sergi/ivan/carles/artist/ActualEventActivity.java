@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,6 +31,8 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView view_song2;
     private TextView view_song3;
     private TextView view_song4;
+    private Button buttonVote;
+    private int pos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,24 +74,27 @@ public class ActualEventActivity extends AppCompatActivity {
                 view_song2.setText(songs.get(selected_songids[1]).getName());
                 view_song3.setText(songs.get(selected_songids[2]).getName());
                 view_song4.setText(songs.get(selected_songids[3]).getName());
-
+                pos = position;
             }
         });
 
-
         //Send the selected group to firebase database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("act_group");
-        String jsonData = toJson(1);
-        if(jsonData != null){
-            myRef.setValue(jsonData);
-            Log.i("info", "group sent");
-        }
-        else{
-            Log.e("info", "group data is null");
-        }
-
-
+        final DatabaseReference myRef = database.getReference("act_group");
+        buttonVote = (Button) findViewById(R.id.btn_vote);
+        buttonVote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String jsonData = toJson(pos);
+                myRef.setValue(jsonData);
+                if(jsonData != null){
+                    Log.i("info", "group sent");
+                }
+                else{
+                    Log.e("ERROR", "group data is null");
+                }
+            }
+        });
     }
 
     private ArrayList<String> getGroupsNames() {
