@@ -1,6 +1,5 @@
 package sergi.ivan.carles.client;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,21 +22,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ActualEventActivity extends AppCompatActivity {
 
+    private MyListAdapter adapter;
     private String newPost;
-    private ArrayList<Integer> points;
-    private ArrayList<String> songs;
-    private ArrayList<String> artists;
+    private ArrayList<Song> songs;
+    private ListView list_songs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actual_event_activiy);
-        ListView lv = (ListView) findViewById(R.id.vote_list);
-        //lv.setAdapter(new MyListAdaper(this, R.layout.list_item, data));
+
+        songs = new ArrayList<>();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference act_ref = database.getReference("act_group");
@@ -56,14 +51,9 @@ public class ActualEventActivity extends AppCompatActivity {
                     JSONArray jArrPoints = jsonObject.getJSONArray("points");
                     JSONArray jArrSongs = jsonObject.getJSONArray("songs");
                     JSONArray jArrArtists = jsonObject.getJSONArray("artists");
-                    points = new ArrayList<>();
-                    songs = new ArrayList<>();
-                    artists = new ArrayList<>();
                     for (int i=0; i < jArrPoints.length(); i++) {
-                        points.add(jArrPoints.getInt(i));
-                        songs.add(jArrSongs.getString(i));
-                        artists.add(jArrArtists.getString(i));
-                        Log.i("info", points.get(i).toString() + "  "+songs.get(i)+ "   "+artists.get(i));
+                        songs.add(new Song(jArrPoints.getInt(i),jArrSongs.getString(i),jArrArtists.getString(i)));
+                        Log.i("info", songs.get(i).getVotes().toString() + "  "+songs.get(i).getName()+ "   "+songs.get(i).getArtist());
                     }
 
                 } catch (JSONException e) {
@@ -75,47 +65,33 @@ public class ActualEventActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
-
+        adapter = new MyListAdapter();
+        list_songs = (ListView) findViewById(R.id.vote_list);
+        list_songs.setAdapter(adapter);
         //TODO: quan cliques enviar votació
 
     }
 
-    private class MyListAdaper extends ArrayAdapter<String> {
-        private int layout;
-        private List<String> mObjects;
-        private MyListAdaper(Context context, int resource, List<String> objects) {
-            super(context, resource, objects);
-            mObjects = objects;
-            layout = resource;
+    private class MyListAdapter extends ArrayAdapter<Song> {
+        MyListAdapter() {
+            super(ActualEventActivity.this, R.layout.list_item, songs);
         }
 
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder mainViewholder = null;
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View result = convertView;
             if(convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                convertView = inflater.inflate(layout, parent, false);
-                ViewHolder viewHolder = new ViewHolder();
-                viewHolder.thumbnail = (ImageView) convertView.findViewById(R.id.list_item_thumbnail);
-                viewHolder.title = (TextView) convertView.findViewById(R.id.list_item_text);
-                viewHolder.button = (Button) convertView.findViewById(R.id.list_item_btn);
-                convertView.setTag(viewHolder);
+                LayoutInflater inflater = getLayoutInflater();
+                result = inflater.inflate(R.layout.list_item, parent, false);
             }
-            mainViewholder = (ViewHolder) convertView.getTag();
-            mainViewholder.button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getContext(), "Button was clicked for list item " + position, Toast.LENGTH_SHORT).show();
-                }
-            });
-            mainViewholder.title.setText(getItem(position));
-
-            return convertView;
+            Song song = getItem(position);
+            TextView title = (TextView) result.findViewById(R.id.list_item_song);
+            title.setText(song.getName());
+            TextView art = (TextView) result.findViewById(R.id.list_item_artist);
+            art.setText(song.getArtist());
+            Button button = (Button) result.findViewById(R.id.list_item_btn);
+            button.setText("VOTE");
+            return result;
         }
-    }
-    public class ViewHolder {
-        ImageView thumbnail;
-        TextView title;
-        Button button;
     }
 }
