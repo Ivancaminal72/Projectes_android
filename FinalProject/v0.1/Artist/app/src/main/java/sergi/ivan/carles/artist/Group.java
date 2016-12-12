@@ -18,7 +18,7 @@ public class Group {
         this.name = name;
         this.songids = new Integer[GROUP_MAX_SIZE];
         arraycopy(songkeys,0,this.songids,0,GROUP_MAX_SIZE);
-        this.points = new ArrayList<>(Arrays.asList(1,2,1,2));
+        this.points = new ArrayList<>(Arrays.asList(0,5,10,15));
     }
 
     public String getName() {

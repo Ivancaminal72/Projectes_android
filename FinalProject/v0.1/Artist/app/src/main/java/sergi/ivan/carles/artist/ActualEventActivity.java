@@ -12,8 +12,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,9 +38,16 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView view_song2;
     private TextView view_song3;
     private TextView view_song4;
+    private TextView points_song1;
+    private TextView points_song2;
+    private TextView points_song3;
+    private TextView points_song4;
     private Button buttonVote;
-    private int pos, pos_act;
+    private int pos;
+    private int pos_act = -1;
     private boolean voting = false;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference myRef = database.getReference("act_group");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +74,10 @@ public class ActualEventActivity extends AppCompatActivity {
         view_song2 = (TextView) findViewById(R.id.view_song2);
         view_song3 = (TextView) findViewById(R.id.view_song3);
         view_song4 = (TextView) findViewById(R.id.view_song4);
+        points_song1 = (TextView) findViewById(R.id.points_song_1);
+        points_song2 = (TextView) findViewById(R.id.points_song_2);
+        points_song3 = (TextView) findViewById(R.id.points_song_3);
+        points_song4 = (TextView) findViewById(R.id.points_song_4);
         group_list = (ListView) findViewById(R.id.group_list);
         group_list.setAdapter(new ArrayAdapter<>(
                 this,
@@ -79,8 +93,6 @@ public class ActualEventActivity extends AppCompatActivity {
         });
 
         //Send the selected group to firebase database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("act_group");
         buttonVote = (Button) findViewById(R.id.btn_vote);
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,13 +130,64 @@ public class ActualEventActivity extends AppCompatActivity {
         });
     }
 
-    private void setGroup(int position) {
+    private void setGroup(final int position) {
         view_group.setText(groups.get(position).getName());
-        Integer[] selected_songids = groups.get(position).getSongids();
-        view_song1.setText(songs.get(selected_songids[0]).getName()+"   "+songs.get(selected_songids[0]).getArtist());
-        view_song2.setText(songs.get(selected_songids[1]).getName()+"   "+songs.get(selected_songids[1]).getArtist());
-        view_song3.setText(songs.get(selected_songids[2]).getName()+"   "+songs.get(selected_songids[2]).getArtist());
-        view_song4.setText(songs.get(selected_songids[3]).getName()+"   "+songs.get(selected_songids[3]).getArtist());
+        if(position == pos_act){
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    try {
+                        String actPost = dataSnapshot.getValue().toString();
+                        JSONObject jsonObject = new JSONObject(actPost);
+                        JSONArray jArrPoints = jsonObject.getJSONArray("points");
+                        ArrayList<Integer> actPoints = new ArrayList<>();
+                        for (int i=0; i < jArrPoints.length(); i++) {
+                            actPoints.add(jArrPoints.getInt(i));
+                        }
+                        ArrayList<Integer> findMax = new ArrayList<>(actPoints);
+                        ArrayList<Integer> orderIndex = new ArrayList<>();
+                        int max = 0;
+                        int n = GROUP_MAX_SIZE-1;
+                        while(n>=0){
+                            for(int i=0; i<GROUP_MAX_SIZE; i++) {
+                                if(findMax.get(i) > max) {max = i;}
+                            }
+                            findMax.set(max,-1);
+                            orderIndex.add(max);
+                            max=0;
+                            n-=1;
+                        }
+                        Integer[] selected_songids = groups.get(position).getSongids();
+                        view_song1.setText(songs.get(selected_songids[orderIndex.get(0)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(0)]).getArtist());
+                        view_song2.setText(songs.get(selected_songids[orderIndex.get(1)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(1)]).getArtist());
+                        view_song3.setText(songs.get(selected_songids[orderIndex.get(2)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(2)]).getArtist());
+                        view_song4.setText(songs.get(selected_songids[orderIndex.get(3)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(3)]).getArtist());
+                        points_song1.setText(actPoints.get(orderIndex.get(0)).toString() +" "+getResources().getString(R.string.points));
+                        points_song2.setText(actPoints.get(orderIndex.get(1)).toString() +" "+getResources().getString(R.string.points));
+                        points_song3.setText(actPoints.get(orderIndex.get(2)).toString() +" "+getResources().getString(R.string.points));
+                        points_song4.setText(actPoints.get(orderIndex.get(3)).toString() +" "+getResources().getString(R.string.points));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.i("info", "error data conversion from firebase");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+        }
+        else{
+            Integer[] selected_songids = groups.get(position).getSongids();
+            view_song1.setText(songs.get(selected_songids[0]).getName()+"   "+songs.get(selected_songids[0]).getArtist());
+            view_song2.setText(songs.get(selected_songids[1]).getName()+"   "+songs.get(selected_songids[1]).getArtist());
+            view_song3.setText(songs.get(selected_songids[2]).getName()+"   "+songs.get(selected_songids[2]).getArtist());
+            view_song4.setText(songs.get(selected_songids[3]).getName()+"   "+songs.get(selected_songids[3]).getArtist());
+            points_song1.setText("");
+            points_song2.setText("");
+            points_song3.setText("");
+            points_song4.setText("");
+        }
     }
 
     private ArrayList<String> getGroupsNames() {

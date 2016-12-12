@@ -19,4 +19,5 @@
     <string name="send">send</string>
     <string name="vote">vote</string>
     <string name="voting">voting</string>
+    <string name="points">p</string>
 </resources>
