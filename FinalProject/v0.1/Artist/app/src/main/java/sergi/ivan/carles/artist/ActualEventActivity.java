@@ -1,5 +1,7 @@
 package sergi.ivan.carles.artist;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static android.R.color.holo_orange_dark;
+
 
 public class ActualEventActivity extends AppCompatActivity {
 
@@ -32,7 +36,8 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView view_song3;
     private TextView view_song4;
     private Button buttonVote;
-    private int pos;
+    private int pos, pos_act;
+    private boolean voting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +73,7 @@ public class ActualEventActivity extends AppCompatActivity {
         group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view_group.setText(groups.get(position).getName());
-                Integer[] selected_songids = groups.get(position).getSongids();
-                view_song1.setText(songs.get(selected_songids[0]).getName());
-                view_song2.setText(songs.get(selected_songids[1]).getName());
-                view_song3.setText(songs.get(selected_songids[2]).getName());
-                view_song4.setText(songs.get(selected_songids[3]).getName());
+                setGroup(position);
                 pos = position;
             }
         });
@@ -85,16 +85,46 @@ public class ActualEventActivity extends AppCompatActivity {
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String jsonData = toJson(pos);
-                myRef.setValue(jsonData);
-                if(jsonData != null){
-                    Log.i("info", "group sent");
+                if (!voting) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActualEventActivity.this);
+                    builder.setTitle(R.string.confirm);
+                    String msg = getResources().getString(R.string.confirm_msg);
+                    builder.setMessage(msg + " "+groups.get(pos).getName() + " to a vote?");
+                    builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String jsonData = toJson(pos);
+                            myRef.setValue(jsonData);
+                            if(jsonData != null){
+                                Log.i("info", "group sent");
+                                buttonVote.setText(R.string.voting);
+                                buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
+                                voting=true;
+                                pos_act=pos;
+                            }
+                            else{
+                                Log.e("ERROR", "group data is null");
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.cancel, null);
+                    builder.create().show();
                 }
                 else{
-                    Log.e("ERROR", "group data is null");
+                    setGroup(pos_act);
                 }
+
             }
         });
+    }
+
+    private void setGroup(int position) {
+        view_group.setText(groups.get(position).getName());
+        Integer[] selected_songids = groups.get(position).getSongids();
+        view_song1.setText(songs.get(selected_songids[0]).getName()+"   "+songs.get(selected_songids[0]).getArtist());
+        view_song2.setText(songs.get(selected_songids[1]).getName()+"   "+songs.get(selected_songids[1]).getArtist());
+        view_song3.setText(songs.get(selected_songids[2]).getName()+"   "+songs.get(selected_songids[2]).getArtist());
+        view_song4.setText(songs.get(selected_songids[3]).getName()+"   "+songs.get(selected_songids[3]).getArtist());
     }
 
     private ArrayList<String> getGroupsNames() {

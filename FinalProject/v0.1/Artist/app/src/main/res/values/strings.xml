@@ -14,4 +14,9 @@
         completions."
     </string>
     <string name="none_group_selected">None group selected</string>
+    <string name="confirm">Confirmation</string>
+    <string name="confirm_msg">Are you sure you want to send group </string>
+    <string name="send">send</string>
+    <string name="vote">vote</string>
+    <string name="voting">voting</string>
 </resources>

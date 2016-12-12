@@ -18,7 +18,9 @@
         android:layout_alignParentEnd="true"
         android:elegantTextHeight="false"
         android:textSize="20sp"
-        android:textColor="?android:attr/textColorPrimary" />
+        android:textColor="?android:attr/textColorPrimary"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
 
     <TextView
         android:id="@+id/view_song1"
@@ -74,9 +76,9 @@
 
     <Button
         android:id="@+id/btn_vote"
-        android:text="Vote"
+        android:text="@string/vote"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/view_song4"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
