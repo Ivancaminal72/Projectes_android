@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,7 +44,7 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView points_song3;
     private TextView points_song4;
     private Button buttonVote;
-    private int pos;
+    private int pos = -1;
     private int pos_act = -1;
     private boolean voting = false;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -97,7 +98,7 @@ public class ActualEventActivity extends AppCompatActivity {
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!voting) {
+                if (!voting & pos != -1) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActualEventActivity.this);
                     builder.setTitle(R.string.confirm);
                     String msg = getResources().getString(R.string.confirm_msg);
@@ -106,8 +107,8 @@ public class ActualEventActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String jsonData = toJson(pos);
-                            myRef.setValue(jsonData);
                             if(jsonData != null){
+                                myRef.setValue(jsonData);
                                 Log.i("info", "group sent");
                                 buttonVote.setText(R.string.voting);
                                 buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
@@ -122,10 +123,15 @@ public class ActualEventActivity extends AppCompatActivity {
                     builder.setNegativeButton(android.R.string.cancel, null);
                     builder.create().show();
                 }
-                else{
+                else if(pos != -1){
                     setGroup(pos_act);
                 }
-
+                else{
+                    Toast.makeText(
+                            ActualEventActivity.this,
+                            getResources().getString(R.string.none_group_selected),
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

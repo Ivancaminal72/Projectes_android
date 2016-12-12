@@ -105,8 +105,8 @@
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/view_song2"
         android:textColor="@android:color/holo_orange_dark"
-        android:textAlignment="textEnd"
-        android:paddingRight="8dp" />
+        android:paddingRight="8dp"
+        android:gravity="end" />
 
     <TextView
         android:id="@+id/points_song_2"
@@ -117,8 +117,8 @@
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/view_song3"
         android:textColor="@android:color/holo_orange_dark"
-        android:textAlignment="textEnd"
-        android:paddingRight="8dp" />
+        android:paddingRight="8dp"
+        android:gravity="end" />
 
     <TextView
         android:id="@+id/points_song_3"
@@ -129,8 +129,8 @@
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/view_song4"
         android:textColor="@android:color/holo_orange_dark"
-        android:textAlignment="textEnd"
-        android:paddingRight="8dp" />
+        android:paddingRight="8dp"
+        android:gravity="end"/>
 
     <TextView
         android:id="@+id/points_song_4"
@@ -141,6 +141,6 @@
         android:layout_alignParentEnd="true"
         android:layout_above="@+id/btn_vote"
         android:textColor="@android:color/holo_orange_dark"
-        android:textAlignment="textEnd"
-        android:paddingRight="8dp" />
+        android:paddingRight="8dp"
+        android:gravity="end"/>
 </RelativeLayout>
