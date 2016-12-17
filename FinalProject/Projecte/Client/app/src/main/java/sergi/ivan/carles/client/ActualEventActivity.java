@@ -17,18 +17,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class ActualEventActivity extends AppCompatActivity {
 
+    private static final int GROUP_MAX_SIZE = 4;
     private MyListAdapter adapter;
     private String newPost;
     private ArrayList<Song> songs;
     private ListView list_songs;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference act_ref = database.getReference("act_group");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,30 +36,22 @@ public class ActualEventActivity extends AppCompatActivity {
 
         songs = new ArrayList<>();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference act_ref = database.getReference("act_group");
-
         act_ref.addValueEventListener(new ValueEventListener()   {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 newPost = dataSnapshot.getValue().toString();
                 Log.i("info", newPost);
-                //todo: Mostrar cançons i puntuació actual al layout
-                try {
-                    JSONObject jsonObject = new JSONObject(newPost);
-                    JSONArray jArrPoints = jsonObject.getJSONArray("points");
-                    JSONArray jArrSongs = jsonObject.getJSONArray("songs");
-                    JSONArray jArrArtists = jsonObject.getJSONArray("artists");
-                    for (int i=0; i < jArrPoints.length(); i++) {
-                        songs.add(new Song(jArrPoints.getInt(i),jArrSongs.getString(i),jArrArtists.getString(i)));
-                        Log.i("info", songs.get(i).getVotes().toString() + "  "+songs.get(i).getName()+ "   "+songs.get(i).getArtist());
+                    for (int i=0; i < GROUP_MAX_SIZE; i++) {
+                        songs.add(i, new Song(
+                                (long)dataSnapshot.child("song"+String.valueOf(i)+"/points").getValue(),
+                                dataSnapshot.child("song"+String.valueOf(i)+"/name").getValue().toString(),
+                                dataSnapshot.child("song"+String.valueOf(i)+"/artist").getValue().toString()));
+                        Log.i("info", String.valueOf(songs.get(i).getPoints()) + "  "+songs.get(i).getName()+ "   "+songs.get(i).getArtist());
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.i("info", "error data conversion from firebase");
                 }
-            }
+                //todo: Mostrar cançons i puntuació actual al layout
+
 
             @Override
             public void onCancelled(DatabaseError databaseError) {}

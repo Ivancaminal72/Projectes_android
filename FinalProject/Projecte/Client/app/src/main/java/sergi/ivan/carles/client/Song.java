@@ -5,19 +5,19 @@ package sergi.ivan.carles.client;
  */
 
 public class Song {
-    private Integer votes;
+    private long points;
     private String name;
     private String artist;
 
-    public Song(Integer votes, String name, String artist) {
+    public Song(long points, String name, String artist) {
 
-        this.votes = votes;
+        this.points = points;
         this.name = name;
         this.artist = artist;
     }
 
-    public Integer getVotes() {
-        return votes;
+    public long getPoints() {
+        return points;
     }
 
     public String getName() {
