@@ -29,6 +29,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static android.R.color.holo_orange_dark;
+import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
 
 
@@ -73,7 +74,7 @@ public class ActualEventActivity extends AppCompatActivity {
         //Random voting groups generation
         groups = new ArrayList<>();
         for(int i=0; i<20; i++){
-            Integer[] songkeys = new Integer[]{1+i, 2+i, 3+i, 4+i};
+            int[] songkeys = new int[]{1+i, 2+i, 3+i, 4+i};
             groups.add(new Group(String.format("Group to select %d",i),songkeys));
         }
 
@@ -102,7 +103,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     myRef.removeEventListener(ListenerDatabase);
                     listening = false;
                 }
-                setGroup(position);
+                showGroup(position);
                 pos = position;
             }
         });
@@ -120,36 +121,30 @@ public class ActualEventActivity extends AppCompatActivity {
                     builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String jsonData = toJson(pos);
-                            if(jsonData != null){
-                                myRef.setValue(jsonData);
-                                Log.i("info", "group sent");
-                                buttonVote.setText(R.string.voting);
-                                buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
-                                voting=true;
-                                Date endVoteTime = new Date(currentTimeMillis() + offsetMillisVote);
-                                //Initialize the timer to end the current vote
-                                new Timer(true).schedule(
-                                        new TimerTask() {
-                                            @Override
-                                            public void run() {
-                                                //recuperar resultat votació i enviar cap grup a votar (Transaction)
-                                            }
-                                        },
-                                        endVoteTime
-                                );
-                                pos_act=pos;
-                            }
-                            else{
-                                Log.e("ERROR", "group data is null");
-                            }
+                            sendGroup();
+                            Log.i("info", "group sent");
+                            buttonVote.setText(R.string.voting);
+                            buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
+                            voting=true;
+                            Date endVoteTime = new Date(currentTimeMillis() + offsetMillisVote);
+                            //Initialize the timer to end the current vote
+                            new Timer(true).schedule(
+                                    new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            //recuperar resultat votació i enviar cap grup a votar (Transaction)
+                                        }
+                                    },
+                                    endVoteTime
+                            );
+                            pos_act=pos;
                         }
                     });
                     builder.setNegativeButton(android.R.string.cancel, null);
                     builder.create().show();
                 }
                 else if(pos != -1){
-                    setGroup(pos_act);
+                    showGroup(pos_act);
                 }
                 else{
                     Toast.makeText(
@@ -161,60 +156,74 @@ public class ActualEventActivity extends AppCompatActivity {
         });
     }
 
-    private void setGroup(final int position) {
+    private void sendGroup() {
+        String[] sNames = new String[GROUP_MAX_SIZE];
+        String[] sArtists = new String[GROUP_MAX_SIZE];
+        int [] songsIds;
+        songsIds = groups.get(pos).getSongIds();
+        for(int i=0; i<GROUP_MAX_SIZE; i++){
+            for(int j = 0; j< songs.size(); j++){
+                if(songs.get(j).getSongId()==songsIds[i]){
+                    sNames[i]=songs.get(j).getName();
+                    sArtists[i]=songs.get(j).getArtist();
+                }
+            }
+        }
+        for(int i=0; i<GROUP_MAX_SIZE; i++){
+            myRef.child("song"+String.valueOf(i)).child("name").setValue(sNames[i]);
+            myRef.child("song"+String.valueOf(i)).child("artist").setValue(sArtists[i]);
+            myRef.child("song"+String.valueOf(i)).child("points").setValue(groups.get(pos).getPoints()[i]);
+        }
+    }
+
+    private void showGroup(final int position) {
         view_group.setText(groups.get(position).getName());
         if(position == pos_act){
             listening = true;
             ListenerDatabase = myRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    try {
-                        String actPost = dataSnapshot.getValue().toString();
-                        JSONObject jsonObject = new JSONObject(actPost);
-                        JSONArray jArrPoints = jsonObject.getJSONArray("points");
-                        ArrayList<Integer> actPoints = new ArrayList<>();
-                        for (int i=0; i < jArrPoints.length(); i++) {
-                            actPoints.add(jArrPoints.getInt(i));
-                        }
-                        ArrayList<Integer> findMax = new ArrayList<>(actPoints);
-                        ArrayList<Integer> orderIndex = new ArrayList<>();
-                        int max = 0;
-                        int n = GROUP_MAX_SIZE-1;
-                        while(n>=0){
-                            for(int i=0; i<GROUP_MAX_SIZE; i++) {
-                                if(findMax.get(i) > max) {max = i;}
-                            }
-                            findMax.set(max,-1);
-                            orderIndex.add(max);
-                            max=0;
-                            n-=1;
-                        }
-                        Integer[] selected_songids = groups.get(position).getSongids();
-                        view_song1.setText(songs.get(selected_songids[orderIndex.get(0)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(0)]).getArtist());
-                        view_song2.setText(songs.get(selected_songids[orderIndex.get(1)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(1)]).getArtist());
-                        view_song3.setText(songs.get(selected_songids[orderIndex.get(2)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(2)]).getArtist());
-                        view_song4.setText(songs.get(selected_songids[orderIndex.get(3)]).getName()+"   "+songs.get(selected_songids[orderIndex.get(3)]).getArtist());
-                        points_song1.setText(actPoints.get(orderIndex.get(0)).toString() +" "+getResources().getString(R.string.points));
-                        points_song2.setText(actPoints.get(orderIndex.get(1)).toString() +" "+getResources().getString(R.string.points));
-                        points_song3.setText(actPoints.get(orderIndex.get(2)).toString() +" "+getResources().getString(R.string.points));
-                        points_song4.setText(actPoints.get(orderIndex.get(3)).toString() +" "+getResources().getString(R.string.points));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Log.i("info", "error data conversion from firebase");
+                    long[] actPoints = new long[GROUP_MAX_SIZE];
+                    for (int i=0; i < GROUP_MAX_SIZE; i++) {
+                        actPoints[i] = (long)dataSnapshot.child("song"+String.valueOf(i)+"/points").getValue();
                     }
+                    long[] findMax = new long[GROUP_MAX_SIZE];
+                    arraycopy(actPoints,0,findMax,0,GROUP_MAX_SIZE);
+                    int[] orderIndex = new int[GROUP_MAX_SIZE];
+                    int max = 0;
+                    int n = 0;
+                    while(n<GROUP_MAX_SIZE){
+                        for(int i=0; i<GROUP_MAX_SIZE; i++) {
+                            if(findMax[i] > max) {max = i;}
+                        }
+                        findMax[max] = -1;
+                        orderIndex[n] = max;
+                        max=0;
+                        n+=1;
+                    }
+                    int[] sIds = groups.get(position).getSongIds();
+                    view_song1.setText(songs.get(sIds[orderIndex[0]]).getName()+"   "+songs.get(sIds[orderIndex[0]]).getArtist());
+                    view_song2.setText(songs.get(sIds[orderIndex[1]]).getName()+"   "+songs.get(sIds[orderIndex[1]]).getArtist());
+                    view_song3.setText(songs.get(sIds[orderIndex[2]]).getName()+"   "+songs.get(sIds[orderIndex[2]]).getArtist());
+                    view_song4.setText(songs.get(sIds[orderIndex[3]]).getName()+"   "+songs.get(sIds[orderIndex[3]]).getArtist());
+                    points_song1.setText(String.valueOf(actPoints[orderIndex[0]])+" "+getResources().getString(R.string.points));
+                    points_song2.setText(String.valueOf(actPoints[orderIndex[1]])+" "+getResources().getString(R.string.points));
+                    points_song3.setText(String.valueOf(actPoints[orderIndex[2]])+" "+getResources().getString(R.string.points));
+                    points_song4.setText(String.valueOf(actPoints[orderIndex[3]])+" "+getResources().getString(R.string.points));
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {}
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("info", "Error reading database: "+databaseError.getDetails());
+                }
             });
         }
         else{
-            Integer[] selected_songids = groups.get(position).getSongids();
-            view_song1.setText(songs.get(selected_songids[0]).getName()+"   "+songs.get(selected_songids[0]).getArtist());
-            view_song2.setText(songs.get(selected_songids[1]).getName()+"   "+songs.get(selected_songids[1]).getArtist());
-            view_song3.setText(songs.get(selected_songids[2]).getName()+"   "+songs.get(selected_songids[2]).getArtist());
-            view_song4.setText(songs.get(selected_songids[3]).getName()+"   "+songs.get(selected_songids[3]).getArtist());
+            int[] sIds = groups.get(position).getSongIds();
+            view_song1.setText(songs.get(sIds[0]).getName()+"   "+songs.get(sIds[0]).getArtist());
+            view_song2.setText(songs.get(sIds[1]).getName()+"   "+songs.get(sIds[1]).getArtist());
+            view_song3.setText(songs.get(sIds[2]).getName()+"   "+songs.get(sIds[2]).getArtist());
+            view_song4.setText(songs.get(sIds[3]).getName()+"   "+songs.get(sIds[3]).getArtist());
             points_song1.setText("");
             points_song2.setText("");
             points_song3.setText("");
@@ -228,35 +237,5 @@ public class ActualEventActivity extends AppCompatActivity {
             group_names.add(groups.get(i).getName());
         }
         return group_names;
-    }
-
-    private String toJson(int index) {
-        ArrayList <String> sNames = new ArrayList<>();
-        ArrayList <String> sArtists = new ArrayList<>();
-        Integer [] songsIds;
-        songsIds = groups.get(index).getSongids();
-        for(int i=0; i<GROUP_MAX_SIZE; i++){
-            for(int j = 0; j< songs.size(); j++){
-                if(songs.get(j).getSongId()==songsIds[i]){
-                    sNames.add(songs.get(j).getName());
-                    sArtists.add(songs.get(j).getArtist());
-                }
-            }
-        }
-        try{
-            JSONObject jsonObject = new JSONObject();
-            JSONArray jsonSongs = new JSONArray(sNames);
-            JSONArray jsonArtists = new JSONArray(sArtists);
-            JSONArray jsonPoints = new JSONArray(groups.get(index).getPoints());
-            jsonObject.put("songs",jsonSongs);
-            jsonObject.put("artists", jsonArtists);
-            jsonObject.put("points", jsonPoints);
-            return jsonObject.toString();
-        }
-
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
