@@ -1,6 +1,7 @@
 package sergi.ivan.carles.artist;
 
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,15 +20,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.R.color.holo_green_light;
 import static android.R.color.holo_orange_dark;
 import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
@@ -53,9 +52,7 @@ public class ActualEventActivity extends AppCompatActivity {
     private int pos_act = -1;
     private boolean voting = false;
     private boolean listening = false;
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private final DatabaseReference myRef = database.getReference("act_group");
-    private long offsetMillisVote = 360000; //Default time 6 minutes
+    private long offsetMillisVote = 3000; //Default time 6 minutes
     private ValueEventListener ListenerDatabase;
 
 
@@ -63,6 +60,8 @@ public class ActualEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actual_event);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference actRef = database.getReference("act_group");
 
         //Random songs generation
         songs = new ArrayList<>();
@@ -100,10 +99,10 @@ public class ActualEventActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(voting & listening){
-                    myRef.removeEventListener(ListenerDatabase);
+                    actRef.removeEventListener(ListenerDatabase);
                     listening = false;
                 }
-                showGroup(position);
+                showGroup(position,actRef);
                 pos = position;
             }
         });
@@ -121,7 +120,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            sendGroup();
+                            sendGroup(pos,actRef);
                             Log.i("info", "group sent");
                             buttonVote.setText(R.string.voting);
                             buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
@@ -132,7 +131,17 @@ public class ActualEventActivity extends AppCompatActivity {
                                     new TimerTask() {
                                         @Override
                                         public void run() {
-                                            //recuperar resultat votació i enviar cap grup a votar (Transaction)
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    showGroup(pos_act,actRef);
+                                                    buttonVote.setText(R.string.vote);
+                                                    buttonVote.setBackgroundColor(getResources().getColor(holo_green_light));
+                                                }
+                                            });
+                                            //enviar cap grup a votar un cop acabat el showgroup
+                                            sendGroup(-1,actRef);
+                                            voting = false;
                                         }
                                     },
                                     endVoteTime
@@ -144,7 +153,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     builder.create().show();
                 }
                 else if(pos != -1){
-                    showGroup(pos_act);
+                    showGroup(pos_act, actRef);
                 }
                 else{
                     Toast.makeText(
@@ -156,31 +165,41 @@ public class ActualEventActivity extends AppCompatActivity {
         });
     }
 
-    private void sendGroup() {
-        String[] sNames = new String[GROUP_MAX_SIZE];
-        String[] sArtists = new String[GROUP_MAX_SIZE];
-        int [] songsIds;
-        songsIds = groups.get(pos).getSongIds();
-        for(int i=0; i<GROUP_MAX_SIZE; i++){
-            for(int j = 0; j< songs.size(); j++){
-                if(songs.get(j).getSongId()==songsIds[i]){
-                    sNames[i]=songs.get(j).getName();
-                    sArtists[i]=songs.get(j).getArtist();
+    private void sendGroup(final int position,DatabaseReference actRef) {
+        if(position != -1) {
+            String[] sNames = new String[GROUP_MAX_SIZE];
+            String[] sArtists = new String[GROUP_MAX_SIZE];
+            int[] songsIds;
+            songsIds = groups.get(position).getSongIds();
+            for (int i = 0; i < GROUP_MAX_SIZE; i++) {
+                for (int j = 0; j < songs.size(); j++) {
+                    if (songs.get(j).getSongId() == songsIds[i]) {
+                        sNames[i] = songs.get(j).getName();
+                        sArtists[i] = songs.get(j).getArtist();
+                    }
                 }
             }
+            for(int i=0; i<GROUP_MAX_SIZE; i++){
+                actRef.child("song"+String.valueOf(i)).child("name").setValue(sNames[i]);
+                actRef.child("song"+String.valueOf(i)).child("artist").setValue(sArtists[i]);
+                actRef.child("song"+String.valueOf(i)).child("points").setValue(groups.get(pos).getPoints()[i]);
+            }
+
         }
-        for(int i=0; i<GROUP_MAX_SIZE; i++){
-            myRef.child("song"+String.valueOf(i)).child("name").setValue(sNames[i]);
-            myRef.child("song"+String.valueOf(i)).child("artist").setValue(sArtists[i]);
-            myRef.child("song"+String.valueOf(i)).child("points").setValue(groups.get(pos).getPoints()[i]);
+        else {
+            for(int i=0; i<GROUP_MAX_SIZE; i++){
+                actRef.child("song"+String.valueOf(i)).child("name").removeValue();
+                actRef.child("song"+String.valueOf(i)).child("artist").removeValue();
+                actRef.child("song"+String.valueOf(i)).child("points").removeValue();
+            }
         }
     }
 
-    private void showGroup(final int position) {
+    private void showGroup(final int position, DatabaseReference actRef) {
         view_group.setText(groups.get(position).getName());
         if(position == pos_act){
             listening = true;
-            ListenerDatabase = myRef.addValueEventListener(new ValueEventListener() {
+            ListenerDatabase = actRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     long[] actPoints = new long[GROUP_MAX_SIZE];
