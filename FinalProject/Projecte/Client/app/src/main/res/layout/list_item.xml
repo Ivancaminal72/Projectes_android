@@ -26,17 +26,33 @@
         android:paddingLeft="20dp"
         android:layout_toEndOf="@+id/list_item_thumbnail"
         android:layout_toRightOf="@+id/list_item_thumbnail"
-        android:layout_alignBottom="@+id/list_item_thumbnail" />
+        android:layout_alignBottom="@+id/list_item_thumbnail"
+        android:ellipsize="end" />
+    <!--
+        <Button
+            android:id="@+id/list_item_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vote"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:background="@android:color/transparent"/>-->
 
-    <Button
-        android:id="@+id/list_item_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Vote"
-        android:layout_alignBaseline="@+id/list_item_song"
-        android:layout_alignBottom="@+id/list_item_song"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+    <TextView
+        android:id="@+id/list_item_points"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="100"
+        android:textSize="18dp"
+        android:paddingTop="21dp"
+        android:paddingLeft="270dp"
+        android:layout_toEndOf="@+id/list_item_thumbnail"
+        android:layout_toRightOf="@+id/list_item_thumbnail"
+        android:layout_alignBottom="@+id/list_item_thumbnail"
+        android:textColor="@android:color/black"
+        android:ellipsize="end" />
 
     <ImageView
         android:id="@+id/list_item_thumbnail"

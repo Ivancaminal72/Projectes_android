@@ -6,11 +6,35 @@
     android:layout_height="match_parent"
     tools:context="sergi.ivan.carles.client.ActualEventActivity">
 
-    <ListView
+    <TextView
+        android:id="@+id/countdown"
+        android:text="Countdown"
+        android:textSize="40dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_margin="60dp"
+        />
+
+    <ListView
+        android:id="@+id/vote_list"
+        android:layout_width="match_parent"
+        android:layout_above="@+id/btn_vote1"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/vote_list" />
+        android:layout_below="@+id/countdown"
+        android:layout_height="wrap_content"
+        android:choiceMode="singleChoice"
+        android:listSelector="@color/pressed_color"/>
+
+    <Button
+        android:id="@+id/btn_vote1"
+        android:layout_width="match_parent"
+        android:text="Vote"
+        android:background="@android:color/transparent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
