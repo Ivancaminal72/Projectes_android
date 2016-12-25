@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -17,41 +18,49 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class ActualEventActivity extends AppCompatActivity {
 
     private static final int GROUP_MAX_SIZE = 4;
     private MyListAdapter adapter;
-    private String newPost;
     private ArrayList<Song> songs;
     private ListView list_songs;
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private final DatabaseReference act_ref = database.getReference("act_group");
+    private FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actual_event_activiy);
 
+        database = FirebaseDatabase.getInstance();
+        final DatabaseReference act_ref = database.getReference("act_group");
+
         songs = new ArrayList<>();
 
         act_ref.addValueEventListener(new ValueEventListener()   {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                newPost = dataSnapshot.getValue().toString();
+            public void onDataChange(DataSnapshot songGroup) {
+                String newPost = songGroup.getValue().toString();
                 Log.i("info", newPost);
-                    for (int i=0; i < GROUP_MAX_SIZE; i++) {
+                for (int i=0; i < GROUP_MAX_SIZE; i++) {
+                    DataSnapshot song = songGroup.child(String.format("song%d", i));
+                    if (song.exists()) {
                         songs.add(i, new Song(
-                                (long)dataSnapshot.child("song"+String.valueOf(i)+"/points").getValue(),
-                                dataSnapshot.child("song"+String.valueOf(i)+"/name").getValue().toString(),
-                                dataSnapshot.child("song"+String.valueOf(i)+"/artist").getValue().toString()));
-                        Log.i("info", String.valueOf(songs.get(i).getPoints()) + "  "+songs.get(i).getName()+ "   "+songs.get(i).getArtist());
+                                (long) song.child("points").getValue(),
+                                song.child("name").getValue().toString(),
+                                song.child("artist").getValue().toString()));
+                        Log.i("info", String.valueOf(songs.get(i).getPoints()) + "  " + songs.get(i).getName() + "   " + songs.get(i).getArtist());
+                    } else {
+                        Log.e("error", String.format("No puc trobar la cancó '%s'", i));
                     }
-
                 }
-                //todo: Mostrar cançons i puntuació actual al layout
-
+                adapter.notifyDataSetChanged();
+            }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -59,8 +68,13 @@ public class ActualEventActivity extends AppCompatActivity {
         adapter = new MyListAdapter();
         list_songs = (ListView) findViewById(R.id.vote_list);
         list_songs.setAdapter(adapter);
-        //TODO: quan cliques enviar votació
+        list_songs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+            }
+        });
+        //TODO: quan cliques enviar votació
     }
 
     private class MyListAdapter extends ArrayAdapter<Song> {
@@ -80,8 +94,8 @@ public class ActualEventActivity extends AppCompatActivity {
             title.setText(song.getName());
             TextView art = (TextView) result.findViewById(R.id.list_item_artist);
             art.setText(song.getArtist());
-            Button button = (Button) result.findViewById(R.id.list_item_btn);
-            button.setText("VOTE");
+            TextView points = (TextView) result.findViewById(R.id.list_item_points);
+            points.setText(String.valueOf(song.getPoints()));
             return result;
         }
     }
