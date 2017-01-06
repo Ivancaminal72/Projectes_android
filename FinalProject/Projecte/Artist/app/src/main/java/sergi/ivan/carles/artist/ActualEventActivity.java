@@ -52,7 +52,7 @@ public class ActualEventActivity extends AppCompatActivity {
     private int pos_act = -1;
     private boolean voting = false;
     private boolean listening = false;
-    private long offsetMillisVote = 3000; //Default time 6 minutes
+    private long offsetMillisVote = 10000; //Default time 6 minutes
     private ValueEventListener ListenerDatabase;
 
 
@@ -102,7 +102,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     actRef.removeEventListener(ListenerDatabase);
                     listening = false;
                 }
-                showGroup(position,actRef);
+                showGroup(position,actRef,false);
                 pos = position;
             }
         });
@@ -134,14 +134,11 @@ public class ActualEventActivity extends AppCompatActivity {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    showGroup(pos_act,actRef);
+                                                    showGroup(pos_act, actRef, true);
                                                     buttonVote.setText(R.string.vote);
                                                     buttonVote.setBackgroundColor(getResources().getColor(holo_green_light));
                                                 }
                                             });
-                                            //enviar cap grup a votar un cop acabat el showgroup
-                                            sendGroup(-1,actRef);
-                                            voting = false;
                                         }
                                     },
                                     endVoteTime
@@ -153,7 +150,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     builder.create().show();
                 }
                 else if(pos != -1){
-                    showGroup(pos_act, actRef);
+                    showGroup(pos_act, actRef, false);
                 }
                 else{
                     Toast.makeText(
@@ -195,7 +192,7 @@ public class ActualEventActivity extends AppCompatActivity {
         }
     }
 
-    private void showGroup(final int position, DatabaseReference actRef) {
+    private void showGroup(final int position, final DatabaseReference actRef, final boolean endVoting) {
         view_group.setText(groups.get(position).getName());
         if(position == pos_act){
             listening = true;
@@ -229,6 +226,14 @@ public class ActualEventActivity extends AppCompatActivity {
                     points_song2.setText(String.valueOf(actPoints[orderIndex[1]])+" "+getResources().getString(R.string.points));
                     points_song3.setText(String.valueOf(actPoints[orderIndex[2]])+" "+getResources().getString(R.string.points));
                     points_song4.setText(String.valueOf(actPoints[orderIndex[3]])+" "+getResources().getString(R.string.points));
+
+                    //Case of end of voting
+                    if(endVoting) {
+                        actRef.removeEventListener(ListenerDatabase);
+                        listening = false;
+                        sendGroup(-1, actRef);
+                        voting = false;
+                    }
                 }
 
                 @Override
