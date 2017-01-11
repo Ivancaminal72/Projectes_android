@@ -5,12 +5,13 @@ package sergi.ivan.carles.client;
  */
 
 public class Song {
+    private int groupPosition;
     private long points;
     private String name;
     private String artist;
 
-    public Song(long points, String name, String artist) {
-
+    public Song(int groupPosition, long points, String name, String artist) {
+        this.groupPosition = groupPosition;
         this.points = points;
         this.name = name;
         this.artist = artist;
@@ -29,6 +30,8 @@ public class Song {
     public String getArtist() {
         return artist;
     }
+
+    public int getGroupPosition() {return groupPosition;}
 
     public void setArtist(String artist) { this.artist = artist; }
 }

@@ -11,54 +11,64 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ActualEventActivity extends AppCompatActivity {
 
     private static final int GROUP_MAX_SIZE = 4;
     private MyListAdapter adapter;
-    private ArrayList<Song> songs;
+    private ArrayList<Song> act_group;
     private ListView list_songs;
     private FirebaseDatabase database;
+    private Button buttonVote;
+    private int songSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actual_event_activiy);
-
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference act_ref = database.getReference("act_group");
+        final DatabaseReference actRef = database.getReference("act_group");
+        act_group = new ArrayList<>();
+        songSelected = -1;
 
-        songs = new ArrayList<>();
-
-        act_ref.addValueEventListener(new ValueEventListener()   {
+        actRef.addValueEventListener(new ValueEventListener()   {
             @Override
             public void onDataChange(DataSnapshot songGroup) {
                 String newPost = songGroup.getValue().toString();
                 Log.i("info", newPost);
+                act_group.clear();
                 for (int i=0; i < GROUP_MAX_SIZE; i++) {
                     DataSnapshot song = songGroup.child(String.format("song%d", i));
                     if (song.exists()) {
-                        songs.add(i, new Song(
+                        act_group.add(i, new Song(
+                                i,
                                 (long) song.child("points").getValue(),
                                 song.child("name").getValue().toString(),
                                 song.child("artist").getValue().toString()));
-                        Log.i("info", String.valueOf(songs.get(i).getPoints()) + "  " + songs.get(i).getName() + "   " + songs.get(i).getArtist());
+                        Log.i("info", String.valueOf(act_group.get(i).getPoints()) + "  " + act_group.get(i).getName() + "   " + act_group.get(i).getArtist());
                     } else {
-                        Log.e("error", String.format("No puc trobar la cancó '%s'", i));
+                        Log.e("info", String.format("No puc trobar la cancó '%s'", i));
                     }
                 }
+                Collections.sort(act_group, new Comparator<Song>(){
+                    public int compare(Song s1, Song s2) {
+                        if (s1.getPoints() == s2.getPoints())
+                            return 0;
+                        else if (s1.getPoints() < s2.getPoints())
+                            return 1;
+                        else
+                            return -1;
+                        }
+                });
                 adapter.notifyDataSetChanged();
             }
 
@@ -71,15 +81,25 @@ public class ActualEventActivity extends AppCompatActivity {
         list_songs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                songSelected=position;
             }
         });
-        //TODO: quan cliques enviar votació
+        buttonVote = (Button) findViewById(R.id.btn_vote);
+        buttonVote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(songSelected >= 0){
+                    Log.i("info", String.format("Voto cancó: %d", songSelected));
+                    actRef.child("song"+String.valueOf(act_group.get(songSelected).getGroupPosition()))
+                            .child("points").setValue(act_group.get(songSelected).getPoints()+1);
+                }
+            }
+        });
     }
 
     private class MyListAdapter extends ArrayAdapter<Song> {
         MyListAdapter() {
-            super(ActualEventActivity.this, R.layout.list_item, songs);
+            super(ActualEventActivity.this, R.layout.list_item, act_group);
         }
 
         @Override
