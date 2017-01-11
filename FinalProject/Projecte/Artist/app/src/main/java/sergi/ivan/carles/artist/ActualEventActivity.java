@@ -1,7 +1,6 @@
 package sergi.ivan.carles.artist;
 
 import android.content.DialogInterface;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +34,7 @@ import static java.lang.System.currentTimeMillis;
 public class ActualEventActivity extends AppCompatActivity {
 
     public static final int GROUP_MAX_SIZE = 4;
+    private long OFFSET_MILLIS_VOTE = 200000; //Default time 6 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
     private ListView group_list;
@@ -48,33 +48,52 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView points_song3;
     private TextView points_song4;
     private Button buttonVote;
-    private int pos = -1;
-    private int pos_act = -1;
-    private boolean voting = false;
-    private boolean listening = false;
-    private long offsetMillisVote = 10000; //Default time 6 minutes
+    private int pos;
+    private int pos_act;
+    private boolean voting;
+    private boolean listening;
     private ValueEventListener ListenerDatabase;
+    private FirebaseDatabase database;
+    private Date endVoteTime;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("info", "onCreate");
         super.onCreate(savedInstanceState);
+        pos_act = -1;
+        if (savedInstanceState != null) {//Saved values
+            Log.i("info", "Loadig savedInstanceState");
+            endVoteTime = new Date(savedInstanceState.getLong("endVoteTime"));
+            pos_act = savedInstanceState.getInt("pos_act");
+            Log.i("info", String.format("SavedInstanceState... Pos act group: '%d'", pos_act));
+        }
+        else{ //Default values
+            Log.i("info", "Null savedInstanceState");
+            pos_act = -1;
+            endVoteTime = new Date(currentTimeMillis()-1);
+        }
+
+        if (endVoteTime.after(new Date(currentTimeMillis()))) {voting = true;}
+        else {voting = false; pos_act = -1;}
+        listening = false;
+        pos=-1;
         setContentView(R.layout.activity_actual_event);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         final DatabaseReference actRef = database.getReference("act_group");
 
         //Random songs generation
         songs = new ArrayList<>();
-        for(int i=0; i<100; i++){
-            Song importedSong = new Song(i,String.format("Cancion%d",i),String.format("Artista%d",i));
+        for (int i = 0; i < 100; i++) {
+            Song importedSong = new Song(i, String.format("Cancion%d", i), String.format("Artista%d", i));
             songs.add(importedSong);
         }
 
         //Random voting groups generation
         groups = new ArrayList<>();
-        for(int i=0; i<20; i++){
-            int[] songkeys = new int[]{1+i, 2+i, 3+i, 4+i};
-            groups.add(new Group(String.format("Group to select %d",i),songkeys));
+        for (int i = 0; i < 20; i++) {
+            int[] songkeys = new int[]{1 + i, 2 + i, 3 + i, 4 + i};
+            groups.add(new Group(String.format("Group to select %d", i), songkeys));
         }
 
         //Set layout
@@ -98,11 +117,11 @@ public class ActualEventActivity extends AppCompatActivity {
         group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(voting & listening){
+                if (voting & listening) {
                     actRef.removeEventListener(ListenerDatabase);
                     listening = false;
                 }
-                showGroup(position,actRef,false);
+                showGroup(position, actRef, false);
                 pos = position;
             }
         });
@@ -112,20 +131,20 @@ public class ActualEventActivity extends AppCompatActivity {
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!voting & pos != -1) {
+                if (!voting & pos >= 0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActualEventActivity.this);
                     builder.setTitle(R.string.confirm);
                     String msg = getResources().getString(R.string.confirm_msg);
-                    builder.setMessage(msg + " "+groups.get(pos).getName() + " to a vote?");
+                    builder.setMessage(msg + " " + groups.get(pos).getName() + " to a vote?");
                     builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            sendGroup(pos,actRef);
+                            sendGroup(pos, actRef);
                             Log.i("info", "group sent");
                             buttonVote.setText(R.string.voting);
                             buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
-                            voting=true;
-                            Date endVoteTime = new Date(currentTimeMillis() + offsetMillisVote);
+                            voting = true;
+                            endVoteTime = new Date(currentTimeMillis() + OFFSET_MILLIS_VOTE);
                             //Initialize the timer to end the current vote
                             new Timer(true).schedule(
                                     new TimerTask() {
@@ -143,16 +162,14 @@ public class ActualEventActivity extends AppCompatActivity {
                                     },
                                     endVoteTime
                             );
-                            pos_act=pos;
+                            pos_act = pos;
                         }
                     });
                     builder.setNegativeButton(android.R.string.cancel, null);
                     builder.create().show();
-                }
-                else if(pos != -1){
+                } else if (pos >= -1) {
                     showGroup(pos_act, actRef, false);
-                }
-                else{
+                } else {
                     Toast.makeText(
                             ActualEventActivity.this,
                             getResources().getString(R.string.none_group_selected),
@@ -162,8 +179,16 @@ public class ActualEventActivity extends AppCompatActivity {
         });
     }
 
-    private void sendGroup(final int position,DatabaseReference actRef) {
-        if(position != -1) {
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putLong("endVoteTime", endVoteTime.getTime());
+        savedInstanceState.putInt("pos_act", pos_act);
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i("info", "savedInstanceState Saved");
+    }
+
+    private void sendGroup(final int position, DatabaseReference actRef) {
+        if(position >= 0) {
             String[] sNames = new String[GROUP_MAX_SIZE];
             String[] sArtists = new String[GROUP_MAX_SIZE];
             int[] songsIds;
