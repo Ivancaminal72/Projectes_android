@@ -1,5 +1,6 @@
 package sergi.ivan.carles.client;
 
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
+import static java.lang.System.currentTimeMillis;
+
 public class ActualEventActivity extends AppCompatActivity {
 
     private static final int GROUP_MAX_SIZE = 4;
@@ -32,8 +35,11 @@ public class ActualEventActivity extends AppCompatActivity {
     private ListView list_songs;
     private FirebaseDatabase database;
     private Button buttonVote;
+    private TextView countdown;
     private int songSelected;
     private Date endVoteTime;
+    private long remaining;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,7 @@ public class ActualEventActivity extends AppCompatActivity {
         final DatabaseReference actRef = database.getReference("act_group");
         act_group = new ArrayList<>();
         songSelected = -1;
+        countdown = (TextView) findViewById(R.id.countdown);
 
         actRef.addValueEventListener(new ValueEventListener()   {
             @Override
@@ -52,6 +59,20 @@ public class ActualEventActivity extends AppCompatActivity {
                 DataSnapshot date = actGroup.child("endVoteTime");
                 if(date.exists()) {
                     endVoteTime = new Date((long) date.getValue());
+                    Log.i("info", String.format("currentTime '%s'", currentTimeMillis()));
+                    Log.i("info", String.format("endVoteTime '%s'", endVoteTime.getTime()));
+                    new CountDownTimer(endVoteTime.getTime() - currentTimeMillis(), 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                            String seconds = String.valueOf(millisUntilFinished / 1000);
+                            countdown.setText(seconds);
+                        }
+
+                        public void onFinish() {
+                            countdown.setText("Votty finished!");
+                        }
+
+                    }.start();
                     act_group.clear();
                     for (int i = 0; i < GROUP_MAX_SIZE; i++) {
                         DataSnapshot song = actGroup.child(String.format("song%d", i));

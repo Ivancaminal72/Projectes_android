@@ -9,12 +9,12 @@
     <TextView
         android:id="@+id/countdown"
         android:text="Countdown"
-        android:textSize="40dp"
+        android:textSize="35dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_margin="60dp"
-        />
+        android:textAlignment="center" />
 
     <ListView
         android:id="@+id/vote_list"
