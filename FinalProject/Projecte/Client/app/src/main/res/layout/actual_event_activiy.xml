@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/countdown"
-        android:text="Countdown"
+        android:text="@string/countdown"
         android:textSize="35dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
     <Button
         android:id="@+id/btn_vote"
         android:layout_width="match_parent"
-        android:text="Vote"
+        android:text="@string/vote"
         android:background="@android:color/transparent"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"

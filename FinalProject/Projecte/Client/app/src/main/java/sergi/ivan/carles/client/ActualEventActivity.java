@@ -38,8 +38,6 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView countdown;
     private int songSelected;
     private Date endVoteTime;
-    private long remaining;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +53,6 @@ public class ActualEventActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot actGroup) {
                 Log.i("info", "Update actual group");
-                String newPost = actGroup.getValue().toString();
                 DataSnapshot date = actGroup.child("endVoteTime");
                 if(date.exists()) {
                     endVoteTime = new Date((long) date.getValue());
@@ -65,11 +62,11 @@ public class ActualEventActivity extends AppCompatActivity {
 
                         public void onTick(long millisUntilFinished) {
                             String seconds = String.valueOf(millisUntilFinished / 1000);
-                            countdown.setText(seconds);
+                            countdown.setText(seconds + ' ' + R.string.seconds);
                         }
 
                         public void onFinish() {
-                            countdown.setText("Votty finished!");
+                            countdown.setText(R.string.finishedTime);
                         }
 
                     }.start();
@@ -87,7 +84,10 @@ public class ActualEventActivity extends AppCompatActivity {
                         }
                     }
                 }
-                else{Log.e("info", "No hi ha endVoteTime");}
+                else{
+                    countdown.setText(R.string.noSongs);
+                    Log.e("info", "No hi ha endVoteTime");
+                }
 
                 Collections.sort(act_group, new Comparator<Song>(){
                     public int compare(Song s1, Song s2) {
