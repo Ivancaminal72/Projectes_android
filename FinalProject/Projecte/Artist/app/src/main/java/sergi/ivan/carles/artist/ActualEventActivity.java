@@ -38,7 +38,7 @@ public class ActualEventActivity extends AppCompatActivity {
     public static final String END_VOTE_TIME = "endVoteTime";
     public static final String POS_ACT_GROUP = "pos_act";
     public static final String POS_GROUP_SELECTED = "position_group_selected";
-    private long OFFSET_MILLIS_VOTE = 60000; //Default time 15 minutes
+    private long OFFSET_MILLIS_VOTE = 10000; //Default time 15 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
     private ListView group_list;
@@ -83,11 +83,9 @@ public class ActualEventActivity extends AppCompatActivity {
             Log.i("info", "Null savedInstanceState... Loading settings or default values");
             pos_act = settings.getInt(POS_ACT_GROUP, -1);
             endVoteTime = new Date(settings.getLong(END_VOTE_TIME,currentTimeMillis()-1));
+            //endVoteTime = new Date(currentTimeMillis()-1); //finalitza votació
             pos=-1;
         }
-
-        if (endVoteTime.after(new Date(currentTimeMillis()))) {voting = true;}
-        else {voting = false; pos_act = -1;}
         listening = false;
 
         //Random songs generation
@@ -115,11 +113,22 @@ public class ActualEventActivity extends AppCompatActivity {
         points_song3 = (TextView) findViewById(R.id.points_song_3);
         points_song4 = (TextView) findViewById(R.id.points_song_4);
         group_list = (ListView) findViewById(R.id.group_list);
+        buttonVote = (Button) findViewById(R.id.btn_vote);
         group_list.setAdapter(new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
                 getGroupsNames()
         ));
+
+        if (endVoteTime.after(new Date(currentTimeMillis()+500))) { //+500 milliseconds (big offset to make sure timmer can be inicialized)
+            Log.i("info", "Votació en curs... inicialització del Timmer");
+            setVotingState(true);
+            initializeTimer(actRef);
+        } else {
+            Log.i("info", "Votació acabada recollir resultats");
+            showGroup(pos_act, actRef, true);
+            setVotingState(false);
+        }
 
         if(pos >= 0){showGroup(pos, actRef, false);}
 
@@ -136,7 +145,6 @@ public class ActualEventActivity extends AppCompatActivity {
         });
 
         //Send the selected group to firebase database
-        buttonVote = (Button) findViewById(R.id.btn_vote);
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,36 +156,26 @@ public class ActualEventActivity extends AppCompatActivity {
                     builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            Log.i("info", String.format("CurrentMillis: %d", currentTimeMillis()));
+                            endVoteTime = new Date(currentTimeMillis() + OFFSET_MILLIS_VOTE);
+                            Log.i("info", String.format("EndVoteTime  : %d", endVoteTime.getTime()));
                             sendGroup(pos, actRef);
                             Log.i("info", "group sent");
-                            buttonVote.setText(R.string.voting);
-                            buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
-                            voting = true;
-                            endVoteTime = new Date(currentTimeMillis() + OFFSET_MILLIS_VOTE);
-                            //Initialize the timer to end the current vote
-                            new Timer(true).schedule(
-                                    new TimerTask() {
-                                        @Override
-                                        public void run() {
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    showGroup(pos_act, actRef, true);
-                                                    buttonVote.setText(R.string.vote);
-                                                    buttonVote.setBackgroundColor(getResources().getColor(holo_green_light));
-                                                }
-                                            });
-                                        }
-                                    },
-                                    endVoteTime
-                            );
+                            setVotingState(true);
+                            initializeTimer(actRef);
                             pos_act = pos;
                         }
                     });
                     builder.setNegativeButton(android.R.string.cancel, null);
                     builder.create().show();
-                } else {
-                    showGroup(pos_act, actRef, false);
+                } else{
+                    if(!listening){showGroup(pos_act, actRef, false);}
+                    if(pos < 0){  //None group selected
+                        Toast.makeText(
+                                ActualEventActivity.this,
+                                getResources().getString(R.string.none_group_selected),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -236,53 +234,49 @@ public class ActualEventActivity extends AppCompatActivity {
     }
 
     private void showGroup(final int position, final DatabaseReference actRef, final boolean endVoting) {
-        if (position < 0) { //None group selected
-            Toast.makeText(
-                    ActualEventActivity.this,
-                    getResources().getString(R.string.none_group_selected),
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if(position < 0){return;}
         view_group.setText(groups.get(position).getName());
         if(position == pos_act){
             listening = true;
             ListenerDatabase = actRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    long[] actPoints = new long[GROUP_MAX_SIZE];
-                    for (int i=0; i < GROUP_MAX_SIZE; i++) {
-                        actPoints[i] = (long)dataSnapshot.child("song"+String.valueOf(i)+"/points").getValue();
-                    }
-                    long[] findMax = new long[GROUP_MAX_SIZE];
-                    arraycopy(actPoints,0,findMax,0,GROUP_MAX_SIZE);
-                    int[] orderIndex = new int[GROUP_MAX_SIZE];
-                    int max = 0;
-                    int n = 0;
-                    while(n<GROUP_MAX_SIZE){
-                        for(int i=0; i<GROUP_MAX_SIZE; i++) {
-                            if(findMax[i] > max) {max = i;}
+                    if(dataSnapshot.exists()) {
+                        long[] actPoints = new long[GROUP_MAX_SIZE];
+                        for (int i = 0; i < GROUP_MAX_SIZE; i++) {
+                            actPoints[i] = (long) dataSnapshot.child("song" + String.valueOf(i) + "/points").getValue();
                         }
-                        findMax[max] = -1;
-                        orderIndex[n] = max;
-                        max=0;
-                        n+=1;
+                        long[] findMax = new long[GROUP_MAX_SIZE];
+                        arraycopy(actPoints, 0, findMax, 0, GROUP_MAX_SIZE);
+                        int[] orderIndex = new int[GROUP_MAX_SIZE];
+                        int max = 0;
+                        int n = 0;
+                        while (n < GROUP_MAX_SIZE) {
+                            for (int i = 0; i < GROUP_MAX_SIZE; i++) {
+                                if (findMax[i] > max) {
+                                    max = i;
+                                }
+                            }
+                            findMax[max] = -1;
+                            orderIndex[n] = max;
+                            max = 0;
+                            n += 1;
+                        }
+                        int[] sIds = groups.get(position).getSongIds();
+                        view_song1.setText(songs.get(sIds[orderIndex[0]]).getName() + "   " + songs.get(sIds[orderIndex[0]]).getArtist());
+                        view_song2.setText(songs.get(sIds[orderIndex[1]]).getName() + "   " + songs.get(sIds[orderIndex[1]]).getArtist());
+                        view_song3.setText(songs.get(sIds[orderIndex[2]]).getName() + "   " + songs.get(sIds[orderIndex[2]]).getArtist());
+                        view_song4.setText(songs.get(sIds[orderIndex[3]]).getName() + "   " + songs.get(sIds[orderIndex[3]]).getArtist());
+                        points_song1.setText(String.valueOf(actPoints[orderIndex[0]]) + " " + getResources().getString(R.string.points));
+                        points_song2.setText(String.valueOf(actPoints[orderIndex[1]]) + " " + getResources().getString(R.string.points));
+                        points_song3.setText(String.valueOf(actPoints[orderIndex[2]]) + " " + getResources().getString(R.string.points));
+                        points_song4.setText(String.valueOf(actPoints[orderIndex[3]]) + " " + getResources().getString(R.string.points));
                     }
-                    int[] sIds = groups.get(position).getSongIds();
-                    view_song1.setText(songs.get(sIds[orderIndex[0]]).getName()+"   "+songs.get(sIds[orderIndex[0]]).getArtist());
-                    view_song2.setText(songs.get(sIds[orderIndex[1]]).getName()+"   "+songs.get(sIds[orderIndex[1]]).getArtist());
-                    view_song3.setText(songs.get(sIds[orderIndex[2]]).getName()+"   "+songs.get(sIds[orderIndex[2]]).getArtist());
-                    view_song4.setText(songs.get(sIds[orderIndex[3]]).getName()+"   "+songs.get(sIds[orderIndex[3]]).getArtist());
-                    points_song1.setText(String.valueOf(actPoints[orderIndex[0]])+" "+getResources().getString(R.string.points));
-                    points_song2.setText(String.valueOf(actPoints[orderIndex[1]])+" "+getResources().getString(R.string.points));
-                    points_song3.setText(String.valueOf(actPoints[orderIndex[2]])+" "+getResources().getString(R.string.points));
-                    points_song4.setText(String.valueOf(actPoints[orderIndex[3]])+" "+getResources().getString(R.string.points));
 
-                    //Case of end of voting
                     if(endVoting) {
                         actRef.removeEventListener(ListenerDatabase);
                         listening = false;
                         sendGroup(-1, actRef);
-                        voting = false;
                         pos_act = -1;
                     }
                 }
@@ -313,4 +307,41 @@ public class ActualEventActivity extends AppCompatActivity {
         }
         return group_names;
     }
+
+    private void initializeTimer(final DatabaseReference actRef) {
+        //Initialize the timer to end the current vote
+        new Timer(true).schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(listening){
+                                    actRef.removeEventListener(ListenerDatabase);
+                                    listening = false;
+                                }
+                                showGroup(pos_act, actRef, true);
+                                setVotingState(false);
+                            }
+                        });
+                    }
+                },
+                endVoteTime
+        );
+    }
+
+    private void setVotingState(boolean isVoting) {
+        if(isVoting){
+            buttonVote.setText(R.string.voting);
+            buttonVote.setBackgroundColor(getResources().getColor(holo_orange_dark));
+            voting = true;
+        } else{
+            buttonVote.setText(R.string.vote);
+            buttonVote.setBackgroundColor(getResources().getColor(holo_green_light));
+            voting = false;
+        }
+
+    }
+
 }
