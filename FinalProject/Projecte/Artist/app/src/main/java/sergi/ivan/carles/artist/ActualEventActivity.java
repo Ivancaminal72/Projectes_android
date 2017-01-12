@@ -167,13 +167,8 @@ public class ActualEventActivity extends AppCompatActivity {
                     });
                     builder.setNegativeButton(android.R.string.cancel, null);
                     builder.create().show();
-                } else if (pos >= -1) {
-                    showGroup(pos_act, actRef, false);
                 } else {
-                    Toast.makeText(
-                            ActualEventActivity.this,
-                            getResources().getString(R.string.none_group_selected),
-                            Toast.LENGTH_SHORT).show();
+                    showGroup(pos_act, actRef, false);
                 }
             }
         });
@@ -218,8 +213,11 @@ public class ActualEventActivity extends AppCompatActivity {
     }
 
     private void showGroup(final int position, final DatabaseReference actRef, final boolean endVoting) {
-        if (position < 0) {
-            // TODO: Potser millor fer un 'disable' del botó perquè no es pugui votar sense un grup seleccionat?
+        if (position < 0) { //None group selected
+            Toast.makeText(
+                    ActualEventActivity.this,
+                    getResources().getString(R.string.none_group_selected),
+                    Toast.LENGTH_SHORT).show();
             return;
         }
         view_group.setText(groups.get(position).getName());
