@@ -1,6 +1,7 @@
 package sergi.ivan.carles.artist;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +35,9 @@ import static java.lang.System.currentTimeMillis;
 public class ActualEventActivity extends AppCompatActivity {
 
     public static final int GROUP_MAX_SIZE = 4;
+    public static final String END_VOTE_TIME = "endVoteTime";
+    public static final String POS_ACT_GROUP = "pos_act";
+    public static final String POS_GROUP_SELECTED = "position_group_selected";
     private long OFFSET_MILLIS_VOTE = 200000; //Default time 6 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
@@ -61,26 +65,30 @@ public class ActualEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("info", "onCreate");
         super.onCreate(savedInstanceState);
-        pos_act = -1;
-        if (savedInstanceState != null) {//Saved values
+        database = FirebaseDatabase.getInstance();
+        final DatabaseReference actRef = database.getReference("act_group");
+        setContentView(R.layout.activity_actual_event);
+
+        //Load saved data
+        SharedPreferences settings = getPreferences(0);
+        if (savedInstanceState != null) {
             Log.i("info", "Loadig savedInstanceState");
-            endVoteTime = new Date(savedInstanceState.getLong("endVoteTime"));
-            pos_act = savedInstanceState.getInt("pos_act");
-            Log.i("info", String.format("SavedInstanceState... Pos act group: '%d'", pos_act));
+            endVoteTime = new Date(savedInstanceState.getLong(END_VOTE_TIME));
+            pos_act = savedInstanceState.getInt(POS_ACT_GROUP);
+            pos = savedInstanceState.getInt(POS_GROUP_SELECTED);
+            Log.i("info", String.format("Pos act: '%d'", pos_act));
+            Log.i("info", String.format("Pos: '%d'", pos));
         }
-        else{ //Default values
-            Log.i("info", "Null savedInstanceState");
-            pos_act = -1;
-            endVoteTime = new Date(currentTimeMillis()-1);
+        else{
+            Log.i("info", "Null savedInstanceState... Loading settings or default values");
+            pos_act = settings.getInt(POS_ACT_GROUP, -1);
+            endVoteTime = new Date(settings.getLong(END_VOTE_TIME,currentTimeMillis()-1));
+            pos=-1;
         }
 
         if (endVoteTime.after(new Date(currentTimeMillis()))) {voting = true;}
         else {voting = false; pos_act = -1;}
         listening = false;
-        pos=-1;
-        setContentView(R.layout.activity_actual_event);
-        database = FirebaseDatabase.getInstance();
-        final DatabaseReference actRef = database.getReference("act_group");
 
         //Random songs generation
         songs = new ArrayList<>();
@@ -113,6 +121,7 @@ public class ActualEventActivity extends AppCompatActivity {
                 getGroupsNames()
         ));
 
+        if(pos >= 0){showGroup(pos, actRef, false);}
 
         group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -175,9 +184,21 @@ public class ActualEventActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        SharedPreferences settings = getPreferences(0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(END_VOTE_TIME, endVoteTime.getTime());
+        editor.putInt(POS_ACT_GROUP, pos_act);
+        editor.commit();
+        Log.i("info", "Settings Saved");
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putLong("endVoteTime", endVoteTime.getTime());
-        savedInstanceState.putInt("pos_act", pos_act);
+        savedInstanceState.putLong(END_VOTE_TIME, endVoteTime.getTime());
+        savedInstanceState.putInt(POS_ACT_GROUP, pos_act);
+        savedInstanceState.putInt(POS_GROUP_SELECTED, pos);
         super.onSaveInstanceState(savedInstanceState);
         Log.i("info", "savedInstanceState Saved");
     }
