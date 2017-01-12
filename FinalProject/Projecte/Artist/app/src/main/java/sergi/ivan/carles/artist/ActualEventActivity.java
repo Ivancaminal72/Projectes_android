@@ -218,6 +218,10 @@ public class ActualEventActivity extends AppCompatActivity {
     }
 
     private void showGroup(final int position, final DatabaseReference actRef, final boolean endVoting) {
+        if (position < 0) {
+            // TODO: Potser millor fer un 'disable' del botó perquè no es pugui votar sense un grup seleccionat?
+            return;
+        }
         view_group.setText(groups.get(position).getName());
         if(position == pos_act){
             listening = true;
