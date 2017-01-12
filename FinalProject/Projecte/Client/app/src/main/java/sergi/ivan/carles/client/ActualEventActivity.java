@@ -15,11 +15,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
 public class ActualEventActivity extends AppCompatActivity {
 
@@ -30,6 +33,7 @@ public class ActualEventActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private Button buttonVote;
     private int songSelected;
+    private Date endVoteTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,23 +46,28 @@ public class ActualEventActivity extends AppCompatActivity {
 
         actRef.addValueEventListener(new ValueEventListener()   {
             @Override
-            public void onDataChange(DataSnapshot songGroup) {
-                String newPost = songGroup.getValue().toString();
-                Log.i("info", newPost);
-                act_group.clear();
-                for (int i=0; i < GROUP_MAX_SIZE; i++) {
-                    DataSnapshot song = songGroup.child(String.format("song%d", i));
-                    if (song.exists()) {
-                        act_group.add(i, new Song(
-                                i,
-                                (long) song.child("points").getValue(),
-                                song.child("name").getValue().toString(),
-                                song.child("artist").getValue().toString()));
-                        Log.i("info", String.valueOf(act_group.get(i).getPoints()) + "  " + act_group.get(i).getName() + "   " + act_group.get(i).getArtist());
-                    } else {
-                        Log.e("info", String.format("No puc trobar la cancó '%s'", i));
+            public void onDataChange(DataSnapshot actGroup) {
+                Log.i("info", "Update actual group");
+                String newPost = actGroup.getValue().toString();
+                DataSnapshot date = actGroup.child("endVoteTime");
+                if(date.exists()) {
+                    endVoteTime = new Date((long) date.getValue());
+                    act_group.clear();
+                    for (int i = 0; i < GROUP_MAX_SIZE; i++) {
+                        DataSnapshot song = actGroup.child(String.format("song%d", i));
+                        if (song.exists()) {
+                            act_group.add(i, new Song(
+                                    i,
+                                    (long) song.child("points").getValue(),
+                                    song.child("name").getValue().toString(),
+                                    song.child("artist").getValue().toString()));
+                        } else {
+                            Log.e("info", String.format("No puc trobar la cancó '%s'", i));
+                        }
                     }
                 }
+                else{Log.e("info", "No hi ha endVoteTime");}
+
                 Collections.sort(act_group, new Comparator<Song>(){
                     public int compare(Song s1, Song s2) {
                         if (s1.getPoints() == s2.getPoints())
@@ -69,6 +78,7 @@ public class ActualEventActivity extends AppCompatActivity {
                             return -1;
                         }
                 });
+
                 adapter.notifyDataSetChanged();
             }
 
@@ -84,14 +94,39 @@ public class ActualEventActivity extends AppCompatActivity {
                 songSelected=position;
             }
         });
+
         buttonVote = (Button) findViewById(R.id.btn_vote);
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(songSelected >= 0){
                     Log.i("info", String.format("Voto cancó: %d", songSelected));
-                    actRef.child("song"+String.valueOf(act_group.get(songSelected).getGroupPosition()))
-                            .child("points").setValue(act_group.get(songSelected).getPoints()+1);
+                    DatabaseReference transRef = actRef.child("song"+String.valueOf(
+                            act_group.get(songSelected).getGroupPosition()))
+                            .child("points");
+                    transRef.runTransaction(new Transaction.Handler(){
+                        @Override
+                        public Transaction.Result doTransaction(MutableData currentData) {
+                            if(currentData.getValue() == null){
+                                Log.e("info", "Can't vote because the song is not available");
+                            }else{
+                                Long actualPoints = (long) currentData.getValue();
+                                currentData.setValue(actualPoints+1);
+                            }
+
+                            return Transaction.success(currentData);
+                        }
+
+                        @Override
+                        public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot currentData) {
+                            if (databaseError != null) {
+                                Log.i("info", "Firebase error voting song");
+                            }
+                            else{
+                                Log.i("info", "Firebase vote song correctly");
+                            }
+                        }
+                    });
                 }
             }
         });

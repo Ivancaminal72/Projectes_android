@@ -38,7 +38,7 @@ public class ActualEventActivity extends AppCompatActivity {
     public static final String END_VOTE_TIME = "endVoteTime";
     public static final String POS_ACT_GROUP = "pos_act";
     public static final String POS_GROUP_SELECTED = "position_group_selected";
-    private long OFFSET_MILLIS_VOTE = 200000; //Default time 6 minutes
+    private long OFFSET_MILLIS_VOTE = 60000; //Default time 15 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
     private ListView group_list;
@@ -217,6 +217,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     }
                 }
             }
+            actRef.child("endVoteTime").setValue(endVoteTime.getTime());
             for(int i=0; i<GROUP_MAX_SIZE; i++){
                 actRef.child("song"+String.valueOf(i)).child("name").setValue(sNames[i]);
                 actRef.child("song"+String.valueOf(i)).child("artist").setValue(sArtists[i]);
@@ -226,6 +227,7 @@ public class ActualEventActivity extends AppCompatActivity {
         }
         else {
             for(int i=0; i<GROUP_MAX_SIZE; i++){
+                actRef.child("endVoteTime").removeValue();
                 actRef.child("song"+String.valueOf(i)).child("name").removeValue();
                 actRef.child("song"+String.valueOf(i)).child("artist").removeValue();
                 actRef.child("song"+String.valueOf(i)).child("points").removeValue();
@@ -281,6 +283,7 @@ public class ActualEventActivity extends AppCompatActivity {
                         listening = false;
                         sendGroup(-1, actRef);
                         voting = false;
+                        pos_act = -1;
                     }
                 }
 
