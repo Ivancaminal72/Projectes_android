@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -61,8 +62,9 @@ public class ActualEventActivity extends AppCompatActivity {
                     new CountDownTimer(endVoteTime.getTime() - currentTimeMillis(), 1000) {
 
                         public void onTick(long millisUntilFinished) {
-                            String seconds = String.valueOf(millisUntilFinished / 1000);
-                            countdown.setText(seconds + ' ' + getResources().getString(R.string.seconds));
+                            countdown.setText(String.format("%d min %d s",
+                                    TimeUnit.MILLISECONDS.toMinutes( millisUntilFinished),
+                                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
                         }
 
                         public void onFinish() {

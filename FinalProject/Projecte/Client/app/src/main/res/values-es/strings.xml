@@ -3,7 +3,6 @@
     <string name="app_name">VottyClient</string>
     <string name="countdown">Cuenta atrás</string>
     <string name="finishedTime">Votty acabada!</string>
-    <string name="seconds">s</string>
     <string name="noSongs">Ninguna canción disponible</string>
     <string name="vote">Vota</string>
 </resources>
