@@ -99,7 +99,7 @@ public class ActualEventActivity extends AppCompatActivity {
         groups = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             int[] songkeys = new int[]{1 + i, 2 + i, 3 + i, 4 + i};
-            groups.add(new Group(String.format("Group to select %d", i), songkeys));
+            groups.add(new Group(getResources().getString(R.string.group_to_select)+String.format(" %d", i), songkeys));
         }
 
         //Set layout
@@ -152,7 +152,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActualEventActivity.this);
                     builder.setTitle(R.string.confirm);
                     String msg = getResources().getString(R.string.confirm_msg);
-                    builder.setMessage(msg + " " + groups.get(pos).getName() + " to a vote?");
+                    builder.setMessage(msg + " " + groups.get(pos).getName() + R.string.to_a_vote);
                     builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

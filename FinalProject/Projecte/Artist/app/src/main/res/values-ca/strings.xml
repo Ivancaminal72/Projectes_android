@@ -2,4 +2,21 @@
 <resources>
     <string name="app_name">VottyArtist</string>
     <string name="none_group_selected">Cap grup seleccionat</string>
+    <string name="confirm">Confirmació</string>
+    <string name="action_sign_in">Identifica\'t o registra\'t</string>
+    <string name="action_sign_in_short">Identifica\'t</string>
+    <string name="confirm_msg">"Está segur que vol enviar el grup "</string>
+    <string name="to_a_vote">" a votació?"</string>
+    <string name="error_field_required">Aquest camp és obligatori</string>
+    <string name="error_incorrect_password">Aquesta contrasenya es incorrecta</string>
+    <string name="error_invalid_email">Aquesta direcció email no es vàlida</string>
+    <string name="error_invalid_password">Aquesta contrasenya és massa curta</string>
+    <string name="permission_rationale">\"Es necessiten permissos de contactes per adquirir email[...]</string>
+    <string name="points">p</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Contrasenya (opcional)</string>
+    <string name="send">enviar</string>
+    <string name="vote">vota</string>
+    <string name="voting">veure punts actuals</string>
+    <string name="group_to_select">Grup a seleccionar</string>
 </resources>
