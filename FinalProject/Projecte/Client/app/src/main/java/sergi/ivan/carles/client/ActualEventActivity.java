@@ -62,7 +62,7 @@ public class ActualEventActivity extends AppCompatActivity {
 
                         public void onTick(long millisUntilFinished) {
                             String seconds = String.valueOf(millisUntilFinished / 1000);
-                            countdown.setText(seconds + ' ' + R.string.seconds);
+                            countdown.setText(seconds + ' ' + getResources().getString(R.string.seconds));
                         }
 
                         public void onFinish() {
