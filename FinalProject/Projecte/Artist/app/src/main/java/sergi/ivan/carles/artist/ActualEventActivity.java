@@ -276,7 +276,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     if(endVoting) {
                         actRef.removeEventListener(ListenerDatabase);
                         listening = false;
-                        sendGroup(-1, actRef);
+                        if(dataSnapshot.exists()){sendGroup(-1, actRef);}
                         pos_act = -1;
                     }
                 }
