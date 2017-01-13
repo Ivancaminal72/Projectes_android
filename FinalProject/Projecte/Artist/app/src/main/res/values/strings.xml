@@ -22,4 +22,5 @@
     <string name="points">p</string>
     <string name="now">Right Now</string>
     <string name="next_events">Upcomming Events</string>
+    <string name="new_event">New event</string>
 </resources>

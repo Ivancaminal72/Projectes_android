@@ -1,8 +1,12 @@
 package sergi.ivan.carles.artist;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,6 +25,7 @@ public class InitActivity extends AppCompatActivity {
     public static final int MILLIS_DAY = 86400000;
     public static final int MILLIS_HOUR = 3600000;
     public static final int MILLIS_MINUTE = 60000;
+    public static final int NEW_EVENT = 0;
     private ArrayList<Event> events;
     private ListView event_list;
     private EventAdapter adapter;
@@ -54,6 +59,37 @@ public class InitActivity extends AppCompatActivity {
         event_list.setAdapter(adapter);
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_init_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.new_event:
+                Intent intent = new Intent(this, EventActivity.class);
+                startActivityForResult(intent, NEW_EVENT);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case NEW_EVENT:
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+
+    }
+
     private class EventAdapter extends ArrayAdapter<Event> {
         EventAdapter() {
             super(InitActivity.this, R.layout.item_events_list, events);
