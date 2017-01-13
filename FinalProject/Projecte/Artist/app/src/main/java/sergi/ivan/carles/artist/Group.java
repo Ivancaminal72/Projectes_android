@@ -2,9 +2,6 @@ package sergi.ivan.carles.artist;
 
 import static java.lang.System.arraycopy;
 
-/**
- * Created by Ivan on 02/12/2016.
- */
 
 public class Group {
     private static final int GROUP_MAX_SIZE = 4;
