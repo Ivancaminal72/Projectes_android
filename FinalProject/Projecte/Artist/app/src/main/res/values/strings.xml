@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">VottyArtist</string>
+    <string name="app_name">Artist</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -16,10 +16,10 @@
     <string name="none_group_selected">None group selected</string>
     <string name="confirm">Confirmation</string>
     <string name="confirm_msg">Are you sure you want to send group </string>
-    <string name="to_a_vote"> to a vote?</string>
     <string name="send">send</string>
     <string name="vote">vote</string>
     <string name="voting">see current points</string>
     <string name="points">p</string>
-    <string name="group_to_select">Group to select</string>
+    <string name="now">Right Now</string>
+    <string name="next_events">Upcomming Events</string>
 </resources>
