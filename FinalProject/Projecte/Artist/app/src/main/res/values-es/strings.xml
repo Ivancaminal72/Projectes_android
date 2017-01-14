@@ -5,8 +5,8 @@
     <string name="action_sign_in">Identificate o registrate</string>
     <string name="action_sign_in_short">Identificate</string>
     <string name="confirm">Confirmación</string>
-    <string name="to_a_vote">" a votación?"</string>
-    <string name="confirm_msg">\"Está seguro que desea enviar el grupo \"</string>
+    <string name="to_a_vote">a votación?</string>
+    <string name="confirm_msg">Está seguro que desea enviar el grupo</string>
     <string name="error_field_required">Este campo es obligatorio</string>
     <string name="error_incorrect_password">Esta contraseña es incorrecta</string>
     <string name="error_invalid_email">Esta dirección email no es válida</string>

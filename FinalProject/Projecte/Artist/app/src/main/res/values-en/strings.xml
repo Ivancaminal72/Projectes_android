@@ -5,8 +5,8 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="confirm">Confirmation</string>
-    <string name="to_a_vote">\" to a vote?\"</string>
-    <string name="confirm_msg">"Are you sure you want to send group "</string>
+    <string name="to_a_vote">to a vote?</string>
+    <string name="confirm_msg">Are you sure you want to send group</string>
     <string name="error_field_required">This field is required</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_invalid_email">This email address is invalid</string>

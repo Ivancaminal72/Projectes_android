@@ -5,8 +5,8 @@
     <string name="confirm">Confirmació</string>
     <string name="action_sign_in">Identifica\'t o registra\'t</string>
     <string name="action_sign_in_short">Identifica\'t</string>
-    <string name="confirm_msg">"Está segur que vol enviar el grup "</string>
-    <string name="to_a_vote">" a votació?"</string>
+    <string name="confirm_msg">Està segur que vol enviar el grup</string>
+    <string name="to_a_vote">a votació?</string>
     <string name="error_field_required">Aquest camp és obligatori</string>
     <string name="error_incorrect_password">Aquesta contrasenya es incorrecta</string>
     <string name="error_invalid_email">Aquesta direcció email no es vàlida</string>

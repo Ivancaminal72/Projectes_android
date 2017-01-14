@@ -152,7 +152,7 @@ public class ActualEventActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActualEventActivity.this);
                     builder.setTitle(R.string.confirm);
                     String msg = getResources().getString(R.string.confirm_msg);
-                    builder.setMessage(msg + " " + groups.get(pos).getName() + R.string.to_a_vote);
+                    builder.setMessage(msg + " " + groups.get(pos).getName() + ' ' + getResources().getString(R.string.to_a_vote));
                     builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
