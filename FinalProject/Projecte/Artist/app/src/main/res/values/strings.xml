@@ -23,4 +23,6 @@
     <string name="now">Right Now</string>
     <string name="next_events">Upcomming Events</string>
     <string name="new_event">New event</string>
+    <string name="to_a_vote"> to a vote?</string>
+    <string name="group_to_select">Group to select</string>
 </resources>

@@ -11,7 +11,7 @@
     <string name="error_incorrect_password">Aquesta contrasenya es incorrecta</string>
     <string name="error_invalid_email">Aquesta direcció email no es vàlida</string>
     <string name="error_invalid_password">Aquesta contrasenya és massa curta</string>
-    <string name="permission_rationale">\"Es necessiten permissos de contactes per adquirir email[...]</string>
+    <string name="permission_rationale">\"Es necessiten permissos de contactes per adquirir terminacions del email\"</string>
     <string name="points">p</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Contrasenya (opcional)</string>
@@ -19,4 +19,7 @@
     <string name="vote">vota</string>
     <string name="voting">veure punts actuals</string>
     <string name="group_to_select">Grup a seleccionar</string>
+    <string name="now">Ara</string>
+    <string name="next_events">Propers Events</string>
+    <string name="new_event">Nou event</string>
 </resources>

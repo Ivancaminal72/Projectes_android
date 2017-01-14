@@ -17,6 +17,9 @@
     <string name="send">send</string>
     <string name="vote">vote</string>
     <string name="voting">see current points</string>
-    <string name="permission_rationale">\"Contacts permissions are needed for providing email[...]</string>
+    <string name="permission_rationale">\"Contacts permissions are needed for providing email completions\"</string>
     <string name="group_to_select">Group to select</string>
+    <string name="now">Right Now</string>
+    <string name="next_events">Upcomming Events</string>
+    <string name="new_event">New event</string>
 </resources>

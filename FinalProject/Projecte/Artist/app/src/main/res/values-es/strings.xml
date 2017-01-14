@@ -17,6 +17,9 @@
     <string name="send">enviar</string>
     <string name="vote">vota</string>
     <string name="voting">ver puntos actuales</string>
-    <string name="permission_rationale">\"Se necesitan permisos de contactos para adquirir email[...]</string>
+    <string name="permission_rationale">\"Se necesitan permisos de contactos para adquirir terminaciones del email\"</string>
     <string name="group_to_select">Grupo a seleccionar</string>
+    <string name="now">Ahora</string>
+    <string name="next_events">Próximos Eventos</string>
+    <string name="new_event">Nuevo evento</string>
 </resources>
