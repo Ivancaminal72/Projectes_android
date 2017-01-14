@@ -59,4 +59,24 @@ public class Event {
     public String toString() {
         return this.name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
 }
