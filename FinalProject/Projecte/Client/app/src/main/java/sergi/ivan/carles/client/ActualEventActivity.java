@@ -39,6 +39,7 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView countdown;
     private int songSelected;
     private Date endVoteTime;
+    private boolean voted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class ActualEventActivity extends AppCompatActivity {
                 Log.i("info", "Update actual group");
                 DataSnapshot date = actGroup.child("endVoteTime");
                 if(date.exists()) {
+                    voted = false;
                     endVoteTime = new Date((long) date.getValue());
                     Log.i("info", String.format("currentTime '%s'", currentTimeMillis()));
                     Log.i("info", String.format("endVoteTime '%s'", endVoteTime.getTime()));
@@ -122,11 +124,12 @@ public class ActualEventActivity extends AppCompatActivity {
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(songSelected >= 0){
+                if(songSelected >= 0 && !voted){
                     Log.i("info", String.format("Voto cancó: %d", songSelected));
                     DatabaseReference transRef = actRef.child("song"+String.valueOf(
                             act_group.get(songSelected).getGroupPosition()))
                             .child("points");
+                    voted = true;
                     transRef.runTransaction(new Transaction.Handler(){
                         @Override
                         public Transaction.Result doTransaction(MutableData currentData) {
