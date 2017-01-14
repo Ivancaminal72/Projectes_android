@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:votty="http://schemas.android.com/apk/res-auto">
     <item android:title="@string/new_event"
-        android:id="@+id/new_event"
+        android:id="@+id/op_new"
         android:icon="@android:drawable/ic_menu_add"
         votty:showAsAction="always"/>
 </menu>

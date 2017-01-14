@@ -23,6 +23,13 @@
     <string name="now">Right Now</string>
     <string name="next_events">Upcomming Events</string>
     <string name="new_event">New event</string>
+    <string name="hint_event_name">Event Name</string>
+    <string name="hint_place">Add Place</string>
+    <string name="hint_room">Add Room (optional)</string>
+    <string name="save_event">Save Event</string>
+    <string name="import_songs">Import songs</string>
+    <string name="delete_event">Delete event</string>
+    <string name="incomplete">Incomplete information</string>
     <string name="to_a_vote"> to a vote?</string>
     <string name="group_to_select">Group to select</string>
 </resources>

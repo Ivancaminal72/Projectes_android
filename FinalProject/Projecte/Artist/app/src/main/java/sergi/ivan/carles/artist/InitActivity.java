@@ -55,8 +55,41 @@ public class InitActivity extends AppCompatActivity {
                 else return -1;
             }
         });
-        event_list = (ListView) findViewById(R.id.events_list);
+        event_list = (ListView) findViewById(R.id.event_listView);
         event_list.setAdapter(adapter);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case NEW_EVENT:
+                if(resultCode == RESULT_OK){
+                    String name = data.getStringExtra("name");
+                    String place = data.getStringExtra("place");
+                    if(data.hasExtra("room")){
+                        String room = data.getStringExtra("room");
+                        Event event = new Event(name, new Date(currentTimeMillis()+10000000),
+                                new Date(currentTimeMillis()+12000000), place, room);
+                        events.add(event);
+                    }else{
+                        Event event = new Event(name, new Date(currentTimeMillis()+10000000),
+                                new Date(currentTimeMillis()+12000000), place);
+                        events.add(event);
+                    }
+                    adapter.notifyDataSetChanged();
+                    adapter.sort(new Comparator<Event>(){
+                        public int compare(Event e1, Event e2) {
+                            if (e1.getStartDate().after(e2.getStartDate())) return 1;
+                            else return -1;
+                        }
+                    });
+                }
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
 
     }
 
@@ -70,25 +103,19 @@ public class InitActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.new_event:
-                Intent intent = new Intent(this, EventActivity.class);
-                startActivityForResult(intent, NEW_EVENT);
+            case R.id.op_new:
+                onCreateEvent();
             default:
                 return super.onOptionsItemSelected(item);
         }
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
-            case NEW_EVENT:
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-
+    private void onCreateEvent() {
+        Intent intent = new Intent(this, EventActivity.class);
+        startActivityForResult(intent, NEW_EVENT);
     }
+
 
     private class EventAdapter extends ArrayAdapter<Event> {
         EventAdapter() {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:votty="http://schemas.android.com/apk/res-auto">
+
+    <item android:title="@string/import_songs"
+        android:id="@+id/import_songs" />
+
+    <item android:title="@string/delete_event"
+        android:id="@+id/delete_event" />
+
+    <item android:id="@+id/op_save"
+        android:icon="@android:drawable/ic_menu_save"
+        votty:showAsAction="always"
+        android:title="@string/save_event" />
+</menu>
