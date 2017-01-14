@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -70,6 +72,7 @@ public class ActualEventActivity extends AppCompatActivity {
                         }
 
                         public void onFinish() {
+                            voted = true;
                             countdown.setText(R.string.finishedTime);
                         }
 
@@ -153,6 +156,24 @@ public class ActualEventActivity extends AppCompatActivity {
                             }
                         }
                     });
+                }
+                else if(songSelected < 0){
+                    Toast.makeText(
+                            ActualEventActivity.this,
+                            getResources().getString(R.string.none_song_selected),
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (endVoteTime.getTime() < currentTimeMillis()){
+                    Toast.makeText(
+                            ActualEventActivity.this,
+                            getResources().getString(R.string.time_finished),
+                            Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(
+                            ActualEventActivity.this,
+                            getResources().getString(R.string.already_voted),
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });

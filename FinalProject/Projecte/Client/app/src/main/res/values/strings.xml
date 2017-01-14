@@ -4,4 +4,7 @@
     <string name="countdown">Countdown</string>
     <string name="noSongs">None songs available</string>
     <string name="vote">Vote</string>
+    <string name="none_song_selected">None song selected</string>
+    <string name="time_finished">Time to vote has finished!</string>
+    <string name="already_voted">You have already voted</string>
 </resources>

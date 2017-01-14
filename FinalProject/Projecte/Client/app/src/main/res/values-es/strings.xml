@@ -5,4 +5,7 @@
     <string name="finishedTime">Votty acabada!</string>
     <string name="noSongs">Ninguna canción disponible</string>
     <string name="vote">Vota</string>
+    <string name="none_song_selected">Ninguna canción seleccionada</string>
+    <string name="already_voted">Ya has votado</string>
+    <string name="time_finished">Tiempo de votación finalizado!</string>
 </resources>
