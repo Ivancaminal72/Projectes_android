@@ -1,5 +1,6 @@
 package sergi.ivan.carles.client;
 
+import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,6 +34,9 @@ import static java.lang.System.currentTimeMillis;
 public class ActualEventActivity extends AppCompatActivity {
 
     private static final int GROUP_MAX_SIZE = 4;
+    public static final String END_VOTE_TIME = "endVoteTime";
+    public static final String OLD_END_VOTE_TIME = "oldEndVoteTime";
+    public static final String VOTED = "voted";
     private MyListAdapter adapter;
     private ArrayList<Song> act_group;
     private ListView list_songs;
@@ -41,6 +45,7 @@ public class ActualEventActivity extends AppCompatActivity {
     private TextView countdown;
     private int songSelected;
     private Date endVoteTime;
+    private Date oldEndVoteTime;
     private boolean voted;
 
     @Override
@@ -53,13 +58,30 @@ public class ActualEventActivity extends AppCompatActivity {
         songSelected = -1;
         countdown = (TextView) findViewById(R.id.countdown);
 
+        //Load saved data
+        SharedPreferences settings = getPreferences(0);
+        if (savedInstanceState != null) {
+            Log.i("info", "Loadig savedInstanceState");
+            endVoteTime = new Date(savedInstanceState.getLong(END_VOTE_TIME));
+            oldEndVoteTime = new Date(savedInstanceState.getLong(OLD_END_VOTE_TIME));
+            voted = savedInstanceState.getBoolean(VOTED);
+        }
+        else{
+            Log.i("info", "Null savedInstanceState... Loading settings or default values");
+            endVoteTime = new Date(settings.getLong(END_VOTE_TIME,currentTimeMillis()-1));
+            oldEndVoteTime = new Date(settings.getLong(OLD_END_VOTE_TIME,currentTimeMillis()-1));
+        }
+
         actRef.addValueEventListener(new ValueEventListener()   {
             @Override
             public void onDataChange(DataSnapshot actGroup) {
                 Log.i("info", "Update actual group");
                 DataSnapshot date = actGroup.child("endVoteTime");
                 if(date.exists()) {
-                    voted = false;
+                    if(oldEndVoteTime.getTime() != endVoteTime.getTime()) {
+                        voted = false;
+                    }
+                    oldEndVoteTime = endVoteTime;
                     endVoteTime = new Date((long) date.getValue());
                     Log.i("info", String.format("currentTime '%s'", currentTimeMillis()));
                     Log.i("info", String.format("endVoteTime '%s'", endVoteTime.getTime()));
@@ -177,6 +199,27 @@ public class ActualEventActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SharedPreferences settings = getPreferences(0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(END_VOTE_TIME, endVoteTime.getTime());
+        editor.putLong(OLD_END_VOTE_TIME, oldEndVoteTime.getTime());
+        editor.putBoolean(VOTED, voted);
+        editor.commit();
+        Log.i("info", "Settings Saved");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putLong(END_VOTE_TIME, endVoteTime.getTime());
+        savedInstanceState.putLong(OLD_END_VOTE_TIME, oldEndVoteTime.getTime());
+        savedInstanceState.putBoolean(VOTED, voted);
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i("info", "savedInstanceState Saved");
     }
 
     private class MyListAdapter extends ArrayAdapter<Song> {
