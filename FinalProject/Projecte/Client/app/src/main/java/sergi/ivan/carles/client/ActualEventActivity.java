@@ -59,17 +59,16 @@ public class ActualEventActivity extends AppCompatActivity {
         countdown = (TextView) findViewById(R.id.countdown);
 
         //Load saved data
-        SharedPreferences settings = getPreferences(0);
         if (savedInstanceState != null) {
             Log.i("info", "Loadig savedInstanceState");
-            endVoteTime = new Date(savedInstanceState.getLong(END_VOTE_TIME));
             oldEndVoteTime = new Date(savedInstanceState.getLong(OLD_END_VOTE_TIME));
             voted = savedInstanceState.getBoolean(VOTED);
         }
         else{
+            SharedPreferences settings = getPreferences(0);
             Log.i("info", "Null savedInstanceState... Loading settings or default values");
-            endVoteTime = new Date(settings.getLong(END_VOTE_TIME,currentTimeMillis()-1));
             oldEndVoteTime = new Date(settings.getLong(OLD_END_VOTE_TIME,currentTimeMillis()-1));
+            voted = settings.getBoolean(VOTED,false);
         }
 
         actRef.addValueEventListener(new ValueEventListener()   {
@@ -78,27 +77,30 @@ public class ActualEventActivity extends AppCompatActivity {
                 Log.i("info", "Update actual group");
                 DataSnapshot date = actGroup.child("endVoteTime");
                 if(date.exists()) {
+                    endVoteTime = new Date((long) date.getValue());
                     if(oldEndVoteTime.getTime() != endVoteTime.getTime()) {
                         voted = false;
+                        oldEndVoteTime = endVoteTime;
                     }
-                    oldEndVoteTime = endVoteTime;
-                    endVoteTime = new Date((long) date.getValue());
+
                     Log.i("info", String.format("currentTime '%s'", currentTimeMillis()));
                     Log.i("info", String.format("endVoteTime '%s'", endVoteTime.getTime()));
+
                     new CountDownTimer(endVoteTime.getTime() - currentTimeMillis(), 1000) {
 
                         public void onTick(long millisUntilFinished) {
-                            countdown.setText(String.format("%d min %d s",
-                                    TimeUnit.MILLISECONDS.toMinutes( millisUntilFinished),
-                                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+                            long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
+                            long secInMin = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
+                            long seconds = secInMin-TimeUnit.MINUTES.toSeconds(minutes);
+                            countdown.setText(String.format("%d min %d s", minutes,seconds));
                         }
 
                         public void onFinish() {
-                            voted = true;
                             countdown.setText(R.string.finishedTime);
                         }
 
                     }.start();
+
                     act_group.clear();
                     for (int i = 0; i < GROUP_MAX_SIZE; i++) {
                         DataSnapshot song = actGroup.child(String.format("song%d", i));
@@ -128,13 +130,13 @@ public class ActualEventActivity extends AppCompatActivity {
                             return -1;
                         }
                 });
-
                 adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
+
         adapter = new MyListAdapter();
         list_songs = (ListView) findViewById(R.id.vote_list);
         list_songs.setAdapter(adapter);
@@ -154,7 +156,6 @@ public class ActualEventActivity extends AppCompatActivity {
                     DatabaseReference transRef = actRef.child("song"+String.valueOf(
                             act_group.get(songSelected).getGroupPosition()))
                             .child("points");
-                    voted = true;
                     transRef.runTransaction(new Transaction.Handler(){
                         @Override
                         public Transaction.Result doTransaction(MutableData currentData) {
@@ -172,9 +173,18 @@ public class ActualEventActivity extends AppCompatActivity {
                         public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot currentData) {
                             if (databaseError != null) {
                                 Log.i("info", "Firebase error voting song");
+                                Toast.makeText(
+                                        ActualEventActivity.this,
+                                        getResources().getString(R.string.time_finished),
+                                        Toast.LENGTH_SHORT).show();
                             }
                             else{
                                 Log.i("info", "Firebase vote song correctly");
+                                voted = true;
+                                Toast.makeText(
+                                        ActualEventActivity.this,
+                                        getResources().getString(R.string.voted),
+                                        Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -183,12 +193,6 @@ public class ActualEventActivity extends AppCompatActivity {
                     Toast.makeText(
                             ActualEventActivity.this,
                             getResources().getString(R.string.none_song_selected),
-                            Toast.LENGTH_SHORT).show();
-                }
-                else if (endVoteTime.getTime() < currentTimeMillis()){
-                    Toast.makeText(
-                            ActualEventActivity.this,
-                            getResources().getString(R.string.time_finished),
                             Toast.LENGTH_SHORT).show();
                 }
                 else{
@@ -206,7 +210,6 @@ public class ActualEventActivity extends AppCompatActivity {
         super.onStop();
         SharedPreferences settings = getPreferences(0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putLong(END_VOTE_TIME, endVoteTime.getTime());
         editor.putLong(OLD_END_VOTE_TIME, oldEndVoteTime.getTime());
         editor.putBoolean(VOTED, voted);
         editor.commit();
@@ -215,7 +218,6 @@ public class ActualEventActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putLong(END_VOTE_TIME, endVoteTime.getTime());
         savedInstanceState.putLong(OLD_END_VOTE_TIME, oldEndVoteTime.getTime());
         savedInstanceState.putBoolean(VOTED, voted);
         super.onSaveInstanceState(savedInstanceState);
