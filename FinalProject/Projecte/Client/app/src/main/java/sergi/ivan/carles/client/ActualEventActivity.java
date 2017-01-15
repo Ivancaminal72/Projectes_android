@@ -86,51 +86,66 @@ public class ActualEventActivity extends AppCompatActivity {
                     Log.i("info", String.format("currentTime '%s'", currentTimeMillis()));
                     Log.i("info", String.format("endVoteTime '%s'", endVoteTime.getTime()));
 
-                    new CountDownTimer(endVoteTime.getTime() - currentTimeMillis(), 1000) {
-
-                        public void onTick(long millisUntilFinished) {
-                            long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
-                            long secInMin = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
-                            long seconds = secInMin-TimeUnit.MINUTES.toSeconds(minutes);
-                            countdown.setText(String.format("%d min %d s", minutes,seconds));
-                        }
-
-                        public void onFinish() {
-                            countdown.setText(R.string.finishedTime);
-                        }
-
-                    }.start();
-
                     act_group.clear();
+                    boolean correctGroup = true;
                     for (int i = 0; i < GROUP_MAX_SIZE; i++) {
                         DataSnapshot song = actGroup.child(String.format("song%d", i));
                         if (song.exists()) {
-                            act_group.add(i, new Song(
-                                    i,
-                                    (long) song.child("points").getValue(),
-                                    song.child("name").getValue().toString(),
-                                    song.child("artist").getValue().toString()));
+                            DataSnapshot points = song.child("points");
+                            DataSnapshot name = song.child("name");
+                            DataSnapshot artist = song.child("artist");
+                            if(points.exists() && name.exists() && artist.exists()){
+                                act_group.add(i, new Song(
+                                        i,
+                                        (long) points.getValue(),
+                                        name.getValue().toString(),
+                                        artist.getValue().toString()));
+                            } else{
+                                correctGroup=false;
+                            }
+
                         } else {
-                            Log.e("info", String.format("No puc trobar la cancó '%s'", i));
+                            correctGroup=false;
                         }
                     }
-                }
-                else{
-                    countdown.setText(R.string.noSongs);
-                    Log.e("info", "No hi ha endVoteTime");
+
+                    if(correctGroup){
+                        //Start orientative timmer
+                        new CountDownTimer(endVoteTime.getTime() - currentTimeMillis(), 1000) {
+
+                            public void onTick(long millisUntilFinished) {
+                                long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
+                                long secInMin = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished);
+                                long seconds = secInMin-TimeUnit.MINUTES.toSeconds(minutes);
+                                countdown.setText(String.format("%d min %d s", minutes,seconds));
+                            }
+
+                            public void onFinish() {
+                                countdown.setText(R.string.finishedTime);
+                            }
+
+                        }.start();
+
+                        //Sort act_group
+                        Collections.sort(act_group, new Comparator<Song>(){
+                            public int compare(Song s1, Song s2) {
+                                if (s1.getPoints() == s2.getPoints())
+                                    return 0;
+                                else if (s1.getPoints() < s2.getPoints())
+                                    return 1;
+                                else
+                                    return -1;
+                            }
+                        });
+                        adapter.notifyDataSetChanged();
+                    }
+
                 }
 
-                Collections.sort(act_group, new Comparator<Song>(){
-                    public int compare(Song s1, Song s2) {
-                        if (s1.getPoints() == s2.getPoints())
-                            return 0;
-                        else if (s1.getPoints() < s2.getPoints())
-                            return 1;
-                        else
-                            return -1;
-                        }
-                });
-                adapter.notifyDataSetChanged();
+                else{
+                    countdown.setText(R.string.noSongs);
+                    Log.i("info", "No hi ha endVoteTime");
+                }
             }
 
             @Override

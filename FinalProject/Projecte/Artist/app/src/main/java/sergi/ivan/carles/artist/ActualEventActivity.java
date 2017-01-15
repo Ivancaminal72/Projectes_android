@@ -224,8 +224,8 @@ public class ActualEventActivity extends AppCompatActivity {
 
         }
         else {
+            actRef.child("endVoteTime").removeValue();
             for(int i=0; i<GROUP_MAX_SIZE; i++){
-                actRef.child("endVoteTime").removeValue();
                 actRef.child("song"+String.valueOf(i)).child("name").removeValue();
                 actRef.child("song"+String.valueOf(i)).child("artist").removeValue();
                 actRef.child("song"+String.valueOf(i)).child("points").removeValue();
