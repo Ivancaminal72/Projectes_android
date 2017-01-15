@@ -3,6 +3,7 @@ package sergi.ivan.carles.artist;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -86,6 +87,14 @@ public class EventActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 timePicker(false,end.getHours(), end.getMinutes());
+            }
+        });
+
+        FloatingActionButton btn_new_group = (FloatingActionButton) findViewById(R.id.btn_new_group);
+        btn_new_group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newGroup();
             }
         });
 
@@ -177,5 +186,10 @@ public class EventActivity extends AppCompatActivity {
                     }
                 },Year, Month, Day);
         datePickerDialog.show();
+    }
+
+    private void newGroup() {
+        Intent intent = new Intent(this, AddGroupActivity.class);
+        startActivityForResult(intent, 0);
     }
 }
