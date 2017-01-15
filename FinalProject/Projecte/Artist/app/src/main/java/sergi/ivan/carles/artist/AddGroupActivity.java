@@ -1,8 +1,15 @@
 package sergi.ivan.carles.artist;
 
-/**
- * Created by Carles on 15/01/2017.
- */
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-public class AddGroupActivity {
+public class AddGroupActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_group);
+        getSupportActionBar().setTitle(getResources().getString(R.string.all_your_songs));
+
+    }
 }
