@@ -22,7 +22,6 @@ import static java.lang.System.currentTimeMillis;
 
 public class EventActivity extends AppCompatActivity {
 
-    public static final int EVENT_DEFAULT_TIME = 10800000;
     private EditText edit_name;
     private EditText edit_place;
     private EditText edit_room;
@@ -33,6 +32,7 @@ public class EventActivity extends AppCompatActivity {
     private Date init;
     private Date end;
     private int pos = -1;
+    private long durationEvent = 10800000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class EventActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         init = new Date(intent.getLongExtra("start",currentTimeMillis()));
-        end = new Date(intent.getLongExtra("end",currentTimeMillis()+ EVENT_DEFAULT_TIME));
+        end = new Date(intent.getLongExtra("end",currentTimeMillis()+ durationEvent));
         if(intent.hasExtra("name")){
             Log.i("info","hey");
             edit_name.setText(intent.getStringExtra("name"));
@@ -61,12 +61,12 @@ public class EventActivity extends AppCompatActivity {
         }
         btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ (init.getYear()+1900));
         btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ (end.getYear()+1900));
-        int minutes = init.getMinutes();
-        if(minutes==0) btn_start_time.setText(init.getHours()+":00");
-        else btn_start_time.setText(init.getHours()+":"+ minutes);
-        minutes = end.getMinutes();
-        if(minutes==0) btn_end_time.setText(end.getHours()+":00");
-        else btn_end_time.setText(end.getHours()+":"+ minutes);
+        int min = init.getMinutes();
+        if(min <= 9) btn_start_time.setText(init.getHours()+":0"+min);
+        else btn_start_time.setText(init.getHours()+":"+ min);
+        min = end.getMinutes();
+        if(min <= 9) btn_end_time.setText(end.getHours()+":0"+min);
+        else btn_end_time.setText(end.getHours()+":"+ min);
 
         btn_start_date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,26 +157,22 @@ public class EventActivity extends AppCompatActivity {
                         Log.i("info", String.format("hour :%d",hourOfDay));
                         Log.i("info", String.format("minute :%d",minute));
                         if(startTime){
-                            if(minute == 0) btn_start_time.setText(hourOfDay+":00");
+                            if(minute <= 9) btn_start_time.setText(hourOfDay+":0"+minute);
                             else btn_start_time.setText(hourOfDay+":"+minute);
                             init.setHours(hourOfDay);
                             init.setMinutes(minute);
-                            end = new Date(init.getTime()+EVENT_DEFAULT_TIME);
-                            int minutes = end.getMinutes();
-                            if(minutes==0) btn_end_time.setText(end.getHours()+":00");
-                            else btn_end_time.setText(end.getHours()+":"+ minutes);
+                            end = new Date(init.getTime()+durationEvent);
+                            int min = end.getMinutes();
+                            if(min <= 9) btn_end_time.setText(end.getHours()+":0"+min);
+                            else btn_end_time.setText(end.getHours()+":"+ min);
                             btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ (end.getYear()+1900));
 
                         } else {
-                            if(minute == 0) btn_end_time.setText(hourOfDay+":00");
+                            if(minute <= 9) btn_end_time.setText(hourOfDay+":0"+minute);
                             else btn_end_time.setText(hourOfDay+":"+minute);
                             end.setHours(hourOfDay);
                             end.setMinutes(minute);
-                            init = new Date(end.getTime()-EVENT_DEFAULT_TIME);
-                            int minutes = init.getMinutes();
-                            if(minutes==0) btn_start_time.setText(init.getHours()+":00");
-                            else btn_start_time.setText(init.getHours()+":"+ minutes);
-                            btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ (init.getYear()+1900));
+                            durationEvent = end.getTime()-init.getTime();
                         }
                     }
                 },hours,minutes,true);
@@ -194,7 +190,7 @@ public class EventActivity extends AppCompatActivity {
                             init.setYear(year-1900);
                             init.setMonth(month);
                             init.setDate(dayOfMonth);
-                            end = new Date(init.getTime()+EVENT_DEFAULT_TIME);
+                            end = new Date(init.getTime()+durationEvent);
                             btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ (end.getYear()+1900));
 
                         } else {
@@ -202,8 +198,7 @@ public class EventActivity extends AppCompatActivity {
                             end.setYear(year-1900);
                             end.setMonth(month);
                             end.setDate(dayOfMonth);
-                            init = new Date(end.getTime()-EVENT_DEFAULT_TIME);
-                            btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ (init.getYear()+1900));
+                            durationEvent = end.getTime()-init.getTime();
                         }
                     }
                 },Year, Month, Day);
