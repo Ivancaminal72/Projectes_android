@@ -22,6 +22,7 @@ import static java.lang.System.currentTimeMillis;
 
 public class EventActivity extends AppCompatActivity {
 
+    public static final int EVENT_DEFAULT_TIME = 10800000;
     private EditText edit_name;
     private EditText edit_place;
     private EditText edit_room;
@@ -49,30 +50,35 @@ public class EventActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         init = new Date(intent.getLongExtra("start",currentTimeMillis()));
-        end = new Date(intent.getLongExtra("end",currentTimeMillis()));
+        end = new Date(intent.getLongExtra("end",currentTimeMillis()+ EVENT_DEFAULT_TIME));
         if(intent.hasExtra("name")){
+            Log.i("info","hey");
             edit_name.setText(intent.getStringExtra("name"));
             edit_place.setText(intent.getStringExtra("place"));
-            btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ init.getYear()+1900);
-            btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ end.getYear()+1900);
-            btn_start_time.setText(init.getHours()+1+":"+ init.getMinutes()+1);
-            btn_end_time.setText(end.getHours()+1+":"+ end.getMinutes()+1);
             if(intent.hasExtra("room")){
                 edit_room.setText((intent.getStringExtra("room")));
             }
         }
+        btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ (init.getYear()+1900));
+        btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ (end.getYear()+1900));
+        int minutes = init.getMinutes();
+        if(minutes==0) btn_start_time.setText(init.getHours()+":00");
+        else btn_start_time.setText(init.getHours()+":"+ minutes);
+        minutes = end.getMinutes();
+        if(minutes==0) btn_end_time.setText(end.getHours()+":00");
+        else btn_end_time.setText(end.getHours()+":"+ minutes);
 
         btn_start_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                datePicker(true,init.getYear()+1900,init.getMonth()+1,init.getDate());
+                datePicker(true,init.getYear()+1900,init.getMonth(),init.getDate());
             }
         });
 
         btn_end_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                datePicker(false,end.getYear()+1900,end.getMonth()+1,end.getDate());
+                datePicker(false,end.getYear()+1900,end.getMonth(),end.getDate());
             }
         });
 
@@ -142,7 +148,7 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    private void timePicker(final boolean startTime, int hours, int minutes) {
+    private void timePicker(final boolean startTime, int hours, final int minutes) {
         TimePickerDialog timePickerDialog = new TimePickerDialog(
                 this,
                 new TimePickerDialog.OnTimeSetListener() {
@@ -151,14 +157,26 @@ public class EventActivity extends AppCompatActivity {
                         Log.i("info", String.format("hour :%d",hourOfDay));
                         Log.i("info", String.format("minute :%d",minute));
                         if(startTime){
-                            btn_start_time.setText(hourOfDay+":"+minute);
+                            if(minute == 0) btn_start_time.setText(hourOfDay+":00");
+                            else btn_start_time.setText(hourOfDay+":"+minute);
                             init.setHours(hourOfDay);
-                            Log.i("info", String.format("hour :%d",hourOfDay));
                             init.setMinutes(minute);
+                            end = new Date(init.getTime()+EVENT_DEFAULT_TIME);
+                            int minutes = end.getMinutes();
+                            if(minutes==0) btn_end_time.setText(end.getHours()+":00");
+                            else btn_end_time.setText(end.getHours()+":"+ minutes);
+                            btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ (end.getYear()+1900));
+
                         } else {
-                            btn_end_time.setText(hourOfDay+":"+minute);
+                            if(minute == 0) btn_end_time.setText(hourOfDay+":00");
+                            else btn_end_time.setText(hourOfDay+":"+minute);
                             end.setHours(hourOfDay);
                             end.setMinutes(minute);
+                            init = new Date(end.getTime()-EVENT_DEFAULT_TIME);
+                            int minutes = init.getMinutes();
+                            if(minutes==0) btn_start_time.setText(init.getHours()+":00");
+                            else btn_start_time.setText(init.getHours()+":"+ minutes);
+                            btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ (init.getYear()+1900));
                         }
                     }
                 },hours,minutes,true);
@@ -176,12 +194,16 @@ public class EventActivity extends AppCompatActivity {
                             init.setYear(year-1900);
                             init.setMonth(month);
                             init.setDate(dayOfMonth);
+                            end = new Date(init.getTime()+EVENT_DEFAULT_TIME);
+                            btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ (end.getYear()+1900));
 
                         } else {
-                            btn_start_date.setText(dayOfMonth+"/"+(month+1)+"/"+year);
+                            btn_end_date.setText(dayOfMonth+"/"+(month+1)+"/"+year);
                             end.setYear(year-1900);
                             end.setMonth(month);
                             end.setDate(dayOfMonth);
+                            init = new Date(end.getTime()-EVENT_DEFAULT_TIME);
+                            btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ (init.getYear()+1900));
                         }
                     }
                 },Year, Month, Day);
