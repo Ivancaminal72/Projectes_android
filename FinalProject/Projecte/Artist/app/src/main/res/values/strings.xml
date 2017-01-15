@@ -21,12 +21,12 @@
     <string name="voting">see current points</string>
     <string name="points">p</string>
     <string name="now">Right Now</string>
-    <string name="next_events">Upcomming Events</string>
+    <string name="next_events">Upcoming Events</string>
     <string name="new_event">New event</string>
-    <string name="hint_event_name">Event Name</string>
-    <string name="hint_place">Add Place</string>
-    <string name="hint_room">Add Room (optional)</string>
-    <string name="save_event">Save Event</string>
+    <string name="hint_event_name">Event name</string>
+    <string name="hint_place">Place</string>
+    <string name="hint_room">Room (optional)</string>
+    <string name="save_event">Save event</string>
     <string name="import_songs">Import songs</string>
     <string name="delete_event">Delete event</string>
     <string name="incomplete">Incomplete information</string>
@@ -34,4 +34,6 @@
     <string name="group_to_select">Group to select</string>
     <string name="group_title_hint">Name of the group</string>
     <string name="all_your_songs">All your songs</string>
+    <string name="create_event">Create event</string>
+    <string name="modify_event">Modify event</string>
 </resources>

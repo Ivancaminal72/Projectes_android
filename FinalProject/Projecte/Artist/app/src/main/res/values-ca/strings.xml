@@ -20,6 +20,17 @@
     <string name="voting">veure punts actuals</string>
     <string name="group_to_select">Grup a seleccionar</string>
     <string name="now">Ara</string>
-    <string name="next_events">Propers Events</string>
-    <string name="new_event">Nou event</string>
+    <string name="next_events">Propers Esdeveniments</string>
+    <string name="new_event">Nou esdeveniment</string>
+    <string name="all_your_songs">Totes les teves cançons</string>
+    <string name="delete_event">Eliminar esdeveniment</string>
+    <string name="group_title_hint">Nom del grup</string>
+    <string name="hint_event_name">Nom del esdeveniment</string>
+    <string name="hint_place">Lloc</string>
+    <string name="hint_room">Sala (opcional)</string>
+    <string name="import_songs">Importar cançons</string>
+    <string name="incomplete">Informació incompleta</string>
+    <string name="save_event">Guardar esdeveniment</string>
+    <string name="create_event">Crear esdeveniment</string>
+    <string name="modify_event">Modifica esdeveniment</string>
 </resources>

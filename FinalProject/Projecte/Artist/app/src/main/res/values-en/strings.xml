@@ -22,4 +22,15 @@
     <string name="now">Right Now</string>
     <string name="next_events">Upcomming Events</string>
     <string name="new_event">New event</string>
+    <string name="all_your_songs">All your songs</string>
+    <string name="delete_event">Delete event</string>
+    <string name="group_title_hint">Name of the group</string>
+    <string name="hint_event_name">Event name</string>
+    <string name="hint_place">Place</string>
+    <string name="hint_room">Room (opcional)</string>
+    <string name="import_songs">Import songs</string>
+    <string name="incomplete">Incomplete information</string>
+    <string name="save_event">Save event</string>
+    <string name="create_event">Create event</string>
+    <string name="modify_event">Modify event</string>
 </resources>

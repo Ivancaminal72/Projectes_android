@@ -22,4 +22,15 @@
     <string name="now">Ahora</string>
     <string name="next_events">Próximos Eventos</string>
     <string name="new_event">Nuevo evento</string>
+    <string name="all_your_songs">Todas tus canciones</string>
+    <string name="delete_event">Eliminar evento</string>
+    <string name="group_title_hint">Nombre del grupo</string>
+    <string name="hint_event_name">Nombre del evento</string>
+    <string name="hint_place">Lugar</string>
+    <string name="hint_room">Sala (opcional)</string>
+    <string name="import_songs">Importar canciones</string>
+    <string name="incomplete">Información incompleta</string>
+    <string name="save_event">Guardar evento</string>
+    <string name="create_event">Crear evento</string>
+    <string name="modify_event">Modifica evento</string>
 </resources>

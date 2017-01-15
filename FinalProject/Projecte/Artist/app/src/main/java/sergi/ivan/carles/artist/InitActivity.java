@@ -60,7 +60,6 @@ public class InitActivity extends AppCompatActivity {
                 onUpdateEvent(pos);
             }
         });
-
     }
 
     @Override

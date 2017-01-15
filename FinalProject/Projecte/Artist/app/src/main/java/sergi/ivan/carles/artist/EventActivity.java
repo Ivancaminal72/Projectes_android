@@ -38,7 +38,6 @@ public class EventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
-        getSupportActionBar().setTitle("EventActivity");
 
         edit_name = (EditText) findViewById(R.id.edit_name);
         edit_place = (EditText) findViewById(R.id.edit_place);
@@ -52,12 +51,15 @@ public class EventActivity extends AppCompatActivity {
         init = new Date(intent.getLongExtra("start",currentTimeMillis()));
         end = new Date(intent.getLongExtra("end",currentTimeMillis()+ durationEvent));
         if(intent.hasExtra("name")){
+            getSupportActionBar().setTitle(R.string.modify_event);
             Log.i("info","hey");
             edit_name.setText(intent.getStringExtra("name"));
             edit_place.setText(intent.getStringExtra("place"));
             if(intent.hasExtra("room")){
                 edit_room.setText((intent.getStringExtra("room")));
             }
+        }else{
+            getSupportActionBar().setTitle(R.string.new_event);
         }
         btn_start_date.setText(init.getDate()+"/"+(init.getMonth()+1)+"/"+ (init.getYear()+1900));
         btn_end_date.setText(end.getDate()+"/"+(end.getMonth()+1)+"/"+ (end.getYear()+1900));
@@ -105,7 +107,6 @@ public class EventActivity extends AppCompatActivity {
         });
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
