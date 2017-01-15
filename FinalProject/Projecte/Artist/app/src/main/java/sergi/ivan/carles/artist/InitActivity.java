@@ -14,6 +14,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,6 +36,9 @@ public class InitActivity extends AppCompatActivity {
     private ArrayList<Event> events;
     private ListView event_list;
     private EventAdapter adapter;
+    private ValueEventListener ListenerDatabase;
+    private FirebaseDatabase database;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +49,7 @@ public class InitActivity extends AppCompatActivity {
         //Load artist events
         events = new ArrayList<>();
         //Todo: (versió 0.5) consultar a firebase els events de l'artista (make not chatch old events)
-        events.add(new Event("Carnaval2", new Date(currentTimeMillis()+1000000), new Date(currentTimeMillis()+1200000), "place", "room"));
-        events.add(new Event("Carnaval1", new Date(currentTimeMillis()-1000000), new Date(currentTimeMillis()+1200000), "place"));
-        events.add(new Event("Carnaval3", new Date(currentTimeMillis()+10000000), new Date(currentTimeMillis()+12000000), "place", "room"));
-        events.add(new Event("Carnaval5", new Date(currentTimeMillis()+140000000), new Date(currentTimeMillis()+150000000), "place"));
-        events.add(new Event("Carnaval6", new Date(currentTimeMillis()+200000000), new Date(currentTimeMillis()+220000000), "place"));
-        events.add(new Event("Carnaval6", new Date(currentTimeMillis()+240000000), new Date(currentTimeMillis()+340000000), "place"));
-        events.add(new Event("Carnaval8", new Date(currentTimeMillis()+1300000000), new Date(currentTimeMillis()+1400000000), "place"));
 
-
-        sortEvents();
         adapter = new EventAdapter();
         event_list = (ListView) findViewById(R.id.event_listView);
         event_list.setAdapter(adapter);
@@ -103,12 +101,21 @@ public class InitActivity extends AppCompatActivity {
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
+                    adapter.notifyDataSetChanged();
+                    database = FirebaseDatabase.getInstance();
+                    final DatabaseReference actRef = database.getReference("events");
+                    String key = actRef.push().getKey();
                     String name = data.getStringExtra("name");
+                    actRef.child(key).child("name").setValue(name);
                     String place = data.getStringExtra("place");
+                    actRef.child(key).child("place").setValue(place);
                     Long init = data.getLongExtra("start", currentTimeMillis());
+                    actRef.child(key).child("init").setValue(init);
                     Long end = data.getLongExtra("end", currentTimeMillis());
+                    actRef.child(key).child("end").setValue(end);
                     if(data.hasExtra("room")){
                         String room = data.getStringExtra("room");
+                        actRef.child(key).child("room").setValue(room);
                         Event event = new Event(name, new Date(init),
                                 new Date(end), place, room);
                         events.add(event);
@@ -118,7 +125,6 @@ public class InitActivity extends AppCompatActivity {
                         events.add(event);
                     }
                     sortEvents();
-                    adapter.notifyDataSetChanged();
                 }
                 break;
             case UPDATE_EVENT:
