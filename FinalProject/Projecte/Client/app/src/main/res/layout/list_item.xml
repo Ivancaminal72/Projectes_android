@@ -28,17 +28,6 @@
         android:layout_toRightOf="@+id/list_item_thumbnail"
         android:layout_alignBottom="@+id/list_item_thumbnail"
         android:ellipsize="end" />
-    <!--
-        <Button
-            android:id="@+id/list_item_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Vote"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/transparent"/>-->
 
     <TextView
         android:id="@+id/list_item_points"
