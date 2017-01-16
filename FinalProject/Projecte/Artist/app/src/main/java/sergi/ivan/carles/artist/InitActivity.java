@@ -20,10 +20,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
@@ -36,12 +35,12 @@ public class InitActivity extends AppCompatActivity {
     public static final int MILLIS_MINUTE = 60000;
     public static final int NEW_EVENT = 0;
     public static final int UPDATE_EVENT = 1;
+    public static final String REF_EVENTS = "events";
     private ArrayList<Event> events;
     private ListView event_list;
     private EventAdapter adapter;
     private FirebaseDatabase database;
     private ChildEventListener ListenerDatabase;
-    private boolean loaded;
 
 
     @Override
@@ -49,53 +48,13 @@ public class InitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
         getSupportActionBar().setTitle(R.string.next_events);
-
-        //Load artist events
-        events = new ArrayList<>();
-
-        //Todo: (versió 0.5) consultar a firebase els events de l'artista (make not chatch old events)
-        loaded = false;
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference actRef = database.getReference("events");
+        final DatabaseReference eventRef = database.getReference(REF_EVENTS);
 
-        if(!loaded) {
-            ListenerDatabase = actRef.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                    String name = dataSnapshot.child("name").getValue().toString();
-                    String place = dataSnapshot.child("place").getValue().toString();
-                    Long init = (long) dataSnapshot.child("start").getValue();
-                    Long end = (long) dataSnapshot.child("end").getValue();
-                    if (dataSnapshot.child("room").exists()) {
-                        String room = dataSnapshot.child("room").getValue().toString();
-                        events.add(new Event(name, new Date(init), new Date(end), place, room));
-                    } else {
-                        events.add(new Event(name, new Date(init), new Date(end), place));
-                    }
-                    sortEvents();
-                    adapter.notifyDataSetChanged();
-                    actRef.removeEventListener(ListenerDatabase);
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-
-            });
-            loaded = true;
-        }
+        //Load upcoming artist events
+        events = new ArrayList<>();
+        Query futureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
+        showEvents(futureEvents);
 
         adapter = new EventAdapter();
         event_list = (ListView) findViewById(R.id.event_listView);
@@ -109,6 +68,45 @@ public class InitActivity extends AppCompatActivity {
         });
     }
 
+    private void showEvents(Query futureEvents) {
+        ListenerDatabase = futureEvents.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
+                String key = eventSnapshot.getKey();
+                String name = eventSnapshot.child("name").getValue().toString();
+                String place = eventSnapshot.child("place").getValue().toString();
+                Long init = (long) eventSnapshot.child("start").getValue();
+                Long end = (long) eventSnapshot.child("end").getValue();
+                if (eventSnapshot.child("room").exists()) {
+                    Log.i("info", "event Added with room");
+                    String room = eventSnapshot.child("room").getValue().toString();
+                    events.add(new Event(key,name, new Date(init), new Date(end), place, room));
+                } else {
+                    Log.i("info", "event Added");
+                    events.add(new Event(key,name, new Date(init), new Date(end), place));
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -119,6 +117,7 @@ public class InitActivity extends AppCompatActivity {
     private void onUpdateEvent(int pos) {
         Event event = events.get(pos);
         Intent intent = new Intent(this, EventActivity.class);
+        intent.putExtra("key", event.getKey());
         intent.putExtra("name", event.getName());
         intent.putExtra("start", event.getStartDate().getTime());
         intent.putExtra("end", event.getEndDate().getTime());
@@ -145,52 +144,45 @@ public class InitActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference actRef = database.getReference("events");
+        final DatabaseReference actRef = database.getReference(REF_EVENTS);
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
                     String key = actRef.push().getKey();
                     String name = data.getStringExtra("name");
-                    actRef.child(key).child("name").setValue(name);
                     String place = data.getStringExtra("place");
-                    actRef.child(key).child("place").setValue(place);
                     Long init = data.getLongExtra("start", currentTimeMillis());
-                    actRef.child(key).child("start").setValue(init);
                     Long end = data.getLongExtra("end", currentTimeMillis());
+
+                    actRef.child(key).child("start").setValue(init);
+                    actRef.child(key).child("place").setValue(place);
+                    actRef.child(key).child("name").setValue(name);
                     actRef.child(key).child("end").setValue(end);
+
                     if(data.hasExtra("room")){
                         String room = data.getStringExtra("room");
                         actRef.child(key).child("room").setValue(room);
-                        Event event = new Event(name, new Date(init),
-                                new Date(end), place, room);
-                        events.add(event);
-                    }else{
-                        Event event = new Event(name, new Date(init),
-                                new Date(end), place);
-                        events.add(event);
                     }
-                    sortEvents();
-                    adapter.notifyDataSetChanged();
+
                 }
                 break;
             case UPDATE_EVENT:
                 if(resultCode == RESULT_OK){
+                    String key = data.getStringExtra("key");
                     String name = data.getStringExtra("name");
                     String place = data.getStringExtra("place");
                     Long init = data.getLongExtra("start", currentTimeMillis());
                     Long end = data.getLongExtra("end", currentTimeMillis());
-                    int pos = data.getIntExtra("pos",-1);
-                    Event event = events.get(pos);
-                    event.setName(name);
-                    event.setPlace(place);
-                    event.setStartDate(new Date(init));
-                    event.setEndDate(new Date(end));
+
+                    actRef.child(key).child("start").setValue(init);
+                    actRef.child(key).child("place").setValue(place);
+                    actRef.child(key).child("name").setValue(name);
+                    actRef.child(key).child("end").setValue(end);
+
                     if(data.hasExtra("room")){
                         String room = data.getStringExtra("room");
-                        event.setRoom(room);
+                        actRef.child(key).child("room").setValue(room);
                     }
-                    sortEvents();
-                    adapter.notifyDataSetChanged();
                 }
                 break;
 
@@ -198,17 +190,6 @@ public class InitActivity extends AppCompatActivity {
                 super.onActivityResult(requestCode, resultCode, data);
         }
 
-    }
-
-    private void sortEvents() {
-        //Sort events by startDate
-        Collections.sort(events, new Comparator<Event>() {
-            @Override
-            public int compare(Event e1, Event e2) {
-                if (e1.getStartDate().after(e2.getStartDate())) return 1;
-                else return -1;
-            }
-        });
     }
 
     private class EventAdapter extends ArrayAdapter<Event> {
@@ -234,7 +215,7 @@ public class InitActivity extends AppCompatActivity {
                     time.setTextColor(getResources().getColor(R.color.colorAccent));
                     time.setText(R.string.now);
                 }else{
-                    Log.e("info", "Old group should not be here");
+                    Log.i("info", "Old group should not be here");
                     time.setText(R.string.old);
                 }
             } else if(timeRemaining < MILLIS_HOUR){

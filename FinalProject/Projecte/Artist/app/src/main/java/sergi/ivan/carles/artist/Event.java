@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Event {
+    private String key;
     private String name;
     private Date startDate;
     private Date endDate;
@@ -11,20 +12,25 @@ public class Event {
     private String room;
     private ArrayList<int[]> groupList;
 
-    public Event(String name, Date startDate, Date endDate, String place) {
+    public Event(String key, String name, Date startDate, Date endDate, String place) {
+        this.key = key;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.place = place;
     }
 
-    public Event(String name, Date startDate, Date endDate, String place, String room) {
+    public Event(String key, String name, Date startDate, Date endDate, String place, String room) {
+        this.key = key;
+
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.place = place;
         this.room = room;
     }
+
+    public String getKey() {return key;}
 
     public String getName() {
         return name;
@@ -59,6 +65,8 @@ public class Event {
     public String toString() {
         return this.name;
     }
+
+    public void setKey(String key) {this.key = key;}
 
     public void setName(String name) {
         this.name = name;

@@ -31,7 +31,7 @@ public class EventActivity extends AppCompatActivity {
     private Button btn_start_time;
     private Date init;
     private Date end;
-    private int pos = -1;
+    private String key;
     private long durationEvent = 10800000;
 
     @Override
@@ -50,9 +50,9 @@ public class EventActivity extends AppCompatActivity {
         Intent intent = getIntent();
         init = new Date(intent.getLongExtra("start",currentTimeMillis()));
         end = new Date(intent.getLongExtra("end",currentTimeMillis()+ durationEvent));
-        if(intent.hasExtra("name")){
+        if(intent.hasExtra("key")){
             getSupportActionBar().setTitle(R.string.modify_event);
-            Log.i("info","hey");
+            key = intent.getStringExtra("key");
             edit_name.setText(intent.getStringExtra("name"));
             edit_place.setText(intent.getStringExtra("place"));
             if(intent.hasExtra("room")){
@@ -133,8 +133,8 @@ public class EventActivity extends AppCompatActivity {
                     data.putExtra("place",place);
                     data.putExtra("start",init.getTime());
                     data.putExtra("end",end.getTime());
-                    if(pos != -1){
-                        data.putExtra("pos", pos);
+                    if(key != null){
+                        data.putExtra("key", key);
                     }
                     if(room.length() != 0){
                         data.putExtra("room", room);
