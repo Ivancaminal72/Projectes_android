@@ -35,4 +35,6 @@
     <string name="modify_event">Modifica esdeveniment</string>
     <string name="old">Vell</string>
     <string name="hint_group_name">Nom del grup</string>
+    <string name="four_songs">Només pots enviar 4 cançons</string>
+    <string name="group_name">És necessari un nom de grup</string>
 </resources>

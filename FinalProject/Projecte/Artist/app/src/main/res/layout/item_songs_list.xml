@@ -21,7 +21,9 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_toRightOf="@+id/list_item_song"
-        android:layout_toEndOf="@+id/list_item_song" />
+        android:layout_toEndOf="@+id/list_item_song"
+        android:clickable="false"
+        android:focusable="false" />
 
     <TextView
         android:id="@+id/list_item_artist"

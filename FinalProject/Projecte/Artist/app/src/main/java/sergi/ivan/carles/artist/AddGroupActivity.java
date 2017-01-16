@@ -7,9 +7,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +30,7 @@ public class AddGroupActivity extends AppCompatActivity {
 
     private static final String REF_SONGS = "songs";
     private ArrayList<Song> songs;
+    private EditText edit_group_name;
     private FirebaseDatabase database;
     private SongAdapter adapter;
 
@@ -42,6 +47,14 @@ public class AddGroupActivity extends AppCompatActivity {
         adapter = new SongAdapter();
         ListView song_list = (ListView) findViewById(R.id.song_list);
         song_list.setAdapter(adapter);
+
+        song_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> list, View v, int pos, long id) {
+                songs.get(pos).toggleChecked();
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         //Load songs from firebase and show them to the ListView
         songRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -66,6 +79,33 @@ public class AddGroupActivity extends AppCompatActivity {
         //Todo: v0.5 Return intent EventActivity CharSequence [] song IDS
     }
 
+    public void onButtonAddClick(View v) {
+        edit_group_name = (EditText) findViewById(R.id.edit_group_name);
+        String name = edit_group_name.getText().toString();
+        if(name.length() == 0){
+            Toast.makeText(
+                    this,
+                    getResources().getString(R.string.group_name),
+                    Toast.LENGTH_SHORT).show();
+        }
+        else {
+            int count = 0;
+            for (int i = 0; i < songs.size(); i++) {
+                if (songs.get(i).isChecked()) {
+                    count++;
+                }
+            }
+            if (count != 4) {
+                Toast.makeText(
+                        this,
+                        getResources().getString(R.string.four_songs),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                //TODO: send songs to firebase
+            }
+        }
+    }
+
     private class SongAdapter extends ArrayAdapter<Song> {
         SongAdapter() {
             super(AddGroupActivity.this, R.layout.item_songs_list, songs);
@@ -83,7 +123,8 @@ public class AddGroupActivity extends AppCompatActivity {
             TextView artist = (TextView) result.findViewById(R.id.list_item_artist);
             name.setText(song.getName());
             artist.setText(song.getArtist());
-
+            CheckBox checkbox = (CheckBox) result.findViewById(R.id.list_item_checkbox);
+            checkbox.setChecked(song.isChecked());
             return result;
         }
     }

@@ -61,7 +61,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:textSize="24sp"
-            style="@style/Widget.AppCompat.Button.Colored" />
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:onClick="onButtonAddClick" />
 
     </RelativeLayout>
 

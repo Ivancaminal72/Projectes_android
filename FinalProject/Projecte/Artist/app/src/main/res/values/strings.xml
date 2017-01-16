@@ -38,4 +38,6 @@
     <string name="modify_event">Modify event</string>
     <string name="old">Old</string>
     <string name="hint_group_name">Group name</string>
+    <string name="four_songs">You only can send 4 songs</string>
+    <string name="group_name">A group name is required</string>
 </resources>

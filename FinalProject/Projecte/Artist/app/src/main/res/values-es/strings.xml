@@ -35,4 +35,6 @@
     <string name="modify_event">Modifica evento</string>
     <string name="old">Viejo</string>
     <string name="hint_group_name">Nombre del grupo</string>
+    <string name="four_songs">Solo puedes enviar 4 canciones</string>
+    <string name="group_name">Es necesario un nombre de grupo</string>
 </resources>
