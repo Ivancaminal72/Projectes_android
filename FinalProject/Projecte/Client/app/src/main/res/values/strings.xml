@@ -9,4 +9,6 @@
     <string name="already_voted">You have already voted</string>
     <string name="voted">Voted!</string>
     <string name="next_events">Upcomming Events</string>
+    <string name="old">Old</string>
+    <string name="now">Right Now</string>
 </resources>
