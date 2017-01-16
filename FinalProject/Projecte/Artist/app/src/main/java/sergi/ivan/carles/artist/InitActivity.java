@@ -3,6 +3,7 @@ package sergi.ivan.carles.artist;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,9 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,8 +39,9 @@ public class InitActivity extends AppCompatActivity {
     private ArrayList<Event> events;
     private ListView event_list;
     private EventAdapter adapter;
-    private ValueEventListener ListenerDatabase;
     private FirebaseDatabase database;
+    private ChildEventListener ListenerDatabase;
+    private boolean loaded;
 
 
     @Override
@@ -48,7 +52,50 @@ public class InitActivity extends AppCompatActivity {
 
         //Load artist events
         events = new ArrayList<>();
+
         //Todo: (versió 0.5) consultar a firebase els events de l'artista (make not chatch old events)
+        loaded = false;
+        database = FirebaseDatabase.getInstance();
+        final DatabaseReference actRef = database.getReference("events");
+
+        if(!loaded) {
+            ListenerDatabase = actRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+                    String name = dataSnapshot.child("name").getValue().toString();
+                    String place = dataSnapshot.child("place").getValue().toString();
+                    Long init = (long) dataSnapshot.child("start").getValue();
+                    Long end = (long) dataSnapshot.child("end").getValue();
+                    if (dataSnapshot.child("room").exists()) {
+                        String room = dataSnapshot.child("room").getValue().toString();
+                        events.add(new Event(name, new Date(init), new Date(end), place, room));
+                    } else {
+                        events.add(new Event(name, new Date(init), new Date(end), place));
+                    }
+                    sortEvents();
+                    adapter.notifyDataSetChanged();
+                    actRef.removeEventListener(ListenerDatabase);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+
+            });
+            loaded = true;
+        }
 
         adapter = new EventAdapter();
         event_list = (ListView) findViewById(R.id.event_listView);
@@ -97,19 +144,18 @@ public class InitActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        database = FirebaseDatabase.getInstance();
+        final DatabaseReference actRef = database.getReference("events");
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
-                    adapter.notifyDataSetChanged();
-                    database = FirebaseDatabase.getInstance();
-                    final DatabaseReference actRef = database.getReference("events");
                     String key = actRef.push().getKey();
                     String name = data.getStringExtra("name");
                     actRef.child(key).child("name").setValue(name);
                     String place = data.getStringExtra("place");
                     actRef.child(key).child("place").setValue(place);
                     Long init = data.getLongExtra("start", currentTimeMillis());
-                    actRef.child(key).child("init").setValue(init);
+                    actRef.child(key).child("start").setValue(init);
                     Long end = data.getLongExtra("end", currentTimeMillis());
                     actRef.child(key).child("end").setValue(end);
                     if(data.hasExtra("room")){
@@ -124,6 +170,7 @@ public class InitActivity extends AppCompatActivity {
                         events.add(event);
                     }
                     sortEvents();
+                    adapter.notifyDataSetChanged();
                 }
                 break;
             case UPDATE_EVENT:
