@@ -145,6 +145,20 @@ public class EventActivity extends AppCompatActivity {
                     return true;
                 }
 
+            case R.id.delete_event:
+                Intent data = new Intent();
+                if(key != null){
+                    data.putExtra("key", "delete"+key);
+                    setResult(RESULT_OK, data);
+                    finish();
+                    return true;
+                }
+                else{
+                    edit_name.setText("");
+                    edit_place.setText("");
+                    edit_room.setText("");
+                }
+
             default:
                 return super.onOptionsItemSelected(item);
         }

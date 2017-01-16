@@ -114,7 +114,14 @@ public class InitActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            public void onChildRemoved(DataSnapshot eventSnapshot) {
+                String key = eventSnapshot.getKey();
+                for(int i = 0; i<events.size(); i++){
+                    if(key.equals(events.get(i).getKey())){
+                        events.remove(i);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
             }
 
             @Override
@@ -188,7 +195,13 @@ public class InitActivity extends AppCompatActivity {
                 break;
             case UPDATE_EVENT:
                 if(resultCode == RESULT_OK){
+                    Log.i("info", "UPDATE_EVENT HA ENTRADO");
                     String key = data.getStringExtra("key");
+                    String delete = "delete";
+                    if(delete.equals(key.substring(0,6))){
+                        actRef.child(key.substring(6)).removeValue();
+                        break;
+                    }
                     String name = data.getStringExtra("name");
                     String place = data.getStringExtra("place");
                     Long init = data.getLongExtra("start", currentTimeMillis());
