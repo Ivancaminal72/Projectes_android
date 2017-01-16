@@ -8,4 +8,8 @@
     <string name="none_song_selected">Ninguna canción seleccionada</string>
     <string name="already_voted">Ya has votado</string>
     <string name="time_finished">Tiempo de votación finalizado!</string>
+    <string name="next_events">Próximos Eventos</string>
+    <string name="now">Ahora</string>
+    <string name="old">Viejo</string>
+    <string name="voted">Votado!</string>
 </resources>

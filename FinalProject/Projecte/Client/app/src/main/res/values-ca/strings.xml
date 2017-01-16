@@ -8,4 +8,8 @@
     <string name="none_song_selected">Cap cançó seleccionada</string>
     <string name="already_voted">Ja has votat</string>
     <string name="time_finished">Temps de votació finalitzat!</string>
+    <string name="next_events">Propers Esdeveniments</string>
+    <string name="now">Ara</string>
+    <string name="old">Vell</string>
+    <string name="voted">Votat!</string>
 </resources>
