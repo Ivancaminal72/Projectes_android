@@ -6,6 +6,7 @@ package sergi.ivan.carles.artist;
 
 public class Song {
     private int songId;
+    private boolean checked;
     private String name;
     private String artist;
 
@@ -25,4 +26,6 @@ public class Song {
     public String getArtist() {
         return artist;
     }
+    public boolean isChecked() {return checked;}
+    public void setChecked(boolean checked) {this.checked = checked;}
 }

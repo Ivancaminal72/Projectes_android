@@ -33,8 +33,9 @@
     <string name="to_a_vote"> to a vote?</string>
     <string name="group_to_select">Group to select</string>
     <string name="group_title_hint">Name of the group</string>
-    <string name="all_your_songs">All your songs</string>
+    <string name="make_groups">Make groups</string>
     <string name="create_event">Create event</string>
     <string name="modify_event">Modify event</string>
     <string name="old">Old</string>
+    <string name="hint_group_name">Group name</string>
 </resources>

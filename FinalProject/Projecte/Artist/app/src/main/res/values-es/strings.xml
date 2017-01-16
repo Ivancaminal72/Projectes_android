@@ -22,7 +22,7 @@
     <string name="now">Ahora</string>
     <string name="next_events">Próximos Eventos</string>
     <string name="new_event">Nuevo evento</string>
-    <string name="all_your_songs">Todas tus canciones</string>
+    <string name="make_groups">Haz grupos</string>
     <string name="delete_event">Eliminar evento</string>
     <string name="group_title_hint">Nombre del grupo</string>
     <string name="hint_event_name">Nombre del evento</string>
@@ -34,4 +34,5 @@
     <string name="create_event">Crear evento</string>
     <string name="modify_event">Modifica evento</string>
     <string name="old">Viejo</string>
+    <string name="hint_group_name">Nombre del grupo</string>
 </resources>

@@ -22,6 +22,7 @@ import static java.lang.System.currentTimeMillis;
 
 public class EventActivity extends AppCompatActivity {
 
+    private static final int ADD_GROUPS = 0;
     private EditText edit_name;
     private EditText edit_place;
     private EditText edit_room;
@@ -206,6 +207,6 @@ public class EventActivity extends AppCompatActivity {
 
     private void newGroup() {
         Intent intent = new Intent(this, AddGroupActivity.class);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent,  ADD_GROUPS);
     }
 }

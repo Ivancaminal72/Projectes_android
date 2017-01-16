@@ -22,7 +22,7 @@
     <string name="now">Ara</string>
     <string name="next_events">Propers Esdeveniments</string>
     <string name="new_event">Nou esdeveniment</string>
-    <string name="all_your_songs">Totes les teves cançons</string>
+    <string name="make_groups">Fes grups</string>
     <string name="delete_event">Eliminar esdeveniment</string>
     <string name="group_title_hint">Nom del grup</string>
     <string name="hint_event_name">Nom del esdeveniment</string>
@@ -34,4 +34,5 @@
     <string name="create_event">Crear esdeveniment</string>
     <string name="modify_event">Modifica esdeveniment</string>
     <string name="old">Vell</string>
+    <string name="hint_group_name">Nom del grup</string>
 </resources>
