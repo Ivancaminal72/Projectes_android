@@ -38,6 +38,7 @@ public class InitActivity extends AppCompatActivity {
     public static final int NEW_EVENT = 0;
     public static final int UPDATE_EVENT = 1;
     public static final String REF_EVENTS = "events";
+    private static final String REF_SONGS = "songs";
     private ArrayList<Event> events;
     private ListView event_list;
     private EventAdapter adapter;
@@ -52,6 +53,16 @@ public class InitActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(R.string.next_events);
         database = FirebaseDatabase.getInstance();
         final DatabaseReference eventRef = database.getReference(REF_EVENTS);
+        final DatabaseReference songRef = database.getReference(REF_SONGS);
+
+        /*//Push some demo songs to firabase
+        for(int i=0; i<20; i++){
+            String key = songRef.push().getKey();
+            String name = "song"+i;
+            String artist = "artist"+i;
+            songRef.child(key).child("name").setValue(name);
+            songRef.child(key).child("artist").setValue(artist);
+        }*/
 
         //Load upcoming artist events
         events = new ArrayList<>();
