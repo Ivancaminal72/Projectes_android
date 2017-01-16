@@ -33,4 +33,5 @@
     <string name="save_event">Guardar evento</string>
     <string name="create_event">Crear evento</string>
     <string name="modify_event">Modifica evento</string>
+    <string name="old">Viejo</string>
 </resources>

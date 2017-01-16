@@ -149,14 +149,12 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    private void timePicker(final boolean startTime, int hours, final int minutes) {
+    private void timePicker(final boolean startTime, int hours, int minutes) {
         TimePickerDialog timePickerDialog = new TimePickerDialog(
                 this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        Log.i("info", String.format("hour :%d",hourOfDay));
-                        Log.i("info", String.format("minute :%d",minute));
                         if(startTime){
                             if(minute <= 9) btn_start_time.setText(hourOfDay+":0"+minute);
                             else btn_start_time.setText(hourOfDay+":"+minute);

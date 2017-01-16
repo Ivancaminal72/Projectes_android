@@ -233,6 +233,9 @@ public class InitActivity extends AppCompatActivity {
                 if(timeToEnd>0){
                     time.setTextColor(getResources().getColor(R.color.colorAccent));
                     time.setText(R.string.now);
+                }else{
+                    Log.e("info", "Old group should not be here");
+                    time.setText(R.string.old);
                 }
             } else if(timeRemaining < MILLIS_HOUR){
                 time.setText(String.valueOf(timeRemaining/ MILLIS_MINUTE)+" m");

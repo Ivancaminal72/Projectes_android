@@ -36,4 +36,5 @@
     <string name="all_your_songs">All your songs</string>
     <string name="create_event">Create event</string>
     <string name="modify_event">Modify event</string>
+    <string name="old">Old</string>
 </resources>
