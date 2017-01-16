@@ -5,21 +5,19 @@ package sergi.ivan.carles.artist;
  */
 
 public class Song {
-    private int songId;
+    private String id;
     private boolean checked;
     private String name;
     private String artist;
 
-    public Song(int songId, String name, String artist) {
+    public Song(String id, String name, String artist) {
 
-        this.songId = songId;
+        this.id = id;
         this.name = name;
         this.artist = artist;
     }
 
-    public int getSongId() {
-        return songId;
-    }
+    public String getId() {return id;}
     public String getName() {
         return name;
     }

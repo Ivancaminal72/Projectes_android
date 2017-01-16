@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
+import static java.lang.System.in;
 
 public class EventActivity extends AppCompatActivity {
 

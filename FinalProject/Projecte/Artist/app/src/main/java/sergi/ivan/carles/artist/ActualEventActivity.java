@@ -91,14 +91,14 @@ public class ActualEventActivity extends AppCompatActivity {
         //Random songs generation
         songs = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            Song importedSong = new Song(i, String.format("Cancion%d", i), String.format("Artista%d", i));
+            Song importedSong = new Song(String.valueOf(i), String.format("Cancion%d", i), String.format("Artista%d", i));
             songs.add(importedSong);
         }
 
         //Random voting groups generation
         groups = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            int[] songkeys = new int[]{1 + i, 2 + i, 3 + i, 4 + i};
+            String[] songkeys = new String[]{String.valueOf(i+1), String.valueOf(i+2), String.valueOf(i+3), String.valueOf(i+4)};
             groups.add(new Group(getResources().getString(R.string.group_to_select)+String.format(" %d", i), songkeys));
         }
 
@@ -205,11 +205,11 @@ public class ActualEventActivity extends AppCompatActivity {
         if(position >= 0) {
             String[] sNames = new String[GROUP_MAX_SIZE];
             String[] sArtists = new String[GROUP_MAX_SIZE];
-            int[] songsIds;
+            String[] songsIds;
             songsIds = groups.get(position).getSongIds();
             for (int i = 0; i < GROUP_MAX_SIZE; i++) {
                 for (int j = 0; j < songs.size(); j++) {
-                    if (songs.get(j).getSongId() == songsIds[i]) {
+                    if (songs.get(j).getId() == songsIds[i]) {
                         sNames[i] = songs.get(j).getName();
                         sArtists[i] = songs.get(j).getArtist();
                     }
@@ -262,11 +262,11 @@ public class ActualEventActivity extends AppCompatActivity {
                             max = 0;
                             n += 1;
                         }
-                        int[] sIds = groups.get(position).getSongIds();
-                        view_song1.setText(songs.get(sIds[orderIndex[0]]).getName() + "   " + songs.get(sIds[orderIndex[0]]).getArtist());
-                        view_song2.setText(songs.get(sIds[orderIndex[1]]).getName() + "   " + songs.get(sIds[orderIndex[1]]).getArtist());
-                        view_song3.setText(songs.get(sIds[orderIndex[2]]).getName() + "   " + songs.get(sIds[orderIndex[2]]).getArtist());
-                        view_song4.setText(songs.get(sIds[orderIndex[3]]).getName() + "   " + songs.get(sIds[orderIndex[3]]).getArtist());
+                        String[] sIds = groups.get(position).getSongIds();
+                        view_song1.setText(getSong(sIds[orderIndex[0]]).getName() + "   " + getSong(sIds[orderIndex[0]]).getArtist());
+                        view_song2.setText(getSong(sIds[orderIndex[1]]).getName() + "   " + getSong(sIds[orderIndex[1]]).getArtist());
+                        view_song3.setText(getSong(sIds[orderIndex[2]]).getName() + "   " + getSong(sIds[orderIndex[2]]).getArtist());
+                        view_song4.setText(getSong(sIds[orderIndex[3]]).getName() + "   " + getSong(sIds[orderIndex[3]]).getArtist());
                         points_song1.setText(String.valueOf(actPoints[orderIndex[0]]) + " " + getResources().getString(R.string.points));
                         points_song2.setText(String.valueOf(actPoints[orderIndex[1]]) + " " + getResources().getString(R.string.points));
                         points_song3.setText(String.valueOf(actPoints[orderIndex[2]]) + " " + getResources().getString(R.string.points));
@@ -288,17 +288,27 @@ public class ActualEventActivity extends AppCompatActivity {
             });
         }
         else{
-            int[] sIds = groups.get(position).getSongIds();
-            view_song1.setText(songs.get(sIds[0]).getName()+"   "+songs.get(sIds[0]).getArtist());
-            view_song2.setText(songs.get(sIds[1]).getName()+"   "+songs.get(sIds[1]).getArtist());
-            view_song3.setText(songs.get(sIds[2]).getName()+"   "+songs.get(sIds[2]).getArtist());
-            view_song4.setText(songs.get(sIds[3]).getName()+"   "+songs.get(sIds[3]).getArtist());
+            String[] sIds = groups.get(position).getSongIds();
+            view_song1.setText(getSong(sIds[0]).getName()+"   "+getSong(sIds[0]).getArtist());
+            view_song2.setText(getSong(sIds[1]).getName()+"   "+getSong(sIds[1]).getArtist());
+            view_song3.setText(getSong(sIds[2]).getName()+"   "+getSong(sIds[2]).getArtist());
+            view_song4.setText(getSong(sIds[3]).getName()+"   "+getSong(sIds[3]).getArtist());
             points_song1.setText("");
             points_song2.setText("");
             points_song3.setText("");
             points_song4.setText("");
         }
     }
+    private Song getSong(String id){
+        for(int i=0; i<songs.size(); i++){
+            if(songs.get(i).getId().equals(id)){
+                return songs.get(i);
+            }
+        }
+        Log.e("info", "No es troba la cançó!");
+        return null;
+    }
+
 
     private ArrayList<String> getGroupsNames() {
         ArrayList<String> group_names = new ArrayList<>();

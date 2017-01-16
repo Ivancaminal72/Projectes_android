@@ -6,12 +6,12 @@ import static java.lang.System.arraycopy;
 public class Group {
     private static final int GROUP_MAX_SIZE = 4;
     private String name;
-    private int[] songIds;
+    private String [] songIds;
     private long [] points;
 
-    public Group(String name, int[] songIds) {
+    public Group(String name, String[] songIds) {
         this.name = name;
-        this.songIds = new int[GROUP_MAX_SIZE];
+        this.songIds = new String[GROUP_MAX_SIZE];
         arraycopy(songIds,0,this.songIds,0,GROUP_MAX_SIZE);
         this.points = new long[]{0,5,10,15};
     }
@@ -20,7 +20,7 @@ public class Group {
         return name;
     }
 
-    public int[] getSongIds() {
+    public String[] getSongIds() {
         return songIds;
     }
 
