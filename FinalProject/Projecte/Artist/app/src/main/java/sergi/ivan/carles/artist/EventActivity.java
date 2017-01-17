@@ -281,7 +281,8 @@ public class EventActivity extends AppCompatActivity {
                     }
                     groups.add(new Group(key, name, Ids));
                 }
-                groupNames = getEventGroupNames(groups);
+                groupNames.clear();
+                groupNames.addAll(getEventGroupNames(groups));
                 Log.i("info", groupNames.get(0).toString());
                 adapter.notifyDataSetChanged();
             }
