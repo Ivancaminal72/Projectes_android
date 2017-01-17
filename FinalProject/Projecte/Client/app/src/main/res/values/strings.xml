@@ -11,4 +11,8 @@
     <string name="next_events">Upcomming Events</string>
     <string name="old">Old</string>
     <string name="now">Right Now</string>
+    <string name="date">Date</string>
+    <string name="place">Place</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
 </resources>

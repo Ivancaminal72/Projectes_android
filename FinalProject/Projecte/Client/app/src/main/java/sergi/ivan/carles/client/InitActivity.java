@@ -1,5 +1,6 @@
 package sergi.ivan.carles.client;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -57,7 +58,22 @@ public class InitActivity extends AppCompatActivity {
         event_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                //onUpdateEvent(pos);
+                if(events.get(pos).getStartDate().getTime() <= currentTimeMillis()){
+                    Intent intent = new Intent(InitActivity.this, ActualEventActivity.class);
+                    intent.putExtra("key", events.get(pos).getKey());
+                    startActivity(intent);
+                }
+                else{
+                    Intent intent = new Intent(InitActivity.this, EventActivity.class);
+                    intent.putExtra("name", events.get(pos).getName());
+                    intent.putExtra("start", events.get(pos).getStartDate().getTime());
+                    intent.putExtra("end", events.get(pos).getEndDate().getTime());
+                    intent.putExtra("place", events.get(pos).getPlace());
+                    if(events.get(pos).getRoom() != null){
+                        intent.putExtra("room", events.get(pos).getRoom());
+                    }
+                    startActivity(intent);
+                }
             }
         });
     }
