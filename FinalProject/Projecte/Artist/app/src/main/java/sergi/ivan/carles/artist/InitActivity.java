@@ -256,8 +256,8 @@ public class InitActivity extends AppCompatActivity {
 
         if(data.hasExtra("groupKeys")){
             ArrayList<String> groupKeys = data.getStringArrayListExtra("groupKeys");
-            for(int i=0; i<GROUP_MAX_SIZE; i++){
-                artistEventRef.child(key).setValue(groupKeys.get(i));
+            for(int i=0; i<groupKeys.size(); i++){
+                artistEventRef.child(key).child("groupId"+String.valueOf(i)).setValue(groupKeys.get(i));
             }
         }
     }
