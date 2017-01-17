@@ -107,6 +107,7 @@ public class AddGroupActivity extends AppCompatActivity {
                                 songs.get(pos[i]).toggleChecked();
                             }
                             adapter.notifyDataSetChanged();
+                            edit_group_name.setText("");
 
                             //Send group to firebase
                             sendGroupToFirebase(pos, groupName, groupRef);
