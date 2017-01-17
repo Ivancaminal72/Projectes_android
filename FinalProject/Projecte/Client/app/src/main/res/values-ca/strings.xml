@@ -12,4 +12,8 @@
     <string name="now">Ara</string>
     <string name="old">Vell</string>
     <string name="voted">Votat!</string>
+    <string name="date">Data</string>
+    <string name="end">Final</string>
+    <string name="place">Lloc</string>
+    <string name="start">Inici</string>
 </resources>

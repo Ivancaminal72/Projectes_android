@@ -12,4 +12,8 @@
     <string name="now">Ahora</string>
     <string name="old">Viejo</string>
     <string name="voted">Votado!</string>
+    <string name="date">Fecha</string>
+    <string name="end">Fin</string>
+    <string name="place">Lugar</string>
+    <string name="start">Inicio</string>
 </resources>
