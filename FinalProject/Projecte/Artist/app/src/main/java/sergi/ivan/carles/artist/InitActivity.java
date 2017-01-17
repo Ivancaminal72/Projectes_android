@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
+import static sergi.ivan.carles.artist.ActualEventActivity.GROUP_MAX_SIZE;
 
 
 public class InitActivity extends AppCompatActivity {
@@ -37,8 +38,10 @@ public class InitActivity extends AppCompatActivity {
     public static final int MILLIS_MINUTE = 60000;
     public static final int NEW_EVENT = 0;
     public static final int UPDATE_EVENT = 1;
+    public static final String REF_ARTIST_EVENT = "artist_events";
     public static final String REF_EVENTS = "events";
-    private static final String REF_SONGS = "songs";
+    public static final String REF_GROUPS = "groups";
+    public static final String REF_SONGS = "songs";
     private ArrayList<Event> events;
     private ListView event_list;
     private EventAdapter adapter;
@@ -183,25 +186,12 @@ public class InitActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference actRef = database.getReference(REF_EVENTS);
+        final DatabaseReference eventRef = database.getReference(REF_EVENTS);
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
-                    String key = actRef.push().getKey();
-                    String name = data.getStringExtra("name");
-                    String place = data.getStringExtra("place");
-                    Long init = data.getLongExtra("start", currentTimeMillis());
-                    Long end = data.getLongExtra("end", currentTimeMillis());
-
-                    actRef.child(key).child("start").setValue(init);
-                    actRef.child(key).child("place").setValue(place);
-                    actRef.child(key).child("name").setValue(name);
-                    actRef.child(key).child("end").setValue(end);
-
-                    if(data.hasExtra("room")){
-                        String room = data.getStringExtra("room");
-                        actRef.child(key).child("room").setValue(room);
-                    }
+                    String key = eventRef.push().getKey();
+                    sendEventToFirebase(data, eventRef, key);
                 }
                 break;
             case UPDATE_EVENT:
@@ -210,22 +200,9 @@ public class InitActivity extends AppCompatActivity {
                     String key = data.getStringExtra("key");
                     String delete = "delete";
                     if(delete.equals(key.substring(0,6))){
-                        actRef.child(key.substring(6)).removeValue();
-                        break;
-                    }
-                    String name = data.getStringExtra("name");
-                    String place = data.getStringExtra("place");
-                    Long init = data.getLongExtra("start", currentTimeMillis());
-                    Long end = data.getLongExtra("end", currentTimeMillis());
-
-                    actRef.child(key).child("start").setValue(init);
-                    actRef.child(key).child("place").setValue(place);
-                    actRef.child(key).child("name").setValue(name);
-                    actRef.child(key).child("end").setValue(end);
-
-                    if(data.hasExtra("room")){
-                        String room = data.getStringExtra("room");
-                        actRef.child(key).child("room").setValue(room);
+                        eventRef.child(key.substring(6)).removeValue();
+                    }else{
+                     sendEventToFirebase(data, eventRef, key);
                     }
                 }
                 break;
@@ -234,6 +211,33 @@ public class InitActivity extends AppCompatActivity {
                 super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+
+    private void sendEventToFirebase(Intent data, DatabaseReference eventRef, String key) {
+        if(database == null){FirebaseDatabase.getInstance();}
+        final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
+
+        String name = data.getStringExtra("name");
+        String place = data.getStringExtra("place");
+        Long init = data.getLongExtra("start", currentTimeMillis());
+        Long end = data.getLongExtra("end", currentTimeMillis());
+
+        eventRef.child(key).child("start").setValue(init);
+        eventRef.child(key).child("place").setValue(place);
+        eventRef.child(key).child("name").setValue(name);
+        eventRef.child(key).child("end").setValue(end);
+
+        if(data.hasExtra("room")){
+            String room = data.getStringExtra("room");
+            eventRef.child(key).child("room").setValue(room);
+        }
+
+        if(data.hasExtra("groupKeys")){
+            ArrayList<String> groupKeys = data.getStringArrayListExtra("groupKeys");
+            for(int i=0; i<GROUP_MAX_SIZE; i++){
+                artistEventRef.child(key).setValue(groupKeys.get(i));
+            }
+        }
     }
 
     private class EventAdapter extends ArrayAdapter<Event> {

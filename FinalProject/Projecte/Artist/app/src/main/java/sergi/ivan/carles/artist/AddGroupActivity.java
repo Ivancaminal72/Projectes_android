@@ -1,8 +1,10 @@
 package sergi.ivan.carles.artist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +25,18 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import static sergi.ivan.carles.artist.ActualEventActivity.GROUP_MAX_SIZE;
+import static sergi.ivan.carles.artist.InitActivity.REF_GROUPS;
+import static sergi.ivan.carles.artist.InitActivity.REF_SONGS;
+
 public class AddGroupActivity extends AppCompatActivity {
 
-    private static final String REF_SONGS = "songs";
-    public static final int MAX_LENGHT = 5;
+    private static final int AUTO_GROUP_NAME_SIZE = 5;
     private ArrayList<Song> songs;
     private EditText edit_group_name;
     private FirebaseDatabase database;
     private SongAdapter adapter;
+    private ArrayList<String> groupKeys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +45,8 @@ public class AddGroupActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getResources().getString(R.string.make_groups));
         database = FirebaseDatabase.getInstance();
         final DatabaseReference songRef = database.getReference(REF_SONGS);
-        final DatabaseReference groupRef = database.getReference(getString(R.string.REF_GROUPS));
+        final DatabaseReference groupRef = database.getReference(REF_GROUPS);
+        groupKeys = new ArrayList<>();
 
         //Intent intent = getIntent();
         edit_group_name = (EditText) findViewById(R.id.edit_group_name);
@@ -81,33 +88,28 @@ public class AddGroupActivity extends AppCompatActivity {
                                 count++;
                             }
                         }
-                        if (count == 4) {//Correct group
+                        if (count == GROUP_MAX_SIZE) {//Correct group
                             String groupName = edit_group_name.getText().toString();
                             if(groupName.length() == 0){
-                                for (int i=0; i<4; i++){
+                                for (int i=0; i<GROUP_MAX_SIZE; i++){
                                     String songName = songs.get(pos[i]).getName();
-                                    if(songName.length() <= MAX_LENGHT){
+                                    if(songName.length() <= AUTO_GROUP_NAME_SIZE){
                                         groupName = groupName + songName+" ";
                                     }else{
-                                        groupName = groupName + songName.substring(0,MAX_LENGHT)+" ";
+                                        groupName = groupName + songName.substring(0, AUTO_GROUP_NAME_SIZE)+" ";
                                     }
 
                                 }
                             }
-
+                            Log.i("info", "Group Name: "+groupName);
                             //Set all songs checked to not checked
-                            for(int i=0; i<4; i++){
+                            for(int i=0; i<GROUP_MAX_SIZE; i++){
                                 songs.get(pos[i]).toggleChecked();
                             }
                             adapter.notifyDataSetChanged();
 
                             //Send group to firebase
                             sendGroupToFirebase(pos, groupName, groupRef);
-
-                            Toast.makeText(
-                                    AddGroupActivity.this,
-                                    getResources().getString(R.string.Group_done),
-                                    Toast.LENGTH_SHORT).show();
 
                         } else {//Incorrect group
                             Toast.makeText(
@@ -126,17 +128,35 @@ public class AddGroupActivity extends AppCompatActivity {
             }
         });
 
-        //Todo: v0.5 Return intent EventActivity CharSequence [] song IDS
-
     }
 
     private void sendGroupToFirebase(int[] pos, String groupName, DatabaseReference groupRef) {
         String key = groupRef.push().getKey();
-        for(int i=0; i<4; i++){
+        for(int i=0; i<GROUP_MAX_SIZE; i++){
             groupRef.child(key).child("songIds").child("id"+String.valueOf(i+1))
                     .setValue(songs.get(pos[i]).getId());
         }
         groupRef.child(key).child("name").setValue(groupName);
+        groupKeys.add(key);
+
+        //Toast to inform correct group generation
+        Toast.makeText(
+                AddGroupActivity.this,
+                getResources().getString(R.string.Group_done),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.i("info", "Back button pressed");
+        if(groupKeys.size() > 0){
+            Intent data = new Intent();
+            data.putExtra("groupKeys", groupKeys);
+            setResult(RESULT_OK, data);
+        }else{
+            setResult(RESULT_CANCELED);
+        }
+        super.onBackPressed();
     }
 
     private class SongAdapter extends ArrayAdapter<Song> {

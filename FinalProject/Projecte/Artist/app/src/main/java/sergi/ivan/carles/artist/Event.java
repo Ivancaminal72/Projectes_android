@@ -10,7 +10,7 @@ public class Event {
     private Date endDate;
     private String place;
     private String room;
-    private ArrayList<int[]> groupList;
+    private ArrayList<String> groupIds;
 
     public Event(String key, String name, Date startDate, Date endDate, String place) {
         this.key = key;
@@ -52,13 +52,13 @@ public class Event {
         return place;
     }
 
-    public ArrayList<int[]> getGroupList() {
-        return groupList;
+    public ArrayList<String> getGroupIds() {
+        return groupIds;
     }
 
-    public ArrayList<int[]> addgroup(int[] group){
-        this.groupList.add(group);
-        return groupList;
+    public ArrayList<String> addgroup(String id){
+        this.groupIds.add(id);
+        return groupIds;
     }
 
     @Override

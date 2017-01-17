@@ -22,9 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActualEventActivity" />
+        <activity android:name=".EventActivity" />
         <activity android:name=".AddGroupActivity" />
-        <activity android:name=".EventActivity"></activity>
+        <activity android:name=".ActualEventActivity"></activity>
     </application>
 
 </manifest>
