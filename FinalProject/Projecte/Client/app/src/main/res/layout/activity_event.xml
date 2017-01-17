@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_event"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="sergi.ivan.carles.client.EventActivity">
+
+    <LinearLayout
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px"/>
+
+    <TextView
+        android:id="@+id/text_date"
+        android:layout_width="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:padding="14dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="@android:color/holo_orange_light"
+        android:text="@string/date" />
+
+    <View
+        android:id="@+id/ruler"
+        android:layout_below="@id/text_date"
+        android:background="#c4c4c4"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ruler"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/text_start_date"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:padding="14dp"
+        android:background="@android:color/transparent"
+        android:text="@string/start"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ruler"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/text_enter_start_date"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:padding="14dp"
+        android:background="@android:color/transparent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_start_date"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/text_end_date"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:padding="14dp"
+        android:background="@android:color/transparent"
+        android:text="@string/end"
+        android:layout_alignRight="@+id/text_start_date"
+        android:layout_alignEnd="@+id/text_start_date" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_start_date"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/text_enter_end_date"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:padding="14dp"
+        android:background="@android:color/transparent" />
+
+    <View
+        android:id="@+id/ruler2"
+        android:layout_below="@id/text_end_date"
+        android:background="#c4c4c4"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ruler2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/text_place"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:padding="14dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="@string/place"/>
+
+    <View
+        android:id="@+id/ruler3"
+        android:layout_below="@id/text_place"
+        android:background="#c4c4c4"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ruler3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/text_enter_place"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:padding="14dp"
+        android:background="@android:color/transparent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_enter_place"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/text_enter_room"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:padding="14dp"
+        android:background="@android:color/transparent"/>
+
+
+</RelativeLayout>
