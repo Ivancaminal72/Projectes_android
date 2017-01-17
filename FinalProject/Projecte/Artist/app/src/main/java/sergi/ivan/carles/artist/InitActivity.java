@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +58,7 @@ public class InitActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         final DatabaseReference eventRef = database.getReference(REF_EVENTS);
         final DatabaseReference songRef = database.getReference(REF_SONGS);
+        final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
 
         /*//Push some demo songs to firabase
         for(int i=0; i<20; i++){
@@ -69,9 +71,6 @@ public class InitActivity extends AppCompatActivity {
 
         //Load upcoming artist events
         events = new ArrayList<>();
-        Query queryEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
-        showEvents(queryEvents);
-
         adapter = new EventAdapter();
         event_list = (ListView) findViewById(R.id.event_listView);
         event_list.setAdapter(adapter);
@@ -82,27 +81,50 @@ public class InitActivity extends AppCompatActivity {
                 onUpdateEvent(pos);
             }
         });
+
+        artistEventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot artistEventsSnapshot) {
+                String[] keys = new String[(int) artistEventsSnapshot.getChildrenCount()];
+                int i=0;
+                for(DataSnapshot event : artistEventsSnapshot.getChildren()){
+                    keys[i] = event.getKey();
+                }
+                Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
+                showEvents(keys, queryFutureEvents);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
-    private void showEvents(Query queryEvents) {
+    private void showEvents(final String[] keys, Query queryEvents) {
         ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
                 String key = eventSnapshot.getKey();
-                String name = eventSnapshot.child("name").getValue().toString();
-                String place = eventSnapshot.child("place").getValue().toString();
-                Long init = (long) eventSnapshot.child("start").getValue();
-                Long end = (long) eventSnapshot.child("end").getValue();
-                if (eventSnapshot.child("room").exists()) {
-                    Log.i("info", "event Added with room");
-                    String room = eventSnapshot.child("room").getValue().toString();
-                    events.add(new Event(key,name, new Date(init), new Date(end), place, room));
-                } else {
-                    Log.i("info", "event Added");
-                    events.add(new Event(key,name, new Date(init), new Date(end), place));
+                for(int i=0; i<keys.length; i++){
+                    if(keys[i].equals(key)){
+                        String name = eventSnapshot.child("name").getValue().toString();
+                        String place = eventSnapshot.child("place").getValue().toString();
+                        Long init = (long) eventSnapshot.child("start").getValue();
+                        Long end = (long) eventSnapshot.child("end").getValue();
+                        if (eventSnapshot.child("room").exists()) {
+                            Log.i("info", "event Added with room");
+                            String room = eventSnapshot.child("room").getValue().toString();
+                            events.add(new Event(key,name, new Date(init), new Date(end), place, room));
+                        } else {
+                            Log.i("info", "event Added");
+                            events.add(new Event(key,name, new Date(init), new Date(end), place));
+                        }
+                        sortEvents();
+                        adapter.notifyDataSetChanged();
+                    }
                 }
-                sortEvents();
-                adapter.notifyDataSetChanged();
             }
 
             @Override
