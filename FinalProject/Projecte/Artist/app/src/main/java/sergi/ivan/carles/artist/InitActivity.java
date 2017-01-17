@@ -48,6 +48,7 @@ public class InitActivity extends AppCompatActivity {
     private EventAdapter adapter;
     private FirebaseDatabase database;
     private ChildEventListener ListenerDatabase;
+    private DatabaseReference artistEventRef;
 
 
     @Override
@@ -58,7 +59,7 @@ public class InitActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         final DatabaseReference eventRef = database.getReference(REF_EVENTS);
         final DatabaseReference songRef = database.getReference(REF_SONGS);
-        final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
+        artistEventRef = database.getReference(REF_ARTIST_EVENT);
 
         /*//Push some demo songs to firabase
         for(int i=0; i<20; i++){
@@ -81,17 +82,87 @@ public class InitActivity extends AppCompatActivity {
                 onUpdateEvent(pos);
             }
         });
+        Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
+        showEvents(queryFutureEvents);
 
+    }
+
+    private void showEvents(final Query queryEvents) {
         artistEventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot artistEventsSnapshot) {
-                String[] keys = new String[(int) artistEventsSnapshot.getChildrenCount()];
+                final String[] keys = new String[(int) artistEventsSnapshot.getChildrenCount()];
                 int i=0;
                 for(DataSnapshot event : artistEventsSnapshot.getChildren()){
                     keys[i] = event.getKey();
                 }
-                Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
-                showEvents(keys, queryFutureEvents);
+
+                ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
+                        String key = eventSnapshot.getKey();
+                        for(int i=0; i<keys.length; i++){
+                            if(key.equals(keys[i])){
+                                String name = eventSnapshot.child("name").getValue().toString();
+                                String place = eventSnapshot.child("place").getValue().toString();
+                                Long init = (long) eventSnapshot.child("start").getValue();
+                                Long end = (long) eventSnapshot.child("end").getValue();
+                                if (eventSnapshot.child("room").exists()) {
+                                    Log.i("info", "event Added with room");
+                                    String room = eventSnapshot.child("room").getValue().toString();
+                                    events.add(new Event(key,name, new Date(init), new Date(end), place, room));
+                                } else {
+                                    Log.i("info", "event Added");
+                                    events.add(new Event(key,name, new Date(init), new Date(end), place));
+                                }
+                                sortEvents();
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot eventSnapshot, String s) {
+                        String key = eventSnapshot.getKey();
+                        for(int i = 0; i<events.size(); i++){
+                            if(key.equals(events.get(i).getKey())){
+                                String name = eventSnapshot.child("name").getValue().toString();
+                                String place = eventSnapshot.child("place").getValue().toString();
+                                Long init = (long) eventSnapshot.child("start").getValue();
+                                Long end = (long) eventSnapshot.child("end").getValue();
+                                events.get(i).setName(name);
+                                events.get(i).setPlace(place);
+                                events.get(i).setStartDate(new Date(init));
+                                events.get(i).setEndDate(new Date(end));
+                                if (eventSnapshot.child("room").exists()) {
+                                    String room = eventSnapshot.child("room").getValue().toString();
+                                    events.get(i).setRoom(room);
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot eventSnapshot) {
+                        String key = eventSnapshot.getKey();
+                        for(int i = 0; i<events.size(); i++){
+                            if(key.equals(events.get(i).getKey())){
+                                events.remove(i);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+
+                });
             }
 
             @Override
@@ -100,75 +171,6 @@ public class InitActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void showEvents(final String[] keys, Query queryEvents) {
-        ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
-                String key = eventSnapshot.getKey();
-                for(int i=0; i<keys.length; i++){
-                    if(key.equals(keys[i])){
-                        String name = eventSnapshot.child("name").getValue().toString();
-                        String place = eventSnapshot.child("place").getValue().toString();
-                        Long init = (long) eventSnapshot.child("start").getValue();
-                        Long end = (long) eventSnapshot.child("end").getValue();
-                        if (eventSnapshot.child("room").exists()) {
-                            Log.i("info", "event Added with room");
-                            String room = eventSnapshot.child("room").getValue().toString();
-                            events.add(new Event(key,name, new Date(init), new Date(end), place, room));
-                        } else {
-                            Log.i("info", "event Added");
-                            events.add(new Event(key,name, new Date(init), new Date(end), place));
-                        }
-                        sortEvents();
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot eventSnapshot, String s) {
-                String key = eventSnapshot.getKey();
-                for(int i = 0; i<events.size(); i++){
-                    if(key.equals(events.get(i).getKey())){
-                        String name = eventSnapshot.child("name").getValue().toString();
-                        String place = eventSnapshot.child("place").getValue().toString();
-                        Long init = (long) eventSnapshot.child("start").getValue();
-                        Long end = (long) eventSnapshot.child("end").getValue();
-                        events.get(i).setName(name);
-                        events.get(i).setPlace(place);
-                        events.get(i).setStartDate(new Date(init));
-                        events.get(i).setEndDate(new Date(end));
-                        if (eventSnapshot.child("room").exists()) {
-                            String room = eventSnapshot.child("room").getValue().toString();
-                            events.get(i).setRoom(room);
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot eventSnapshot) {
-                String key = eventSnapshot.getKey();
-                for(int i = 0; i<events.size(); i++){
-                    if(key.equals(events.get(i).getKey())){
-                        events.remove(i);
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-
-        });
     }
 
     @Override
@@ -260,6 +262,8 @@ public class InitActivity extends AppCompatActivity {
                 artistEventRef.child(key).child("groupId"+String.valueOf(i)).setValue(groupKeys.get(i));
             }
         }
+        Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
+        showEvents(queryFutureEvents);
     }
 
     private class EventAdapter extends ArrayAdapter<Event> {
