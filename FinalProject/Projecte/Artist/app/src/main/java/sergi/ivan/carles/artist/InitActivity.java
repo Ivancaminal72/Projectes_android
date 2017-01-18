@@ -91,18 +91,18 @@ public class InitActivity extends AppCompatActivity {
         artistEventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot artistEventsSnapshot) {
-                final String[] keys = new String[(int) artistEventsSnapshot.getChildrenCount()];
+                final String[] eventKeys = new String[(int) artistEventsSnapshot.getChildrenCount()];
                 int i=0;
                 for(DataSnapshot event : artistEventsSnapshot.getChildren()){
-                    keys[i] = event.getKey();
+                    eventKeys[i] = event.getKey();
                 }
 
                 ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
                         String key = eventSnapshot.getKey();
-                        for(int i=0; i<keys.length; i++){
-                            if(key.equals(keys[i])){
+                        for(int i=0; i<eventKeys.length; i++){
+                            if(key.equals(eventKeys[i])){
                                 String name = eventSnapshot.child("name").getValue().toString();
                                 String place = eventSnapshot.child("place").getValue().toString();
                                 Long init = (long) eventSnapshot.child("start").getValue();
@@ -258,9 +258,13 @@ public class InitActivity extends AppCompatActivity {
 
         if(data.hasExtra("groupKeys")){
             ArrayList<String> groupKeys = data.getStringArrayListExtra("groupKeys");
+            artistEventRef.child(key).removeValue();
             for(int i=0; i<groupKeys.size(); i++){
                 artistEventRef.child(key).child("groupId"+String.valueOf(i)).setValue(groupKeys.get(i));
             }
+        }else{
+            artistEventRef.child(key).removeValue();
+            artistEventRef.child(key).setValue(false);
         }
         Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
         showEvents(queryFutureEvents);
