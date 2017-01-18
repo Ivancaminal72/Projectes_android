@@ -198,6 +198,10 @@ public class InitActivity extends AppCompatActivity {
         if(room != null){
             intent.putExtra("room", room);
         }
+        ArrayList<String> groupIds = event.getGroupIds();
+        if(groupIds != null){
+            intent.putExtra("groupIds", groupIds);
+        }
         startActivityForResult(intent, UPDATE_EVENT);
     }
 
@@ -217,22 +221,115 @@ public class InitActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         database = FirebaseDatabase.getInstance();
         final DatabaseReference eventRef = database.getReference(REF_EVENTS);
+        final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
                     String id = eventRef.push().getKey();
-                    sendEventToFirebase(data, eventRef, id);
+                    String name = data.getStringExtra("name");
+                    String place = data.getStringExtra("place");
+                    Long init = data.getLongExtra("start", currentTimeMillis());
+                    Long end = data.getLongExtra("end", currentTimeMillis());
+                    Event event = new Event(id,name,new Date(init),new Date(end),place);
+
+                    eventRef.child(id).child("start").setValue(init);
+                    eventRef.child(id).child("place").setValue(place);
+                    eventRef.child(id).child("name").setValue(name);
+                    eventRef.child(id).child("end").setValue(end);
+
+                    if(data.hasExtra("room")){
+                        String room = data.getStringExtra("room");
+                        eventRef.child(id).child("room").setValue(room);
+                        event.setRoom(room);
+                    }
+
+                    if(data.hasExtra("groupIds")){
+                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                        for(int i=0; i<groupIds.size(); i++){
+                            artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
+                        }
+                        event.setGroupIds(groupIds);
+                    }else{
+                        artistEventRef.child(id).setValue(false);
+                    }
+                    events.add(event);
+                    sortEvents();
+                    adapter.notifyDataSetChanged();
                 }
                 break;
             case UPDATE_EVENT:
                 if(resultCode == RESULT_OK){
-                    Log.i("info", "UPDATE_EVENT HA ENTRADO");
                     String id = data.getStringExtra("id");
                     String delete = "delete";
-                    if(delete.equals(id.substring(0,6))){
+
+                    if(delete.equals(id.substring(0,6))){ //Case delete event
                         eventRef.child(id.substring(6)).removeValue();
-                    }else{
-                     sendEventToFirebase(data, eventRef, id);
+                        artistEventRef.child(id.substring(6)).removeValue();
+                        for(int i=0; i<events.size(); i++){
+                            if(id.equals(events.get(i).getId())){
+                                events.remove(i);
+                                break;
+                            }
+                        }
+                    }
+
+                    String name = data.getStringExtra("name");
+                    String place = data.getStringExtra("place");
+                    Long init = data.getLongExtra("start", currentTimeMillis());
+                    Long end = data.getLongExtra("end", currentTimeMillis());
+
+                    for(int i=0; i<events.size(); i++) {
+                        if (id.equals(events.get(i).getId())) {//Case update event
+                            Event oldEvent = events.get(i);
+                            Event updatedEvent = new Event(id, name, new Date(init), new Date(end), place);
+
+                            if(!oldEvent.getName().equals(updatedEvent.getName())){
+                                eventRef.child(id).child("name").setValue(name);
+                            }
+                            if(!oldEvent.getPlace().equals(updatedEvent.getPlace())){
+                                eventRef.child(id).child("place").setValue(place);
+                            }
+                            if(!oldEvent.getStartDate().equals(updatedEvent.getStartDate())){
+                                eventRef.child(id).child("start").setValue(init);
+                            }
+                            if(!oldEvent.getEndDate().equals(updatedEvent.getEndDate())){
+                                eventRef.child(id).child("end").setValue(end);
+                            }
+
+                            if (data.hasExtra("room")) {
+                                String room = data.getStringExtra("room");
+                                updatedEvent.setRoom(room);
+                                if(!room.equals(oldEvent.getRoom())){
+                                    eventRef.child(id).child("room").setValue(room);
+                                }
+                            }else{
+                                if(oldEvent.getRoom() != null){
+                                    eventRef.child(id).child("room").removeValue();
+                                }
+                            }
+                            if (data.hasExtra("groupIds")) {
+                                ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                                updatedEvent.setGroupIds(groupIds);
+                                if(!groupIds.equals(oldEvent.getGroupIds())){
+                                    if(groupIds != updatedEvent.getGroupIds()) {
+                                        artistEventRef.child(id).removeValue();
+                                        for(int j=0; j<groupIds.size(); j++){
+                                            artistEventRef.child(id).child("groupId"+String.valueOf(j)).setValue(groupIds.get(j));
+                                        }
+                                    }
+                                }
+                            }else{
+                                if(oldEvent.getGroupIds() != null){
+                                    artistEventRef.child(id).removeValue();
+                                    artistEventRef.child(id).setValue(false);
+                                }
+                            }
+                            events.remove(i);
+                            events.add(updatedEvent);
+                            sortEvents();
+                            adapter.notifyDataSetChanged();
+                            break;
+                        }
                     }
                 }
                 break;
@@ -241,39 +338,6 @@ public class InitActivity extends AppCompatActivity {
                 super.onActivityResult(requestCode, resultCode, data);
         }
 
-    }
-
-    private void sendEventToFirebase(Intent data, DatabaseReference eventRef, String id) {
-        if(database == null){FirebaseDatabase.getInstance();}
-        final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
-
-        String name = data.getStringExtra("name");
-        String place = data.getStringExtra("place");
-        Long init = data.getLongExtra("start", currentTimeMillis());
-        Long end = data.getLongExtra("end", currentTimeMillis());
-
-        eventRef.child(id).child("start").setValue(init);
-        eventRef.child(id).child("place").setValue(place);
-        eventRef.child(id).child("name").setValue(name);
-        eventRef.child(id).child("end").setValue(end);
-
-        if(data.hasExtra("room")){
-            String room = data.getStringExtra("room");
-            eventRef.child(id).child("room").setValue(room);
-        }
-
-        if(data.hasExtra("groupIds")){
-            ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-            artistEventRef.child(id).removeValue();
-            for(int i=0; i<groupIds.size(); i++){
-                artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
-            }
-        }else{
-            artistEventRef.child(id).removeValue();
-            artistEventRef.child(id).setValue(false);
-        }
-        Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
-        showEvents(queryFutureEvents);
     }
 
     private class EventAdapter extends ArrayAdapter<Event> {

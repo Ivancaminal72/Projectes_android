@@ -54,6 +54,24 @@ public class EventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event);
         durationEvent = 10800000;
 
+        edit_name = (EditText) findViewById(R.id.edit_name);
+        edit_place = (EditText) findViewById(R.id.edit_place);
+        edit_room = (EditText) findViewById(R.id.edit_room);
+        btn_end_date = (Button) findViewById(R.id.btn_end_date);
+        btn_end_time = (Button) findViewById(R.id.btn_end_time);
+        btn_start_date = (Button) findViewById(R.id.btn_start_date);
+        btn_start_time = (Button) findViewById(R.id.btn_start_time);
+        ListView group_listview = (ListView) findViewById(R.id.group_listView);
+
+        groupIds = new ArrayList<>();
+        groupNames = new ArrayList<>();
+        adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                groupNames
+        );
+        group_listview.setAdapter(adapter);
+
         Intent intent = getIntent();
         init = new Date(intent.getLongExtra("start", currentTimeMillis()));
         end = new Date(intent.getLongExtra("end", currentTimeMillis() + durationEvent));
@@ -72,23 +90,6 @@ public class EventActivity extends AppCompatActivity {
         } else {
             getSupportActionBar().setTitle(R.string.new_event);
         }
-        edit_name = (EditText) findViewById(R.id.edit_name);
-        edit_place = (EditText) findViewById(R.id.edit_place);
-        edit_room = (EditText) findViewById(R.id.edit_room);
-        btn_end_date = (Button) findViewById(R.id.btn_end_date);
-        btn_end_time = (Button) findViewById(R.id.btn_end_time);
-        btn_start_date = (Button) findViewById(R.id.btn_start_date);
-        btn_start_time = (Button) findViewById(R.id.btn_start_time);
-        ListView group_listview = (ListView) findViewById(R.id.group_listView);
-
-        groupIds = new ArrayList<>();
-        groupNames = new ArrayList<>();
-        adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_list_item_1,
-                groupNames
-        );
-        group_listview.setAdapter(adapter);
 
         btn_start_date.setText(init.getDate() + "/" + (init.getMonth() + 1) + "/" + (init.getYear() + 1900));
         btn_end_date.setText(end.getDate() + "/" + (end.getMonth() + 1) + "/" + (end.getYear() + 1900));
@@ -302,9 +303,11 @@ public class EventActivity extends AppCompatActivity {
         switch (requestCode) {
             case ADD_GROUPS:
                 if (resultCode == RESULT_OK) {
-                    ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
-                    groupIds.addAll(Ids);
-                    getGroupsFromFirebase();
+                    if(data.hasExtra("groupIds")){
+                        ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
+                        groupIds.addAll(Ids);
+                        getGroupsFromFirebase();
+                    }
                 }
                 break;
             default:
