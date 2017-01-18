@@ -91,30 +91,37 @@ public class InitActivity extends AppCompatActivity {
         artistEventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot artistEventsSnapshot) {
-                final String[] eventKeys = new String[(int) artistEventsSnapshot.getChildrenCount()];
-                int i=0;
+                final ArrayList<String> eventKeys = new ArrayList<>();
+                final ArrayList<ArrayList<String>> eventGroupIds = new ArrayList<>();
                 for(DataSnapshot event : artistEventsSnapshot.getChildren()){
-                    eventKeys[i] = event.getKey();
+                    eventKeys.add(event.getKey());
+                    ArrayList<String> groupIds = new ArrayList<>();
+                    if(event.hasChildren()){
+                        for(DataSnapshot id : event.getChildren()){
+                            groupIds.add(id.getValue().toString());
+                        }
+                    }
+                    eventGroupIds.add(groupIds);
                 }
 
                 ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
                         String key = eventSnapshot.getKey();
-                        for(int i=0; i<eventKeys.length; i++){
-                            if(key.equals(eventKeys[i])){
+                        for(int i=0; i<eventKeys.size(); i++){
+                            if(key.equals(eventKeys.get(i))){
                                 String name = eventSnapshot.child("name").getValue().toString();
                                 String place = eventSnapshot.child("place").getValue().toString();
                                 Long init = (long) eventSnapshot.child("start").getValue();
                                 Long end = (long) eventSnapshot.child("end").getValue();
+                                Event event = new Event(key,name, new Date(init), new Date(end), place);
                                 if (eventSnapshot.child("room").exists()) {
-                                    Log.i("info", "event Added with room");
-                                    String room = eventSnapshot.child("room").getValue().toString();
-                                    events.add(new Event(key,name, new Date(init), new Date(end), place, room));
-                                } else {
-                                    Log.i("info", "event Added");
-                                    events.add(new Event(key,name, new Date(init), new Date(end), place));
+                                    event.setRoom(eventSnapshot.child("room").getValue().toString());
                                 }
+                                if(eventGroupIds.get(i).size() > 0){
+                                    event.setGroupIds(eventGroupIds.get(i));
+                                }
+                                events.add(event);
                                 sortEvents();
                                 adapter.notifyDataSetChanged();
                             }

@@ -20,15 +20,6 @@ public class Event {
         this.place = place;
     }
 
-    public Event(String key, String name, Date startDate, Date endDate, String place, String room) {
-        this.key = key;
-
-        this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.place = place;
-        this.room = room;
-    }
 
     public String getKey() {return key;}
 
@@ -53,11 +44,6 @@ public class Event {
     }
 
     public ArrayList<String> getGroupIds() {
-        return groupIds;
-    }
-
-    public ArrayList<String> addgroup(String id){
-        this.groupIds.add(id);
         return groupIds;
     }
 
@@ -87,4 +73,6 @@ public class Event {
     public void setRoom(String room) {
         this.room = room;
     }
+
+    public void setGroupIds(ArrayList<String> groupIds) {this.groupIds = groupIds;}
 }

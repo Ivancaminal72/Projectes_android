@@ -269,7 +269,7 @@ public class EventActivity extends AppCompatActivity {
         groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot groupsSnapshot) {
-                ArrayList<Group> groups = new ArrayList<Group>();
+                ArrayList<Group> groups = new ArrayList<>();
                 for (DataSnapshot group : groupsSnapshot.getChildren()) {
                     String key = group.getKey();
                     String name = group.child("name").getValue().toString();
@@ -283,7 +283,6 @@ public class EventActivity extends AppCompatActivity {
                 }
                 groupNames.clear();
                 groupNames.addAll(getEventGroupNames(groups));
-                Log.i("info", groupNames.get(0).toString());
                 adapter.notifyDataSetChanged();
             }
 
