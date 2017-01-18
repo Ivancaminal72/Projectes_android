@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,7 @@ public class AddGroupActivity extends AppCompatActivity {
     private EditText edit_group_name;
     private FirebaseDatabase database;
     private SongAdapter adapter;
-    private ArrayList<String> groupKeys;
+    private ArrayList<String> groupIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,7 @@ public class AddGroupActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         final DatabaseReference songRef = database.getReference(REF_SONGS);
         final DatabaseReference groupRef = database.getReference(REF_GROUPS);
-        groupKeys = new ArrayList<>();
+        groupIds = new ArrayList<>();
 
         //Intent intent = getIntent();
         edit_group_name = (EditText) findViewById(R.id.edit_group_name);
@@ -132,13 +131,13 @@ public class AddGroupActivity extends AppCompatActivity {
     }
 
     private void sendGroupToFirebase(int[] pos, String groupName, DatabaseReference groupRef) {
-        String key = groupRef.push().getKey();
+        String id = groupRef.push().getKey();
         for(int i=0; i<GROUP_MAX_SIZE; i++){
-            groupRef.child(key).child("songIds").child("id"+String.valueOf(i+1))
+            groupRef.child(id).child("songIds").child("id"+String.valueOf(i+1))
                     .setValue(songs.get(pos[i]).getId());
         }
-        groupRef.child(key).child("name").setValue(groupName);
-        groupKeys.add(key);
+        groupRef.child(id).child("name").setValue(groupName);
+        groupIds.add(id);
 
         //Toast to inform correct group generation
         Toast.makeText(
@@ -150,9 +149,9 @@ public class AddGroupActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.i("info", "Back button pressed");
-        if(groupKeys.size() > 0){
+        if(groupIds.size() > 0){
             Intent data = new Intent();
-            data.putExtra("groupKeys", groupKeys);
+            data.putExtra("groupIds", groupIds);
             setResult(RESULT_OK, data);
         }else{
             setResult(RESULT_CANCELED);

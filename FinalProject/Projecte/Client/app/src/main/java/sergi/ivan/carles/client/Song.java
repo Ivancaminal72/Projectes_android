@@ -1,8 +1,5 @@
 package sergi.ivan.carles.client;
 
-/**
- * Created by Carles on 11/12/2016.
- */
 
 public class Song {
     private int groupPosition;

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
 import static sergi.ivan.carles.artist.InitActivity.REF_GROUPS;
@@ -44,9 +42,9 @@ public class EventActivity extends AppCompatActivity {
     private Button btn_start_time;
     private Date init;
     private Date end;
-    private String key;
+    private String id;
     private long durationEvent;
-    private ArrayList<String> groupKeys;
+    private ArrayList<String> groupIds;
     private ArrayList<String> groupNames;
     private ArrayAdapter<String> adapter;
 
@@ -59,16 +57,16 @@ public class EventActivity extends AppCompatActivity {
         Intent intent = getIntent();
         init = new Date(intent.getLongExtra("start", currentTimeMillis()));
         end = new Date(intent.getLongExtra("end", currentTimeMillis() + durationEvent));
-        if (intent.hasExtra("key")) {
+        if (intent.hasExtra("id")) {
             getSupportActionBar().setTitle(R.string.modify_event);
-            key = intent.getStringExtra("key");
+            id = intent.getStringExtra("id");
             edit_name.setText(intent.getStringExtra("name"));
             edit_place.setText(intent.getStringExtra("place"));
             if (intent.hasExtra("room")) {
                 edit_room.setText((intent.getStringExtra("room")));
             }
-            if (intent.hasExtra("groupKeys")) {
-                groupKeys = intent.getStringArrayListExtra("groupKeys");
+            if (intent.hasExtra("groupIds")) {
+                groupIds = intent.getStringArrayListExtra("groupIds");
                 getGroupsFromFirebase();
             }
         } else {
@@ -83,7 +81,7 @@ public class EventActivity extends AppCompatActivity {
         btn_start_time = (Button) findViewById(R.id.btn_start_time);
         ListView group_listview = (ListView) findViewById(R.id.group_listView);
 
-        groupKeys = new ArrayList<>();
+        groupIds = new ArrayList<>();
         groupNames = new ArrayList<>();
         adapter = new ArrayAdapter<>(
                 this,
@@ -163,14 +161,14 @@ public class EventActivity extends AppCompatActivity {
                     data.putExtra("place", place);
                     data.putExtra("start", init.getTime());
                     data.putExtra("end", end.getTime());
-                    if (key != null) {
-                        data.putExtra("key", key);
+                    if (id != null) {
+                        data.putExtra("id", id);
                     }
                     if (room.length() > 0) {
                         data.putExtra("room", room);
                     }
-                    if (groupKeys.size() > 0) {
-                        data.putExtra("groupKeys", groupKeys);
+                    if (groupIds.size() > 0) {
+                        data.putExtra("groupIds", groupIds);
                     }
                     setResult(RESULT_OK, data);
                     finish();
@@ -179,8 +177,8 @@ public class EventActivity extends AppCompatActivity {
 
             case R.id.delete_event:
                 Intent data = new Intent();
-                if (key != null) {
-                    data.putExtra("key", "delete" + key);
+                if (id != null) {
+                    data.putExtra("id", "delete" + id);
                     setResult(RESULT_OK, data);
                     finish();
                     return true;
@@ -253,8 +251,8 @@ public class EventActivity extends AppCompatActivity {
     private ArrayList<String> getEventGroupNames(ArrayList<Group> groups) {
         ArrayList<String> group_names = new ArrayList<>();
         for (int i = 0; i < groups.size(); i++) {
-            for (int j = 0; j < groupKeys.size(); j++) {
-                if (groups.get(i).getKey().equals(groupKeys.get(j))) {
+            for (int j = 0; j < groupIds.size(); j++) {
+                if (groups.get(i).getId().equals(groupIds.get(j))) {
                     group_names.add(groups.get(i).getName());
                 }
             }
@@ -271,15 +269,15 @@ public class EventActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot groupsSnapshot) {
                 ArrayList<Group> groups = new ArrayList<>();
                 for (DataSnapshot group : groupsSnapshot.getChildren()) {
-                    String key = group.getKey();
+                    String groupId = group.getKey();
                     String name = group.child("name").getValue().toString();
-                    String[] Ids = new String[(int) group.child("songIds").getChildrenCount()];
+                    String[] songIds = new String[(int) group.child("songIds").getChildrenCount()];
                     int i = 0;
-                    for (DataSnapshot id : group.child("songIds").getChildren()) {
-                        Ids[i] = id.getValue().toString();
+                    for (DataSnapshot songId : group.child("songIds").getChildren()) {
+                        songIds[i] = songId.getValue().toString();
                         i++;
                     }
-                    groups.add(new Group(key, name, Ids));
+                    groups.add(new Group(groupId, name, songIds));
                 }
                 groupNames.clear();
                 groupNames.addAll(getEventGroupNames(groups));
@@ -304,8 +302,8 @@ public class EventActivity extends AppCompatActivity {
         switch (requestCode) {
             case ADD_GROUPS:
                 if (resultCode == RESULT_OK) {
-                    ArrayList<String> Keys = data.getStringArrayListExtra("groupKeys");
-                    groupKeys.addAll(Keys);
+                    ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
+                    groupIds.addAll(Ids);
                     getGroupsFromFirebase();
                 }
                 break;

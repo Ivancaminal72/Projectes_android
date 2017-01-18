@@ -98,8 +98,8 @@ public class ActualEventActivity extends AppCompatActivity {
         //Random voting groups generation
         groups = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            String[] songkeys = new String[]{String.valueOf(i+1), String.valueOf(i+2), String.valueOf(i+3), String.valueOf(i+4)};
-            groups.add(new Group("patata",getResources().getString(R.string.group_to_select)+String.format(" %d", i), songkeys));
+            String[] songIds = new String[]{String.valueOf(i+1), String.valueOf(i+2), String.valueOf(i+3), String.valueOf(i+4)};
+            groups.add(new Group("patata",getResources().getString(R.string.group_to_select)+String.format(" %d", i), songIds));
         }
 
         //Set layout

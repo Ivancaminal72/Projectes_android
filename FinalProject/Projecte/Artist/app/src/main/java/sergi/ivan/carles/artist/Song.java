@@ -1,8 +1,5 @@
 package sergi.ivan.carles.artist;
 
-/**
- * Created by Ivan on 06/12/2016.
- */
 
 public class Song {
     private String id;

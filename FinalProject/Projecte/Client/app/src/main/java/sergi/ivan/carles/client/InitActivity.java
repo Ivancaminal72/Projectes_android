@@ -60,7 +60,7 @@ public class InitActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
                 if(events.get(pos).getStartDate().getTime() <= currentTimeMillis()){
                     Intent intent = new Intent(InitActivity.this, ActualEventActivity.class);
-                    intent.putExtra("key", events.get(pos).getKey());
+                    intent.putExtra("id", events.get(pos).getId());
                     startActivity(intent);
                 }
                 else{
@@ -82,7 +82,7 @@ public class InitActivity extends AppCompatActivity {
         ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
-                String key = eventSnapshot.getKey();
+                String id = eventSnapshot.getKey();
                 String name = eventSnapshot.child("name").getValue().toString();
                 String place = eventSnapshot.child("place").getValue().toString();
                 Long init = (long) eventSnapshot.child("start").getValue();
@@ -90,10 +90,10 @@ public class InitActivity extends AppCompatActivity {
                 if (eventSnapshot.child("room").exists()) {
                     Log.i("info", "event Added with room");
                     String room = eventSnapshot.child("room").getValue().toString();
-                    events.add(new Event(key,name, new Date(init), new Date(end), place, room));
+                    events.add(new Event(id,name, new Date(init), new Date(end), place, room));
                 } else {
                     Log.i("info", "event Added");
-                    events.add(new Event(key,name, new Date(init), new Date(end), place));
+                    events.add(new Event(id,name, new Date(init), new Date(end), place));
                 }
                 sortEvents();
                 adapter.notifyDataSetChanged();
@@ -101,9 +101,9 @@ public class InitActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot eventSnapshot, String s) {
-                String key = eventSnapshot.getKey();
+                String id = eventSnapshot.getKey();
                 for(int i = 0; i<events.size(); i++){
-                    if(key.equals(events.get(i).getKey())){
+                    if(id.equals(events.get(i).getId())){
                         String name = eventSnapshot.child("name").getValue().toString();
                         String place = eventSnapshot.child("place").getValue().toString();
                         Long init = (long) eventSnapshot.child("start").getValue();
@@ -123,9 +123,9 @@ public class InitActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot eventSnapshot) {
-                String key = eventSnapshot.getKey();
+                String id = eventSnapshot.getKey();
                 for(int i = 0; i<events.size(); i++){
-                    if(key.equals(events.get(i).getKey())){
+                    if(id.equals(events.get(i).getId())){
                         events.remove(i);
                         adapter.notifyDataSetChanged();
                     }

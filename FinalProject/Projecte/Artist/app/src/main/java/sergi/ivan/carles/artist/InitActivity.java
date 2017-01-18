@@ -29,7 +29,6 @@ import java.util.Comparator;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
-import static sergi.ivan.carles.artist.ActualEventActivity.GROUP_MAX_SIZE;
 
 
 public class InitActivity extends AppCompatActivity {
@@ -63,11 +62,11 @@ public class InitActivity extends AppCompatActivity {
 
         /*//Push some demo songs to firabase
         for(int i=0; i<20; i++){
-            String key = songRef.push().getKey();
+            String id = songRef.push().getKey();
             String name = "song"+i;
             String artist = "artist"+i;
-            songRef.child(key).child("name").setValue(name);
-            songRef.child(key).child("artist").setValue(artist);
+            songRef.child(id).child("name").setValue(name);
+            songRef.child(id).child("artist").setValue(artist);
         }*/
 
         //Load upcoming artist events
@@ -91,10 +90,10 @@ public class InitActivity extends AppCompatActivity {
         artistEventRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot artistEventsSnapshot) {
-                final ArrayList<String> eventKeys = new ArrayList<>();
+                final ArrayList<String> eventIds = new ArrayList<>();
                 final ArrayList<ArrayList<String>> eventGroupIds = new ArrayList<>();
                 for(DataSnapshot event : artistEventsSnapshot.getChildren()){
-                    eventKeys.add(event.getKey());
+                    eventIds.add(event.getKey());
                     ArrayList<String> groupIds = new ArrayList<>();
                     if(event.hasChildren()){
                         for(DataSnapshot id : event.getChildren()){
@@ -107,14 +106,14 @@ public class InitActivity extends AppCompatActivity {
                 ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
-                        String key = eventSnapshot.getKey();
-                        for(int i=0; i<eventKeys.size(); i++){
-                            if(key.equals(eventKeys.get(i))){
+                        String id = eventSnapshot.getKey();
+                        for(int i=0; i<eventIds.size(); i++){
+                            if(id.equals(eventIds.get(i))){
                                 String name = eventSnapshot.child("name").getValue().toString();
                                 String place = eventSnapshot.child("place").getValue().toString();
                                 Long init = (long) eventSnapshot.child("start").getValue();
                                 Long end = (long) eventSnapshot.child("end").getValue();
-                                Event event = new Event(key,name, new Date(init), new Date(end), place);
+                                Event event = new Event(id,name, new Date(init), new Date(end), place);
                                 if (eventSnapshot.child("room").exists()) {
                                     event.setRoom(eventSnapshot.child("room").getValue().toString());
                                 }
@@ -130,9 +129,9 @@ public class InitActivity extends AppCompatActivity {
 
                     @Override
                     public void onChildChanged(DataSnapshot eventSnapshot, String s) {
-                        String key = eventSnapshot.getKey();
+                        String id = eventSnapshot.getKey();
                         for(int i = 0; i<events.size(); i++){
-                            if(key.equals(events.get(i).getKey())){
+                            if(id.equals(events.get(i).getId())){
                                 String name = eventSnapshot.child("name").getValue().toString();
                                 String place = eventSnapshot.child("place").getValue().toString();
                                 Long init = (long) eventSnapshot.child("start").getValue();
@@ -152,9 +151,9 @@ public class InitActivity extends AppCompatActivity {
 
                     @Override
                     public void onChildRemoved(DataSnapshot eventSnapshot) {
-                        String key = eventSnapshot.getKey();
+                        String id = eventSnapshot.getKey();
                         for(int i = 0; i<events.size(); i++){
-                            if(key.equals(events.get(i).getKey())){
+                            if(id.equals(events.get(i).getId())){
                                 events.remove(i);
                                 adapter.notifyDataSetChanged();
                             }
@@ -190,7 +189,7 @@ public class InitActivity extends AppCompatActivity {
     private void onUpdateEvent(int pos) {
         Event event = events.get(pos);
         Intent intent = new Intent(this, EventActivity.class);
-        intent.putExtra("key", event.getKey());
+        intent.putExtra("id", event.getId());
         intent.putExtra("name", event.getName());
         intent.putExtra("start", event.getStartDate().getTime());
         intent.putExtra("end", event.getEndDate().getTime());
@@ -221,19 +220,19 @@ public class InitActivity extends AppCompatActivity {
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
-                    String key = eventRef.push().getKey();
-                    sendEventToFirebase(data, eventRef, key);
+                    String id = eventRef.push().getKey();
+                    sendEventToFirebase(data, eventRef, id);
                 }
                 break;
             case UPDATE_EVENT:
                 if(resultCode == RESULT_OK){
                     Log.i("info", "UPDATE_EVENT HA ENTRADO");
-                    String key = data.getStringExtra("key");
+                    String id = data.getStringExtra("id");
                     String delete = "delete";
-                    if(delete.equals(key.substring(0,6))){
-                        eventRef.child(key.substring(6)).removeValue();
+                    if(delete.equals(id.substring(0,6))){
+                        eventRef.child(id.substring(6)).removeValue();
                     }else{
-                     sendEventToFirebase(data, eventRef, key);
+                     sendEventToFirebase(data, eventRef, id);
                     }
                 }
                 break;
@@ -244,7 +243,7 @@ public class InitActivity extends AppCompatActivity {
 
     }
 
-    private void sendEventToFirebase(Intent data, DatabaseReference eventRef, String key) {
+    private void sendEventToFirebase(Intent data, DatabaseReference eventRef, String id) {
         if(database == null){FirebaseDatabase.getInstance();}
         final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
 
@@ -253,25 +252,25 @@ public class InitActivity extends AppCompatActivity {
         Long init = data.getLongExtra("start", currentTimeMillis());
         Long end = data.getLongExtra("end", currentTimeMillis());
 
-        eventRef.child(key).child("start").setValue(init);
-        eventRef.child(key).child("place").setValue(place);
-        eventRef.child(key).child("name").setValue(name);
-        eventRef.child(key).child("end").setValue(end);
+        eventRef.child(id).child("start").setValue(init);
+        eventRef.child(id).child("place").setValue(place);
+        eventRef.child(id).child("name").setValue(name);
+        eventRef.child(id).child("end").setValue(end);
 
         if(data.hasExtra("room")){
             String room = data.getStringExtra("room");
-            eventRef.child(key).child("room").setValue(room);
+            eventRef.child(id).child("room").setValue(room);
         }
 
-        if(data.hasExtra("groupKeys")){
-            ArrayList<String> groupKeys = data.getStringArrayListExtra("groupKeys");
-            artistEventRef.child(key).removeValue();
-            for(int i=0; i<groupKeys.size(); i++){
-                artistEventRef.child(key).child("groupId"+String.valueOf(i)).setValue(groupKeys.get(i));
+        if(data.hasExtra("groupIds")){
+            ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+            artistEventRef.child(id).removeValue();
+            for(int i=0; i<groupIds.size(); i++){
+                artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
             }
         }else{
-            artistEventRef.child(key).removeValue();
-            artistEventRef.child(key).setValue(false);
+            artistEventRef.child(id).removeValue();
+            artistEventRef.child(id).setValue(false);
         }
         Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
         showEvents(queryFutureEvents);
