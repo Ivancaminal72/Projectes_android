@@ -188,21 +188,28 @@ public class InitActivity extends AppCompatActivity {
 
     private void onUpdateEvent(int pos) {
         Event event = events.get(pos);
-        Intent intent = new Intent(this, EventActivity.class);
-        intent.putExtra("id", event.getId());
-        intent.putExtra("name", event.getName());
-        intent.putExtra("start", event.getStartDate().getTime());
-        intent.putExtra("end", event.getEndDate().getTime());
-        intent.putExtra("place", event.getPlace());
-        String room = event.getRoom();
-        if(room != null){
-            intent.putExtra("room", room);
+        if(event.getStartDate().getTime() <= currentTimeMillis()){
+            Intent intent = new Intent(this,ActualEventActivity.class);
+            intent.putStringArrayListExtra("groupIds", event.getGroupIds());
+            startActivity(intent);
         }
-        ArrayList<String> groupIds = event.getGroupIds();
-        if(groupIds != null){
-            intent.putExtra("groupIds", groupIds);
+        else {
+            Intent intent = new Intent(this, EventActivity.class);
+            intent.putExtra("id", event.getId());
+            intent.putExtra("name", event.getName());
+            intent.putExtra("start", event.getStartDate().getTime());
+            intent.putExtra("end", event.getEndDate().getTime());
+            intent.putExtra("place", event.getPlace());
+            String room = event.getRoom();
+            if (room != null) {
+                intent.putExtra("room", room);
+            }
+            ArrayList<String> groupIds = event.getGroupIds();
+            if (groupIds != null) {
+                intent.putExtra("groupIds", groupIds);
+            }
+            startActivityForResult(intent, UPDATE_EVENT);
         }
-        startActivityForResult(intent, UPDATE_EVENT);
     }
 
     @Override

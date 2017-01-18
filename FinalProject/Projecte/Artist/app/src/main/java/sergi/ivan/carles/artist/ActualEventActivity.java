@@ -1,6 +1,7 @@
 package sergi.ivan.carles.artist;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +15,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 
@@ -38,6 +41,7 @@ public class ActualEventActivity extends AppCompatActivity {
     public static final String END_VOTE_TIME = "endVoteTime";
     public static final String POS_ACT_GROUP = "pos_act";
     public static final String POS_GROUP_SELECTED = "position_group_selected";
+    public static final String REF_GROUPS = "groups";
     private long OFFSET_MILLIS_VOTE = 3600000; //Default time 15 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
@@ -311,10 +315,23 @@ public class ActualEventActivity extends AppCompatActivity {
 
 
     private ArrayList<String> getGroupsNames() {
-        ArrayList<String> group_names = new ArrayList<>();
-        for(int i =0; i<groups.size(); i++){
-            group_names.add(groups.get(i).getName());
-        }
+        database = FirebaseDatabase.getInstance();
+        final DatabaseReference groupRef = database.getReference(REF_GROUPS);
+        Intent intent = getIntent();
+        final ArrayList<String> group_names = new ArrayList<>();
+        final ArrayList<String> group_ids = intent.getStringArrayListExtra("groupIds");
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot groupsSnapshot) {
+                for (int i = 0; i < group_ids.size(); i++) {
+                    group_names.add(groupsSnapshot.child(group_ids.get(i)).child("name").getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
         return group_names;
     }
 
