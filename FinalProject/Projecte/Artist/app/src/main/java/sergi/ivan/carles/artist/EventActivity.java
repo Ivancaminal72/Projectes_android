@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -315,4 +316,16 @@ public class EventActivity extends AppCompatActivity {
                 super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        Log.i("info", "Back button pressed");
+        if(groupIds.size() > 0){
+            Intent data = new Intent();
+            data.putExtra("groupIds", groupIds);
+            setResult(RESULT_CANCELED, data);
+        }
+        super.onBackPressed();
+    }
+
 }

@@ -38,6 +38,7 @@ public class InitActivity extends AppCompatActivity {
     public static final int MILLIS_MINUTE = 60000;
     public static final int NEW_EVENT = 0;
     public static final int UPDATE_EVENT = 1;
+    public static final int DISCARD_EVENT = 2;
     public static final String REF_ARTIST_EVENT = "artist_events";
     public static final String REF_EVENTS = "events";
     public static final String REF_GROUPS = "groups";
@@ -222,6 +223,7 @@ public class InitActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         final DatabaseReference eventRef = database.getReference(REF_EVENTS);
         final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
+        final DatabaseReference groupRef = database.getReference(REF_GROUPS);
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
@@ -247,6 +249,7 @@ public class InitActivity extends AppCompatActivity {
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
                         for(int i=0; i<groupIds.size(); i++){
                             artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
+                            groupRef.child(groupIds.get(i)).child("eventId").setValue(id);
                         }
                         event.setGroupIds(groupIds);
                     }else{
@@ -255,6 +258,14 @@ public class InitActivity extends AppCompatActivity {
                     events.add(event);
                     sortEvents();
                     adapter.notifyDataSetChanged();
+                }
+                else if(resultCode == RESULT_CANCELED) {
+                    if (data.hasExtra("groupIds")) {
+                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                        for (int i = 0; i < groupIds.size(); i++) {
+                            groupRef.child(groupIds.get(i)).removeValue();
+                        }
+                    }
                 }
                 break;
             case UPDATE_EVENT:
