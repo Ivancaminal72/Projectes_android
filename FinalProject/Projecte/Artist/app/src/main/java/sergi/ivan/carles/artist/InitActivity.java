@@ -38,7 +38,6 @@ public class InitActivity extends AppCompatActivity {
     public static final int MILLIS_MINUTE = 60000;
     public static final int NEW_EVENT = 0;
     public static final int UPDATE_EVENT = 1;
-    public static final int DISCARD_EVENT = 2;
     public static final String REF_ARTIST_EVENT = "artist_events";
     public static final String REF_EVENTS = "events";
     public static final String REF_GROUPS = "groups";
@@ -249,7 +248,7 @@ public class InitActivity extends AppCompatActivity {
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
                         for(int i=0; i<groupIds.size(); i++){
                             artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
-                            groupRef.child(groupIds.get(i)).child("eventId").setValue(id);
+                            groupRef.child(groupIds.get(i)).child("eventIds").child(id).setValue(true);
                         }
                         event.setGroupIds(groupIds);
                     }else{
@@ -271,77 +270,86 @@ public class InitActivity extends AppCompatActivity {
             case UPDATE_EVENT:
                 if(resultCode == RESULT_OK){
                     String id = data.getStringExtra("id");
-                    String delete = "delete";
+                    int pos=-1;
+                    for(int i=0; i<events.size(); i++) {
+                        if (id.equals(events.get(i).getId())) {
+                            pos=i;
+                        }
+                    }
+                    if(pos==-1){Log.e("info", "UPDATE_CASE old event not found");}
+                    Event oldEvent = events.get(pos);
 
-                    if(delete.equals(id.substring(0,6))){ //Case delete event
-                        eventRef.child(id.substring(6)).removeValue();
-                        artistEventRef.child(id.substring(6)).removeValue();
-                        for(int i=0; i<events.size(); i++){
-                            if(id.equals(events.get(i).getId())){
-                                events.remove(i);
-                                break;
+                    if(data.hasExtra("delete")){ //Case delete event
+                        eventRef.child(id).removeValue();
+                        artistEventRef.child(id).removeValue();
+
+                        if (data.hasExtra("groupIds")) {
+                            ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                            for (int i = 0; i < groupIds.size(); i++) {
+                                groupRef.child(groupIds.get(i)).child("eventIds").child(id).removeValue();
+                            }
+                            //Todo: groupRef.addListenerForSingleValueEvent to delete events with no eventIds assigned
+                        }else{
+                            if(oldEvent.getGroupIds() != null){
+                                Log.e("info", "This case is not possible in the current version");
                             }
                         }
+                        events.remove(pos);
+                        adapter.notifyDataSetChanged();
+                        break;
                     }
 
                     String name = data.getStringExtra("name");
                     String place = data.getStringExtra("place");
                     Long init = data.getLongExtra("start", currentTimeMillis());
                     Long end = data.getLongExtra("end", currentTimeMillis());
+                    Event updatedEvent = new Event(id, name, new Date(init), new Date(end), place);//Case update event
 
-                    for(int i=0; i<events.size(); i++) {
-                        if (id.equals(events.get(i).getId())) {//Case update event
-                            Event oldEvent = events.get(i);
-                            Event updatedEvent = new Event(id, name, new Date(init), new Date(end), place);
+                    if(!oldEvent.getName().equals(updatedEvent.getName())){
+                        eventRef.child(id).child("name").setValue(name);
+                    }
+                    if(!oldEvent.getPlace().equals(updatedEvent.getPlace())){
+                        eventRef.child(id).child("place").setValue(place);
+                    }
+                    if(!oldEvent.getStartDate().equals(updatedEvent.getStartDate())){
+                        eventRef.child(id).child("start").setValue(init);
+                    }
+                    if(!oldEvent.getEndDate().equals(updatedEvent.getEndDate())){
+                        eventRef.child(id).child("end").setValue(end);
+                    }
 
-                            if(!oldEvent.getName().equals(updatedEvent.getName())){
-                                eventRef.child(id).child("name").setValue(name);
-                            }
-                            if(!oldEvent.getPlace().equals(updatedEvent.getPlace())){
-                                eventRef.child(id).child("place").setValue(place);
-                            }
-                            if(!oldEvent.getStartDate().equals(updatedEvent.getStartDate())){
-                                eventRef.child(id).child("start").setValue(init);
-                            }
-                            if(!oldEvent.getEndDate().equals(updatedEvent.getEndDate())){
-                                eventRef.child(id).child("end").setValue(end);
-                            }
-
-                            if (data.hasExtra("room")) {
-                                String room = data.getStringExtra("room");
-                                updatedEvent.setRoom(room);
-                                if(!room.equals(oldEvent.getRoom())){
-                                    eventRef.child(id).child("room").setValue(room);
-                                }
-                            }else{
-                                if(oldEvent.getRoom() != null){
-                                    eventRef.child(id).child("room").removeValue();
-                                }
-                            }
-                            if (data.hasExtra("groupIds")) {
-                                ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                                updatedEvent.setGroupIds(groupIds);
-                                if(!groupIds.equals(oldEvent.getGroupIds())){
-                                    if(groupIds != updatedEvent.getGroupIds()) {
-                                        artistEventRef.child(id).removeValue();
-                                        for(int j=0; j<groupIds.size(); j++){
-                                            artistEventRef.child(id).child("groupId"+String.valueOf(j)).setValue(groupIds.get(j));
-                                        }
-                                    }
-                                }
-                            }else{
-                                if(oldEvent.getGroupIds() != null){
-                                    artistEventRef.child(id).removeValue();
-                                    artistEventRef.child(id).setValue(false);
-                                }
-                            }
-                            events.remove(i);
-                            events.add(updatedEvent);
-                            sortEvents();
-                            adapter.notifyDataSetChanged();
-                            break;
+                    if (data.hasExtra("room")) {
+                        String room = data.getStringExtra("room");
+                        updatedEvent.setRoom(room);
+                        if(!room.equals(oldEvent.getRoom())){
+                            eventRef.child(id).child("room").setValue(room);
+                        }
+                    }else{
+                        if(oldEvent.getRoom() != null){
+                            eventRef.child(id).child("room").removeValue();
                         }
                     }
+                    if (data.hasExtra("groupIds")) {
+                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                        updatedEvent.setGroupIds(groupIds);
+                        if(!groupIds.equals(oldEvent.getGroupIds())){
+                            if(groupIds != updatedEvent.getGroupIds()) {
+                                artistEventRef.child(id).removeValue();
+                                for(int j=0; j<groupIds.size(); j++){
+                                    artistEventRef.child(id).child("groupId"+String.valueOf(j)).setValue(groupIds.get(j));
+                                }
+                            }
+                        }
+                    }else{
+                        if(oldEvent.getGroupIds() != null){
+                            Log.e("info", "This case is not possible in the current version");
+                        }
+                    }
+
+                    events.remove(pos);
+                    events.add(updatedEvent);
+                    sortEvents();
+                    adapter.notifyDataSetChanged();
                 }
                 break;
 

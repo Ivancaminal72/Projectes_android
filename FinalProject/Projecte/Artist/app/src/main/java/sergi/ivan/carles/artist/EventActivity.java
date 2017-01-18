@@ -180,7 +180,11 @@ public class EventActivity extends AppCompatActivity {
             case R.id.delete_event:
                 Intent data = new Intent();
                 if (id != null) {
-                    data.putExtra("id", "delete" + id);
+                    data.putExtra("delete", true);
+                    data.putExtra("id", id);
+                    if (groupIds.size() > 0) {
+                        data.putExtra("groupIds", groupIds);
+                    }
                     setResult(RESULT_OK, data);
                     finish();
                     return true;
