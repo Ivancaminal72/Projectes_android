@@ -295,6 +295,7 @@ public class EventActivity extends AppCompatActivity {
 
     private void newGroup() {
         Intent intent = new Intent(this, AddGroupActivity.class);
+        intent.putExtra("id", id);
         startActivityForResult(intent, ADD_GROUPS);
     }
 

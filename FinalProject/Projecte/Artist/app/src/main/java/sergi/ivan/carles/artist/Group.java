@@ -1,5 +1,7 @@
 package sergi.ivan.carles.artist;
 
+import java.util.ArrayList;
+
 import static java.lang.System.arraycopy;
 import static sergi.ivan.carles.artist.ActualEventActivity.GROUP_MAX_SIZE;
 
@@ -8,6 +10,7 @@ public class Group {
     private String Id;
     private String name;
     private String [] songIds;
+    private ArrayList<String> eventIds;
     private long [] points;
 
     public Group(String id, String name, String[] songIds) {
@@ -34,4 +37,7 @@ public class Group {
         return points;
     }
 
+    public ArrayList<String> getEventIds() {return eventIds;}
+
+    public void setEventIds(ArrayList<String> eventIds) {this.eventIds = eventIds;}
 }
