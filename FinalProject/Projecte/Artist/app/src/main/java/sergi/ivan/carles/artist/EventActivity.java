@@ -300,7 +300,9 @@ public class EventActivity extends AppCompatActivity {
 
     private void newGroup() {
         Intent intent = new Intent(this, AddGroupActivity.class);
-        intent.putExtra("eventId", eventId);
+        if(eventId != null){
+            intent.putExtra("eventId", eventId);
+        }
         startActivityForResult(intent, ADD_GROUPS);
     }
 
