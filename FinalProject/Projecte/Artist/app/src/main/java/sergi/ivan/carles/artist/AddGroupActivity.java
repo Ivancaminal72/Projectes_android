@@ -140,7 +140,7 @@ public class AddGroupActivity extends AppCompatActivity {
         groupIds.add(id);
         Intent intent = getIntent();
         if(intent.hasExtra("eventId")){ //Detect if the event is a new one or one that is already saved
-            groupRef.child(id).child("eventId").setValue(intent.getStringExtra("eventId"));
+            groupRef.child(id).child("eventIds").child(intent.getStringExtra("eventId")).setValue(true);
         }
 
         //Toast to inform correct group generation

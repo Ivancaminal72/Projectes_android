@@ -275,17 +275,18 @@ public class InitActivity extends AppCompatActivity {
                 }
                 break;
             case UPDATE_EVENT:
-                if(resultCode == RESULT_OK){
-                    String id = data.getStringExtra("id");
-                    int pos=-1;
-                    for(int i=0; i<events.size(); i++) {
-                        if (id.equals(events.get(i).getId())) {
-                            pos=i;
-                        }
-                    }
-                    if(pos==-1){Log.e("info", "UPDATE_CASE old event not found");}
-                    Event oldEvent = events.get(pos);
 
+                String id = data.getStringExtra("id");
+                int pos=-1;
+                for(int i=0; i<events.size(); i++) {
+                    if (id.equals(events.get(i).getId())) {
+                        pos=i;
+                    }
+                }
+                if(pos==-1){Log.e("info", "UPDATE_EVENT, old event not found");}
+                Event oldEvent = events.get(pos);
+
+                if(resultCode == RESULT_OK){
                     if(data.hasExtra("delete")){ //Case delete event
                         eventRef.child(id).removeValue();
                         artistEventRef.child(id).removeValue();
@@ -299,6 +300,7 @@ public class InitActivity extends AppCompatActivity {
                         }else{
                             if(oldEvent.getGroupIds() != null){
                                 Log.e("info", "This case is not possible in the current version");
+                                finish();
                             }
                         }
                         events.remove(pos);
@@ -306,6 +308,8 @@ public class InitActivity extends AppCompatActivity {
                         break;
                     }
 
+                    //Case update event
+                    boolean changed = false;
                     String name = data.getStringExtra("name");
                     String place = data.getStringExtra("place");
                     Long init = data.getLongExtra("start", currentTimeMillis());
@@ -313,15 +317,19 @@ public class InitActivity extends AppCompatActivity {
                     Event updatedEvent = new Event(id, name, new Date(init), new Date(end), place);//Case update event
 
                     if(!oldEvent.getName().equals(updatedEvent.getName())){
+                        changed=true;
                         eventRef.child(id).child("name").setValue(name);
                     }
                     if(!oldEvent.getPlace().equals(updatedEvent.getPlace())){
+                        changed=true;
                         eventRef.child(id).child("place").setValue(place);
                     }
                     if(!oldEvent.getStartDate().equals(updatedEvent.getStartDate())){
+                        changed=true;
                         eventRef.child(id).child("start").setValue(init);
                     }
                     if(!oldEvent.getEndDate().equals(updatedEvent.getEndDate())){
+                        changed=true;
                         eventRef.child(id).child("end").setValue(end);
                     }
 
@@ -329,34 +337,81 @@ public class InitActivity extends AppCompatActivity {
                         String room = data.getStringExtra("room");
                         updatedEvent.setRoom(room);
                         if(!room.equals(oldEvent.getRoom())){
+                            changed=true;
                             eventRef.child(id).child("room").setValue(room);
                         }
                     }else{
                         if(oldEvent.getRoom() != null){
+                            changed=true;
                             eventRef.child(id).child("room").removeValue();
                         }
                     }
                     if (data.hasExtra("groupIds")) {
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                        ArrayList<String> oldGroupIds = oldEvent.getGroupIds();
                         updatedEvent.setGroupIds(groupIds);
-                        if(!groupIds.equals(oldEvent.getGroupIds())){
-                            if(groupIds != updatedEvent.getGroupIds()) {
-                                artistEventRef.child(id).removeValue();
-                                for(int j=0; j<groupIds.size(); j++){
-                                    artistEventRef.child(id).child("groupId"+String.valueOf(j)).setValue(groupIds.get(j));
+                        if(!groupIds.equals(oldGroupIds)){
+                            changed=true;
+                            for (int i = 0; i < groupIds.size(); i++) {
+                                for(int j=0; j < oldGroupIds.size(); j++){
+                                    if(groupIds.get(i).equals(oldGroupIds.get(j))){
+                                        groupIds.set(i,"=");
+                                        oldGroupIds.set(j,"=");
+                                    }
+                                }
+                            }
+                            for(int j=0; j<oldGroupIds.size(); j++){
+                                if(!oldGroupIds.get(j).equals("=")){
+                                    Log.e("info", "This case is not possible in the current version");
+                                    finish();
+                                }
+                            }
+                            int num = oldGroupIds.size();
+                            for(int i=0; i<groupIds.size(); i++){
+                                if(!groupIds.get(i).equals("=")){
+                                    artistEventRef.child(id).child("groupId"+String.valueOf(num)).setValue(groupIds.get(i));
+                                    num++;
                                 }
                             }
                         }
                     }else{
                         if(oldEvent.getGroupIds() != null){
                             Log.e("info", "This case is not possible in the current version");
+                            finish();
                         }
                     }
 
-                    events.remove(pos);
-                    events.add(updatedEvent);
-                    sortEvents();
-                    adapter.notifyDataSetChanged();
+                    if(changed){ //If sth changed during the UPDATE, update list events
+                        events.set(pos, updatedEvent);
+                        sortEvents();
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
+
+                }else if(resultCode == RESULT_CANCELED) {
+                    if (data.hasExtra("groupIds")) {
+                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                        ArrayList<String> oldGroupIds = oldEvent.getGroupIds();
+                        for (int i = 0; i < groupIds.size(); i++) {
+                            for(int j=0; j < oldGroupIds.size(); j++){
+                                if(groupIds.get(i).equals(oldGroupIds.get(j))){
+                                    groupIds.set(i,"=");
+                                    oldGroupIds.set(j,"=");
+                                }
+                            }
+                        }
+                        for(int i=0; i<groupIds.size(); i++){
+                            if(!groupIds.get(i).equals("=")){
+                                groupRef.child(groupIds.get(i)).child("eventIds").child(id).removeValue();
+                            }
+                        }
+                        for(int j=0; j<oldGroupIds.size(); j++){
+                            if(!oldGroupIds.get(j).equals("=")){
+                                Log.e("info", "This case is not possible in the current version");
+                                finish();
+                            }
+                        }
+                    }
                 }
                 break;
 
