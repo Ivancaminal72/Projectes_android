@@ -296,7 +296,23 @@ public class InitActivity extends AppCompatActivity {
                             for (int i = 0; i < groupIds.size(); i++) {
                                 groupRef.child(groupIds.get(i)).child("eventIds").child(eventId).removeValue();
                             }
-                            //Todo: groupRef.addListenerForSingleValueEvent to delete events with no eventIds assigned
+                            //Delete events with no eventIds assigned
+                            groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot groupsSnapshot) {
+                                    for(DataSnapshot group : groupsSnapshot.getChildren()){
+                                        if(!group.child("eventIds").exists()){
+                                            groupRef.child(group.getKey()).removeValue();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
                         }else{
                             if(oldEvent.getGroupIds() != null){
                                 Log.e("info", "This case is not possible in the current version");
