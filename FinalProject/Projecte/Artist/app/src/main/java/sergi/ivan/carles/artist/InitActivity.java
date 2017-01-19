@@ -414,8 +414,8 @@ public class InitActivity extends AppCompatActivity {
 
                 }else if(resultCode == RESULT_CANCELED) {
                     if (data.hasExtra("groupIds")) {
-                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                        ArrayList<String> oldGroupIds = oldEvent.getGroupIds();
+                        ArrayList<String> groupIds = new ArrayList<>(data.getStringArrayListExtra("groupIds"));
+                        ArrayList<String> oldGroupIds = new ArrayList<>(oldEvent.getGroupIds());
                         if(oldGroupIds != null){
                             for (int i = 0; i < groupIds.size(); i++) {
                                 for(int j=0; j < oldGroupIds.size(); j++){
