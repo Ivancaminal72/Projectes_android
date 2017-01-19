@@ -43,7 +43,7 @@ public class EventActivity extends AppCompatActivity {
     private Button btn_start_time;
     private Date init;
     private Date end;
-    private String id;
+    private String eventId;
     private long durationEvent;
     private ArrayList<String> groupIds;
     private ArrayList<String> groupNames;
@@ -76,9 +76,9 @@ public class EventActivity extends AppCompatActivity {
         Intent intent = getIntent();
         init = new Date(intent.getLongExtra("start", currentTimeMillis()));
         end = new Date(intent.getLongExtra("end", currentTimeMillis() + durationEvent));
-        if (intent.hasExtra("id")) {
+        if (intent.hasExtra("eventId")) {
             getSupportActionBar().setTitle(R.string.modify_event);
-            id = intent.getStringExtra("id");
+            eventId = intent.getStringExtra("eventId");
             edit_name.setText(intent.getStringExtra("name"));
             edit_place.setText(intent.getStringExtra("place"));
             if (intent.hasExtra("room")) {
@@ -163,8 +163,8 @@ public class EventActivity extends AppCompatActivity {
                     data.putExtra("place", place);
                     data.putExtra("start", init.getTime());
                     data.putExtra("end", end.getTime());
-                    if (id != null) {
-                        data.putExtra("id", id);
+                    if (eventId != null) {
+                        data.putExtra("eventId", eventId);
                     }
                     if (room.length() > 0) {
                         data.putExtra("room", room);
@@ -179,9 +179,9 @@ public class EventActivity extends AppCompatActivity {
 
             case R.id.delete_event:
                 Intent data = new Intent();
-                if (id != null) {
+                if (eventId != null) {
                     data.putExtra("delete", true);
-                    data.putExtra("id", id);
+                    data.putExtra("eventId", eventId);
                     if (groupIds.size() > 0) {
                         data.putExtra("groupIds", groupIds);
                     }
@@ -300,7 +300,7 @@ public class EventActivity extends AppCompatActivity {
 
     private void newGroup() {
         Intent intent = new Intent(this, AddGroupActivity.class);
-        intent.putExtra("id", id);
+        intent.putExtra("eventId", eventId);
         startActivityForResult(intent, ADD_GROUPS);
     }
 
@@ -309,11 +309,12 @@ public class EventActivity extends AppCompatActivity {
         switch (requestCode) {
             case ADD_GROUPS:
                 if (resultCode == RESULT_OK) {
-                    if(data.hasExtra("groupIds")){
-                        ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
-                        groupIds.addAll(Ids);
-                        getGroupsFromFirebase();
-                    }
+                    ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
+                    groupIds.addAll(Ids);
+                    getGroupsFromFirebase();
+
+                }else if(resultCode == RESULT_CANCELED){
+                    Log.i("info", "0 groups");
                 }
                 break;
             default:
@@ -324,11 +325,14 @@ public class EventActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.i("info", "Back button pressed");
-        if(groupIds.size() > 0){
-            Intent data = new Intent();
-            data.putExtra("groupIds", groupIds);
-            setResult(RESULT_CANCELED, data);
+        Intent data = new Intent();
+        if (eventId != null) {
+            data.putExtra("eventId", eventId);
         }
+        if(groupIds.size() > 0){
+            data.putExtra("groupIds", groupIds);
+        }
+        setResult(RESULT_CANCELED, data);
         super.onBackPressed();
     }
 

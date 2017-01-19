@@ -153,13 +153,14 @@ public class AddGroupActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.i("info", "Back button pressed");
+        Intent data = new Intent();
         if(groupIds.size() > 0){
-            Intent data = new Intent();
             data.putExtra("groupIds", groupIds);
             setResult(RESULT_OK, data);
         }else{
             setResult(RESULT_CANCELED);
         }
+
         super.onBackPressed();
     }
 
