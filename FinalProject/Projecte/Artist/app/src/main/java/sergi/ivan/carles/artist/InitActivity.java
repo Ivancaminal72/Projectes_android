@@ -41,6 +41,7 @@ public class InitActivity extends AppCompatActivity {
     public static final String REF_EVENTS = "events";
     public static final String REF_GROUPS = "groups";
     public static final String REF_SONGS = "songs";
+    public static ArrayList<Song> songs;
     private ArrayList<Event> events;
     private ArrayList<Group> groups;
     private EventAdapter adapter;
@@ -70,6 +71,7 @@ public class InitActivity extends AppCompatActivity {
             songRef.child(id).child("artist").setValue(artist);
         }*/
 
+        songs = new ArrayList<>();
         events = new ArrayList<>();
         groups = new ArrayList<>();
         adapter = new EventAdapter();
@@ -91,6 +93,11 @@ public class InitActivity extends AppCompatActivity {
         artistRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot artistSnapshot) {
+                for(DataSnapshot song : artistSnapshot.child(REF_SONGS).getChildren()){
+                    String name = song.child("name").getValue().toString();
+                    String artist = song.child("artist").getValue().toString();
+                    songs.add(new Song(song.getKey(),name,artist));
+                }
                 for (DataSnapshot group : artistSnapshot.child(REF_GROUPS).getChildren()) {
                     String groupId = group.getKey();
                     String name = group.child("name").getValue().toString();

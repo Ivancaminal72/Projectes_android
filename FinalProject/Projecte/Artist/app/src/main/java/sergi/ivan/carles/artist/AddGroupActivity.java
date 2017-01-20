@@ -31,10 +31,10 @@ import static sergi.ivan.carles.artist.InitActivity.REF_SONGS;
 public class AddGroupActivity extends AppCompatActivity {
 
     private static final int AUTO_GROUP_NAME_SIZE = 5;
-    private ArrayList<Song> songs;
     private EditText edit_group_name;
     private SongAdapter adapter;
     private ArrayList<String> groupIds;
+    private ArrayList<Song> songs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,82 +51,62 @@ public class AddGroupActivity extends AppCompatActivity {
         final Button btn_add_group = (Button) findViewById(R.id.btn_add_group);
         final ListView song_list = (ListView) findViewById(R.id.song_list);
 
-        songs = new ArrayList<>();
+        songs = InitActivity.songs;
         adapter = new SongAdapter();
         song_list.setAdapter(adapter);
 
-        //Load songs from firebase and show them to the ListView
-        songRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        song_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onDataChange(DataSnapshot songsSnapshot) {
-                for(DataSnapshot song : songsSnapshot.getChildren()){
-                    String name = song.child("name").getValue().toString();
-                    String artist = song.child("artist").getValue().toString();
-                    songs.add(new Song(song.getKey(),name,artist));
-                }
+            public void onItemClick(AdapterView<?> list, View v, int pos, long id) {
+                songs.get(pos).toggleChecked();
                 adapter.notifyDataSetChanged();
-
-                song_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> list, View v, int pos, long id) {
-                        songs.get(pos).toggleChecked();
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-
-                //Make groups of 4 songs
-                btn_add_group.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int count = 0;
-                        int[] pos = new int[songs.size()];
-                        for (int i = 0; i < songs.size(); i++) {
-                            if (songs.get(i).isChecked()) {
-                                pos[count] = i;
-                                count++;
-                            }
-                        }
-                        if (count == GROUP_MAX_SIZE) {//Correct group
-                            String groupName = edit_group_name.getText().toString();
-                            if(groupName.length() == 0){
-                                for (int i=0; i<GROUP_MAX_SIZE; i++){
-                                    String songName = songs.get(pos[i]).getName();
-                                    if(songName.length() <= AUTO_GROUP_NAME_SIZE){
-                                        groupName = groupName + songName+" ";
-                                    }else{
-                                        groupName = groupName + songName.substring(0, AUTO_GROUP_NAME_SIZE)+" ";
-                                    }
-
-                                }
-                            }
-                            Log.i("info", "Group Name: "+groupName);
-                            //Set all songs checked to not checked
-                            for(int i=0; i<GROUP_MAX_SIZE; i++){
-                                songs.get(pos[i]).toggleChecked();
-                            }
-                            adapter.notifyDataSetChanged();
-                            edit_group_name.setText("");
-
-                            //Send group to firebase
-                            sendGroupToFirebase(pos, groupName, groupRef);
-
-                        } else {//Incorrect group
-                            Toast.makeText(
-                                    AddGroupActivity.this,
-                                    getResources().getString(R.string.four_songs),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
+        //Make groups of 4 songs
+        btn_add_group.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = 0;
+                int[] pos = new int[songs.size()];
+                for (int i = 0; i < songs.size(); i++) {
+                    if (songs.get(i).isChecked()) {
+                        pos[count] = i;
+                        count++;
+                    }
+                }
+                if (count == GROUP_MAX_SIZE) {//Correct group
+                    String groupName = edit_group_name.getText().toString();
+                    if(groupName.length() == 0){
+                        for (int i=0; i<GROUP_MAX_SIZE; i++){
+                            String songName = songs.get(pos[i]).getName();
+                            if(songName.length() <= AUTO_GROUP_NAME_SIZE){
+                                groupName = groupName + songName+" ";
+                            }else{
+                                groupName = groupName + songName.substring(0, AUTO_GROUP_NAME_SIZE)+" ";
+                            }
+
+                        }
+                    }
+                    Log.i("info", "Group Name: "+groupName);
+                    //Set all songs checked to not checked
+                    for(int i=0; i<GROUP_MAX_SIZE; i++){
+                        songs.get(pos[i]).toggleChecked();
+                    }
+                    adapter.notifyDataSetChanged();
+                    edit_group_name.setText("");
+
+                    //Send group to firebase
+                    sendGroupToFirebase(pos, groupName, groupRef);
+
+                } else {//Incorrect group
+                    Toast.makeText(
+                            AddGroupActivity.this,
+                            getResources().getString(R.string.four_songs),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void sendGroupToFirebase(int[] pos, String groupName, DatabaseReference groupRef) {
@@ -164,9 +144,7 @@ public class AddGroupActivity extends AppCompatActivity {
     }
 
     private class SongAdapter extends ArrayAdapter<Song> {
-        SongAdapter() {
-            super(AddGroupActivity.this, R.layout.item_songs_list, songs);
-        }
+        SongAdapter() {super(AddGroupActivity.this, R.layout.item_songs_list, songs);}
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
