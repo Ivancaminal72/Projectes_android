@@ -63,9 +63,10 @@ public class InitActivity extends AppCompatActivity {
         artistEventRef = database.getReference(REF_ARTIST_EVENT);
         groupRef = database.getReference(REF_GROUPS);
         artistRef = database.getReference();
+        DatabaseReference songRef = database.getReference(REF_SONGS);
 
-        /*//Push some demo songs to firabase
-        for(int i=0; i<20; i++){
+        //Push some demo songs to firabase
+        /*for(int i=0; i<20; i++){
             String id = songRef.push().getKey();
             String name = "song"+i;
             String artist = "artist"+i;
@@ -264,6 +265,7 @@ public class InitActivity extends AppCompatActivity {
                             for(int j=0; j<GROUP_MAX_SIZE; j++) {
                                 groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
                                         .setValue(groupSongIds.get(i)[j]);
+                                Log.i("info","New groupSongIds: "+groupSongIds.get(i)[j]);
                             }
                             groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                             groupRef.child(groupId).child("eventIds").child(id).setValue(true);
@@ -300,7 +302,6 @@ public class InitActivity extends AppCompatActivity {
 
                         if (oldEvent.getGroupIds() != null) {
                             for (int i = 0; i < oldEvent.getGroupIds().size(); i++) {
-                                Log.i("info", "Event id que sha de borrar: "+groupRef.toString()+" "+oldEvent.getGroupIds().get(i));
                                 groupRef.child(oldEvent.getGroupIds().get(i)).child("eventIds").child(eventId).removeValue();
                             }
                             updateGroups();
@@ -357,6 +358,12 @@ public class InitActivity extends AppCompatActivity {
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
                         ArrayList<String> groupNames = data.getStringArrayListExtra("groupNames");
                         ArrayList<String[]> groupSongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
+                        for(String[] id : groupSongIds){
+                            Log.i("info", "--1   "+id[0]);
+                            Log.i("info", "--1   "+id[1]);
+                            Log.i("info", "--2   "+id[2]);
+                            Log.i("info", "--3   "+id[3]);
+                        }
                         ArrayList<String> oldGroupIds = new ArrayList<>();
                         if(oldEvent.getGroupIds()!=null){
                             oldGroupIds = oldEvent.getGroupIds();
@@ -385,6 +392,7 @@ public class InitActivity extends AppCompatActivity {
                                         for(int j=0; j<GROUP_MAX_SIZE; j++) {
                                             groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
                                                     .setValue(groupSongIds.get(i)[j]);
+                                            Log.i("info","Update groupSongIds: "+groupSongIds.get(i)[j]);
                                         }
                                         groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                                         groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
@@ -402,7 +410,7 @@ public class InitActivity extends AppCompatActivity {
 
                                         for(int j=0; j<GROUP_MAX_SIZE; j++) {
                                             groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
-                                                    .setValue(groupSongIds.get(i)[i]);
+                                                    .setValue(groupSongIds.get(i)[j]);
                                         }
                                         groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                                         groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);

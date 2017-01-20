@@ -26,6 +26,7 @@ import static java.lang.System.currentTimeMillis;
 public class EventActivity extends AppCompatActivity {
 
     private static final int ADD_GROUPS = 2;
+    public static final int OFFSET_WEEK_MILLIS = 604800000;
     private EditText edit_name;
     private EditText edit_place;
     private EditText edit_room;
@@ -68,8 +69,8 @@ public class EventActivity extends AppCompatActivity {
         group_listview.setAdapter(adapter);
 
         Intent intent = getIntent();
-        init = new Date(intent.getLongExtra("start", currentTimeMillis()));
-        end = new Date(intent.getLongExtra("end", currentTimeMillis() + durationEvent));
+        init = new Date(intent.getLongExtra("start", currentTimeMillis()+ OFFSET_WEEK_MILLIS));
+        end = new Date(intent.getLongExtra("end", currentTimeMillis()+ OFFSET_WEEK_MILLIS + durationEvent));
         if (intent.hasExtra("eventId")) {
             getSupportActionBar().setTitle(R.string.modify_event);
             eventId = intent.getStringExtra("eventId");
