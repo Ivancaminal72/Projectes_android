@@ -3,7 +3,7 @@ package sergi.ivan.carles.artist;
 import java.util.ArrayList;
 
 import static java.lang.System.arraycopy;
-import static sergi.ivan.carles.artist.ActualEventActivity.GROUP_MAX_SIZE;
+import static sergi.ivan.carles.artist.InitActivity.GROUP_MAX_SIZE;
 
 
 public class Group {

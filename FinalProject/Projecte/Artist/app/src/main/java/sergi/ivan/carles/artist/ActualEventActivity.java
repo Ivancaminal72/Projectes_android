@@ -33,11 +33,11 @@ import static android.R.color.holo_green_light;
 import static android.R.color.holo_orange_dark;
 import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
+import static sergi.ivan.carles.artist.InitActivity.GROUP_MAX_SIZE;
 
 
 public class ActualEventActivity extends AppCompatActivity {
 
-    public static final int GROUP_MAX_SIZE = 4;
     public static final String END_VOTE_TIME = "endVoteTime";
     public static final String POS_ACT_GROUP = "pos_act";
     public static final String POS_GROUP_SELECTED = "position_group_selected";

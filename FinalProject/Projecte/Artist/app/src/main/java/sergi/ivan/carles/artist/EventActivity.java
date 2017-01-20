@@ -39,6 +39,7 @@ public class EventActivity extends AppCompatActivity {
     private long durationEvent;
     private ArrayList<String> groupIds;
     private ArrayList<String> groupNames;
+    private ArrayList<String[]> groupSongIds;
     private ArrayAdapter<String> adapter;
 
     @Override
@@ -58,6 +59,7 @@ public class EventActivity extends AppCompatActivity {
 
         groupIds = new ArrayList<>();
         groupNames = new ArrayList<>();
+        groupSongIds = new ArrayList<>();
         adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -78,8 +80,8 @@ public class EventActivity extends AppCompatActivity {
             }
             if (intent.hasExtra("groupIds")) {
                 groupIds = intent.getStringArrayListExtra("groupIds");
-                groupNames.clear();
                 groupNames=intent.getStringArrayListExtra("groupNames");
+                groupSongIds= (ArrayList<String[]>) intent.getSerializableExtra("groupSongIds");
                 adapter.notifyDataSetChanged();
             }
         } else {
@@ -166,6 +168,7 @@ public class EventActivity extends AppCompatActivity {
                     if (groupIds.size() > 0) {
                         data.putExtra("groupIds", groupIds);
                         data.putExtra("groupNames", groupNames);
+                        data.putExtra("groupSongIds", groupSongIds);
                     }
                     setResult(RESULT_OK, data);
                     finish();
@@ -180,6 +183,7 @@ public class EventActivity extends AppCompatActivity {
                     if (groupIds.size() > 0) {
                         data.putExtra("groupIds", groupIds);
                         data.putExtra("groupNames", groupNames);
+                        data.putExtra("groupSongIds", groupSongIds);
                     }
                     setResult(RESULT_OK, data);
                     finish();
@@ -252,9 +256,6 @@ public class EventActivity extends AppCompatActivity {
 
     private void newGroup() {
         Intent intent = new Intent(this, AddGroupActivity.class);
-        if(eventId != null){
-            intent.putExtra("eventId", eventId);
-        }
         startActivityForResult(intent, ADD_GROUPS);
     }
 
@@ -264,8 +265,11 @@ public class EventActivity extends AppCompatActivity {
             case ADD_GROUPS:
                 if (resultCode == RESULT_OK) {
                     ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
+                    ArrayList<String> Names = data.getStringArrayListExtra("groupNames");
+                    ArrayList<String[]> SongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
                     groupIds.addAll(Ids);
-                    groupNames.addAll(data.getStringArrayListExtra("groupNames"));
+                    groupNames.addAll(Names);
+                    groupSongIds.addAll(SongIds);
                     adapter.notifyDataSetChanged();
 
                 }else if(resultCode == RESULT_CANCELED){

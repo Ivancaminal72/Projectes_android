@@ -28,10 +28,12 @@ import java.util.Comparator;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
+import static sergi.ivan.carles.artist.AddGroupActivity.NEW_EVENT_KEY;
 
 
 public class InitActivity extends AppCompatActivity {
 
+    public static final int GROUP_MAX_SIZE = 4;
     public static final int MILLIS_DAY = 86400000;
     public static final int MILLIS_HOUR = 3600000;
     public static final int MILLIS_MINUTE = 60000;
@@ -121,8 +123,11 @@ public class InitActivity extends AppCompatActivity {
                     }
                     eventGroupIds.add(groupIds);
                 }
-                Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
-                loadArtistEvents(queryFutureEvents,eventIds,eventGroupIds);
+                if(eventIds.size()>0){
+                    Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
+                    loadArtistEvents(queryFutureEvents,eventIds,eventGroupIds);
+                }
+
             }
 
             @Override
@@ -135,9 +140,10 @@ public class InitActivity extends AppCompatActivity {
     private void loadArtistEvents(final Query queryEvents, final ArrayList<String> eventIds, final ArrayList<ArrayList<String>> eventGroupIds) {
         queryEvents.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot eventSnapshot) {
-                String id = eventSnapshot.getKey();
-                for(int i=0; i<eventIds.size(); i++){
+            public void onDataChange(DataSnapshot eventsSnapshot) {
+                int i=0;
+                for(DataSnapshot eventSnapshot : eventsSnapshot.getChildren()){
+                    String id = eventSnapshot.getKey();
                     if(id.equals(eventIds.get(i))){
                         String name = eventSnapshot.child("name").getValue().toString();
                         String place = eventSnapshot.child("place").getValue().toString();
@@ -154,6 +160,7 @@ public class InitActivity extends AppCompatActivity {
                         sortEvents();
                         adapter.notifyDataSetChanged();
                     }
+                    i++;
                 }
             }
 
@@ -193,14 +200,17 @@ public class InitActivity extends AppCompatActivity {
             if (groupIds != null) {
                 intent.putExtra("groupIds", groupIds);
                 ArrayList<String> groupNames = new ArrayList<>();
+                ArrayList<String[]> groupSongIds = new ArrayList<>();
                 for (int i = 0; i < groups.size(); i++) {
                     for (int j = 0; j < groupIds.size(); j++) {
                         if (groups.get(i).getId().equals(groupIds.get(j))) {
                             groupNames.add(groups.get(i).getName());
+                            groupSongIds.add(groups.get(i).getSongIds());
                         }
                     }
                 }
                 intent.putExtra("groupNames", groupNames);
+                intent.putExtra("groupSongIds", groupSongIds);
             }
             startActivityForResult(intent, UPDATE_EVENT);
         }
@@ -244,9 +254,26 @@ public class InitActivity extends AppCompatActivity {
 
                     if(data.hasExtra("groupIds")){
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
+                        ArrayList<String> groupNames = data.getStringArrayListExtra("groupNames");
+                        ArrayList<String[]> groupSongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
                         for(int i=0; i<groupIds.size(); i++){
+                            String groupId;
+                            Log.i("info",groupIds.get(i));
+                            if(NEW_EVENT_KEY.equals(groupIds.get(i))){
+                                Log.i("info","equals");
+                                groupId = groupRef.push().getKey();
+                            }else{
+                                Log.i("info","difff");
+                                groupId = groupIds.get(i);
+                            }
+                            for(int j=0; j<GROUP_MAX_SIZE; j++) {
+                                groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
+                                        .setValue(groupSongIds.get(i)[i]);
+                            }
+                            groupRef.child(groupId).child("name").setValue(groupNames.get(i));
+                            groupRef.child(groupId).child("eventIds").child(id).setValue(true);
                             artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
-                            groupRef.child(groupIds.get(i)).child("eventIds").child(id).setValue(true);
+                            groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
                         }
                         event.setGroupIds(groupIds);
                     }else{
@@ -255,15 +282,6 @@ public class InitActivity extends AppCompatActivity {
                     events.add(event);
                     sortEvents();
                     adapter.notifyDataSetChanged();
-                }
-                else if(resultCode == RESULT_CANCELED) {
-                    Log.i("info","New_event Discard");
-                    if (data.hasExtra("groupIds")) {
-                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                        for (int i = 0; i < groupIds.size(); i++) {
-                            groupRef.child(groupIds.get(i)).removeValue();
-                        }
-                    }
                 }
                 break;
             case UPDATE_EVENT:
@@ -284,33 +302,12 @@ public class InitActivity extends AppCompatActivity {
                         eventRef.child(eventId).removeValue();
                         artistEventRef.child(eventId).removeValue();
 
-                        if (data.hasExtra("groupIds")) {
-                            ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                            for (int i = 0; i < groupIds.size(); i++) {
-                                groupRef.child(groupIds.get(i)).child("eventIds").child(eventId).removeValue();
+                        if (oldEvent.getGroupIds() != null) {
+                            for (int i = 0; i < oldEvent.getGroupIds().size(); i++) {
+                                groupRef.child(oldEvent.getGroupIds().get(i)).child("eventIds").child(eventId).removeValue();
                             }
-                            //Delete events with no eventIds assigned
-                            groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot groupsSnapshot) {
-                                    for(DataSnapshot group : groupsSnapshot.getChildren()){
-                                        if(!group.child("eventIds").exists()){
-                                            groupRef.child(group.getKey()).removeValue();
-                                        }
-                                    }
-                                }
+                            updateGroups();
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-                        }else{
-                            if(oldEvent.getGroupIds() != null){
-                                Log.e("info", "This case is not possible in the current version");
-                                finish();
-                            }
                         }
                         events.remove(pos);
                         adapter.notifyDataSetChanged();
@@ -358,11 +355,16 @@ public class InitActivity extends AppCompatActivity {
                     if (data.hasExtra("groupIds")) {
                         Log.i("info", "Update has Extra groupIds");
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                        ArrayList<String> oldGroupIds = oldEvent.getGroupIds();
+                        ArrayList<String> groupNames = data.getStringArrayListExtra("groupNames");
+                        ArrayList<String[]> groupSongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
+                        ArrayList<String> oldGroupIds = new ArrayList<>();
+                        if(oldEvent.getGroupIds()!=null){
+                            oldGroupIds = oldEvent.getGroupIds();
+                        }
                         updatedEvent.setGroupIds(groupIds);
                         if(!groupIds.equals(oldGroupIds)){
                             changed=true;
-                            if(oldGroupIds != null){
+                            if(oldGroupIds.size() > 0){
                                 for (int i = 0; i < groupIds.size(); i++) {
                                     for(int j=0; j < oldGroupIds.size(); j++){
                                         if(groupIds.get(i).equals(oldGroupIds.get(j))){
@@ -380,14 +382,34 @@ public class InitActivity extends AppCompatActivity {
                                 int num = oldGroupIds.size();
                                 for(int i=0; i<groupIds.size(); i++){
                                     if(!groupIds.get(i).equals("=")){
-                                        artistEventRef.child(eventId).child("groupId"+String.valueOf(num)).setValue(groupIds.get(i));
+                                        String groupId = groupRef.push().getKey();
+
+                                        for(int j=0; j<GROUP_MAX_SIZE; j++) {
+                                            groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
+                                                    .setValue(groupSongIds.get(i)[j]);
+                                        }
+                                        groupRef.child(groupId).child("name").setValue(groupNames.get(i));
+                                        groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
+                                        artistEventRef.child(eventId).child("groupId"+String.valueOf(num)).setValue(groupId);
+                                        groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
+                                        changed=true;
                                         num++;
                                     }
                                 }
                             }else{
                                 for(int i=0; i<groupIds.size(); i++){
                                     if(!groupIds.get(i).equals("=")){
+                                        String groupId = groupRef.push().getKey();
+
+                                        for(int j=0; j<GROUP_MAX_SIZE; j++) {
+                                            groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
+                                                    .setValue(groupSongIds.get(i)[i]);
+                                        }
+                                        groupRef.child(groupId).child("name").setValue(groupNames.get(i));
+                                        groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
                                         artistEventRef.child(eventId).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
+                                        groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
+                                        changed=true;
                                     }
                                 }
                             }
@@ -405,44 +427,6 @@ public class InitActivity extends AppCompatActivity {
                         sortEvents();
                         adapter.notifyDataSetChanged();
                     }
-                    break;
-
-                }else if(resultCode == RESULT_CANCELED) {
-                    Log.i("info", "Update discard");
-                    if (data.hasExtra("groupIds")) {
-                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                        ArrayList<String> oldGroupIds = new ArrayList<>(oldEvent.getGroupIds());
-                        oldGroupIds.clear();
-                        if(oldGroupIds.size()<0){
-                            Log.i("info", "Update discard amb oldGroups != null");
-                            for (int i = 0; i < groupIds.size(); i++) {
-                                for(int j=0; j < oldGroupIds.size(); j++){
-                                    if(groupIds.get(i).equals(oldGroupIds.get(j))){
-                                        groupIds.set(i,"=");
-                                        oldGroupIds.set(j,"=");
-                                    }
-                                }
-                            }
-                            for(int i=0; i<groupIds.size(); i++){
-                                if(!groupIds.get(i).equals("=")){
-                                    groupRef.child(groupIds.get(i)).child("eventIds").child(eventId).removeValue();
-                                }
-                            }
-                            for(int j=0; j<oldGroupIds.size(); j++){
-                                if(!oldGroupIds.get(j).equals("=")){
-                                    Log.e("info", "This case is not possible in the current version");
-                                    finish();
-                                }
-                            }
-                        }else{
-                            Log.i("info", "Update discard amb oldGroups == null");
-                            for(int i=0; i<groupIds.size(); i++){
-                                groupRef.child(groupIds.get(i)).child("eventIds").child(eventId).removeValue();
-                            }
-                        }
-
-
-                    }
                 }
                 break;
 
@@ -450,6 +434,25 @@ public class InitActivity extends AppCompatActivity {
                 super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+
+    private void updateGroups() {
+        //Delete events with no eventIds assigned
+        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot groupsSnapshot) {
+                for(DataSnapshot group : groupsSnapshot.getChildren()){
+                    if(!group.child("eventIds").exists()){
+                        groupRef.child(group.getKey()).removeValue();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private class EventAdapter extends ArrayAdapter<Event> {
