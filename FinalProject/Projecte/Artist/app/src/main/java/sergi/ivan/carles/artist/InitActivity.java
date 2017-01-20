@@ -100,7 +100,7 @@ public class InitActivity extends AppCompatActivity {
                     String artist = song.child("artist").getValue().toString();
                     songs.add(new Song(song.getKey(),name,artist));
                 }
-                for (DataSnapshot group : artistSnapshot.child(REF_GROUPS).getChildren()) {
+                for(DataSnapshot group : artistSnapshot.child(REF_GROUPS).getChildren()) {
                     String groupId = group.getKey();
                     String name = group.child("name").getValue().toString();
                     String[] songIds = new String[(int) group.child("songIds").getChildrenCount()];
@@ -197,6 +197,7 @@ public class InitActivity extends AppCompatActivity {
                 intent.putExtra("room", room);
             }
             ArrayList<String> groupIds = event.getGroupIds();
+            Log.i("info","Intent Update pos: "+pos);
             if (groupIds != null) {
                 intent.putExtra("groupIds", groupIds);
                 ArrayList<String> groupNames = new ArrayList<>();
@@ -256,26 +257,20 @@ public class InitActivity extends AppCompatActivity {
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
                         ArrayList<String> groupNames = data.getStringArrayListExtra("groupNames");
                         ArrayList<String[]> groupSongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
+
                         for(int i=0; i<groupIds.size(); i++){
-                            String groupId;
-                            Log.i("info",groupIds.get(i));
-                            if(NEW_EVENT_KEY.equals(groupIds.get(i))){
-                                Log.i("info","equals");
-                                groupId = groupRef.push().getKey();
-                            }else{
-                                Log.i("info","difff");
-                                groupId = groupIds.get(i);
-                            }
+                            String groupId = groupRef.push().getKey();
+
                             for(int j=0; j<GROUP_MAX_SIZE; j++) {
                                 groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
-                                        .setValue(groupSongIds.get(i)[i]);
+                                        .setValue(groupSongIds.get(i)[j]);
                             }
                             groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                             groupRef.child(groupId).child("eventIds").child(id).setValue(true);
-                            artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
+                            artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupId);
                             groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
+                            event.addGroupId(groupId);
                         }
-                        event.setGroupIds(groupIds);
                     }else{
                         artistEventRef.child(id).setValue(false);
                     }
@@ -297,13 +292,15 @@ public class InitActivity extends AppCompatActivity {
                 Event oldEvent = events.get(pos);
 
                 if(resultCode == RESULT_OK){
-                    Log.i("info", "Update save");
+
                     if(data.hasExtra("delete")){ //Case delete event
+                        Log.i("info", "Delete event");
                         eventRef.child(eventId).removeValue();
                         artistEventRef.child(eventId).removeValue();
 
                         if (oldEvent.getGroupIds() != null) {
                             for (int i = 0; i < oldEvent.getGroupIds().size(); i++) {
+                                Log.i("info", "Event id que sha de borrar: "+groupRef.toString()+" "+oldEvent.getGroupIds().get(i));
                                 groupRef.child(oldEvent.getGroupIds().get(i)).child("eventIds").child(eventId).removeValue();
                             }
                             updateGroups();
@@ -313,9 +310,10 @@ public class InitActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         break;
                     }
-
+                    Log.i("info", "Update save");
                     //Case update event
                     boolean changed = false;
+                    boolean changedDate = false;
                     String name = data.getStringExtra("name");
                     String place = data.getStringExtra("place");
                     Long init = data.getLongExtra("start", currentTimeMillis());
@@ -332,10 +330,12 @@ public class InitActivity extends AppCompatActivity {
                     }
                     if(!oldEvent.getStartDate().equals(updatedEvent.getStartDate())){
                         changed=true;
+                        changedDate=true;
                         eventRef.child(eventId).child("start").setValue(init);
                     }
                     if(!oldEvent.getEndDate().equals(updatedEvent.getEndDate())){
                         changed=true;
+                        changedDate=true;
                         eventRef.child(eventId).child("end").setValue(end);
                     }
 
@@ -361,9 +361,7 @@ public class InitActivity extends AppCompatActivity {
                         if(oldEvent.getGroupIds()!=null){
                             oldGroupIds = oldEvent.getGroupIds();
                         }
-                        updatedEvent.setGroupIds(groupIds);
                         if(!groupIds.equals(oldGroupIds)){
-                            changed=true;
                             if(oldGroupIds.size() > 0){
                                 for (int i = 0; i < groupIds.size(); i++) {
                                     for(int j=0; j < oldGroupIds.size(); j++){
@@ -392,6 +390,7 @@ public class InitActivity extends AppCompatActivity {
                                         groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
                                         artistEventRef.child(eventId).child("groupId"+String.valueOf(num)).setValue(groupId);
                                         groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
+                                        updatedEvent.addGroupId(groupId);
                                         changed=true;
                                         num++;
                                     }
@@ -407,8 +406,9 @@ public class InitActivity extends AppCompatActivity {
                                         }
                                         groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                                         groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
-                                        artistEventRef.child(eventId).child("groupId"+String.valueOf(i)).setValue(groupIds.get(i));
+                                        artistEventRef.child(eventId).child("groupId"+String.valueOf(i)).setValue(groupId);
                                         groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
+                                        updatedEvent.addGroupId(groupId);
                                         changed=true;
                                     }
                                 }
@@ -423,8 +423,9 @@ public class InitActivity extends AppCompatActivity {
 
                     if(changed){ //If sth changed during the UPDATE, update list events
                         Log.i("info", "Update finish with changes");
+                        Log.i("info", "Pos: "+String.valueOf(pos));
                         events.set(pos, updatedEvent);
-                        sortEvents();
+                        if(changedDate){sortEvents();}
                         adapter.notifyDataSetChanged();
                     }
                 }

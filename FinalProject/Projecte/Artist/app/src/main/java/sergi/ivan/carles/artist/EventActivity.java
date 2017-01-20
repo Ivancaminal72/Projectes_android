@@ -267,6 +267,12 @@ public class EventActivity extends AppCompatActivity {
                     ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
                     ArrayList<String> Names = data.getStringArrayListExtra("groupNames");
                     ArrayList<String[]> SongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
+                    for(String[] id : SongIds){
+                        Log.i("info", "1   "+id[0]);
+                        Log.i("info", "1   "+id[1]);
+                        Log.i("info", "2   "+id[2]);
+                        Log.i("info", "3   "+id[3]);
+                    }
                     groupIds.addAll(Ids);
                     groupNames.addAll(Names);
                     groupSongIds.addAll(SongIds);

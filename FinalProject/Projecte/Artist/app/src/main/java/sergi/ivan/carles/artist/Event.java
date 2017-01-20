@@ -75,4 +75,10 @@ public class Event {
     }
 
     public void setGroupIds(ArrayList<String> groupIds) {this.groupIds = groupIds;}
+
+    public void addGroupId(String groupId){
+        if(this.groupIds == null){this.groupIds = new ArrayList<>();}
+        this.groupIds.add(groupId);
+    }
+
 }

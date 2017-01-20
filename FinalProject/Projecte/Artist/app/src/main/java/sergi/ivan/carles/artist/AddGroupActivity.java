@@ -40,8 +40,6 @@ public class AddGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
         getSupportActionBar().setTitle(getResources().getString(R.string.make_groups));
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference groupRef = database.getReference(REF_GROUPS);
 
         groupIds = new ArrayList<>();
         groupNames = new ArrayList<>();
@@ -130,6 +128,12 @@ public class AddGroupActivity extends AppCompatActivity {
         if(groupIds.size() > 0){
             data.putExtra("groupIds", groupIds);
             data.putExtra("groupNames", groupNames);
+            for(String[] songIds : groupSongIds){
+                Log.i("info", songIds[0]);
+                Log.i("info", songIds[1]);
+                Log.i("info", songIds[2]);
+                Log.i("info", songIds[3]);
+            }
             data.putExtra("groupSongIds", groupSongIds);
             setResult(RESULT_OK, data);
         }else{
