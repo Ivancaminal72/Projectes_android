@@ -44,8 +44,8 @@ public class InitActivity extends AppCompatActivity {
     public static final String REF_GROUPS = "groups";
     public static final String REF_SONGS = "songs";
     public static ArrayList<Song> songs;
-    private ArrayList<Event> events;
-    private ArrayList<Group> groups;
+    public static ArrayList<Event> events;
+    public static ArrayList<Group> groups;
     private EventAdapter adapter;
     private DatabaseReference eventRef;
     private DatabaseReference artistEventRef;
@@ -182,9 +182,41 @@ public class InitActivity extends AppCompatActivity {
     private void onUpdateEvent(int pos) {
         Event event = events.get(pos);
         if(event.getStartDate().getTime() <= currentTimeMillis()){
-            Intent intent = new Intent(this,ActualEventActivity.class);
-            intent.putStringArrayListExtra("groupIds", event.getGroupIds());
-            startActivity(intent);
+            if(event.getGroupIds() != null) {
+                Intent intent = new Intent(this,ActualEventActivity.class);
+                intent.putStringArrayListExtra("groupIds", event.getGroupIds());
+                startActivity(intent);
+            }
+            else{
+                Intent intent = new Intent(this, EventActivity.class);
+                intent.putExtra("eventId", event.getId());
+                intent.putExtra("name", event.getName());
+                intent.putExtra("start", event.getStartDate().getTime());
+                intent.putExtra("end", event.getEndDate().getTime());
+                intent.putExtra("place", event.getPlace());
+                String room = event.getRoom();
+                if (room != null) {
+                    intent.putExtra("room", room);
+                }
+                ArrayList<String> groupIds = event.getGroupIds();
+                Log.i("info","Intent Update pos: "+pos);
+                if (groupIds != null) {
+                    intent.putExtra("groupIds", groupIds);
+                    ArrayList<String> groupNames = new ArrayList<>();
+                    ArrayList<String[]> groupSongIds = new ArrayList<>();
+                    for (int i = 0; i < groups.size(); i++) {
+                        for (int j = 0; j < groupIds.size(); j++) {
+                            if (groups.get(i).getId().equals(groupIds.get(j))) {
+                                groupNames.add(groups.get(i).getName());
+                                groupSongIds.add(groups.get(i).getSongIds());
+                            }
+                        }
+                    }
+                    intent.putExtra("groupNames", groupNames);
+                    intent.putExtra("groupSongIds", groupSongIds);
+                }
+                startActivityForResult(intent, UPDATE_EVENT);
+            }
         }
         else {
             Intent intent = new Intent(this, EventActivity.class);

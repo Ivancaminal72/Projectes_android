@@ -69,6 +69,7 @@ public class ActualEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("info", "onCreate");
         super.onCreate(savedInstanceState);
+        songs = new ArrayList<>(InitActivity.songs);
         database = FirebaseDatabase.getInstance();
         final DatabaseReference actRef = database.getReference("act_group");
         setContentView(R.layout.activity_actual_event);
@@ -92,7 +93,7 @@ public class ActualEventActivity extends AppCompatActivity {
         }
         listening = false;
 
-        //Random songs generation
+        /*//Random songs generation
         songs = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Song importedSong = new Song(String.valueOf(i), String.format("Cancion%d", i), String.format("Artista%d", i));
@@ -104,7 +105,7 @@ public class ActualEventActivity extends AppCompatActivity {
         for (int i = 0; i < 20; i++) {
             String[] songIds = new String[]{String.valueOf(i+1), String.valueOf(i+2), String.valueOf(i+3), String.valueOf(i+4)};
             groups.add(new Group("patata",getResources().getString(R.string.group_to_select)+String.format(" %d", i), songIds));
-        }
+        }*/
 
         //Set layout
         view_group = (TextView) findViewById(R.id.view_group);
@@ -315,23 +316,17 @@ public class ActualEventActivity extends AppCompatActivity {
 
 
     private ArrayList<String> getGroupsNames() {
-        database = FirebaseDatabase.getInstance();
-        final DatabaseReference groupRef = database.getReference(REF_GROUPS);
         Intent intent = getIntent();
-        final ArrayList<String> group_names = new ArrayList<>();
-        final ArrayList<String> group_ids = intent.getStringArrayListExtra("groupIds");
-        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot groupsSnapshot) {
-                for (int i = 0; i < group_ids.size(); i++) {
-                    group_names.add(groupsSnapshot.child(group_ids.get(i)).child("name").getValue().toString());
+        groups = new ArrayList<>();
+        ArrayList<String> group_names = new ArrayList<>();
+        ArrayList<String> group_ids = new ArrayList<>(intent.getStringArrayListExtra("groupIds"));
+        for (int i = 0; i < InitActivity.groups.size(); i++) {
+            for (int j = 0; j < group_ids.size(); j++)
+                if(InitActivity.groups.get(i).getId().equals(group_ids.get(j))){
+                    group_names.add(InitActivity.groups.get(i).getName());
+                    groups.add(InitActivity.groups.get(i));
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+        }
         return group_names;
     }
 
