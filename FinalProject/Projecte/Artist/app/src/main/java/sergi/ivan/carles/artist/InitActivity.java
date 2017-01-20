@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,11 +42,12 @@ public class InitActivity extends AppCompatActivity {
     public static final String REF_GROUPS = "groups";
     public static final String REF_SONGS = "songs";
     private ArrayList<Event> events;
-    private ListView event_list;
+    private ArrayList<Group> groups;
     private EventAdapter adapter;
-    private FirebaseDatabase database;
-    private ChildEventListener ListenerDatabase;
+    private DatabaseReference eventRef;
     private DatabaseReference artistEventRef;
+    private DatabaseReference groupRef;
+    private DatabaseReference artistRef;
 
 
     @Override
@@ -55,10 +55,11 @@ public class InitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
         getSupportActionBar().setTitle(R.string.next_events);
-        database = FirebaseDatabase.getInstance();
-        final DatabaseReference eventRef = database.getReference(REF_EVENTS);
-        final DatabaseReference songRef = database.getReference(REF_SONGS);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        eventRef = database.getReference(REF_EVENTS);
         artistEventRef = database.getReference(REF_ARTIST_EVENT);
+        groupRef = database.getReference(REF_GROUPS);
+        artistRef = database.getReference();
 
         /*//Push some demo songs to firabase
         for(int i=0; i<20; i++){
@@ -69,10 +70,13 @@ public class InitActivity extends AppCompatActivity {
             songRef.child(id).child("artist").setValue(artist);
         }*/
 
-        //Load upcoming artist events
         events = new ArrayList<>();
+        groups = new ArrayList<>();
         adapter = new EventAdapter();
-        event_list = (ListView) findViewById(R.id.event_listView);
+
+        loadArtist();
+
+        ListView event_list = (ListView) findViewById(R.id.event_listView);
         event_list.setAdapter(adapter);
 
         event_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,18 +85,26 @@ public class InitActivity extends AppCompatActivity {
                 onUpdateEvent(pos);
             }
         });
-        Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
-        showEvents(queryFutureEvents);
 
     }
-
-    private void showEvents(final Query queryEvents) {
-        artistEventRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void loadArtist(){
+        artistRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot artistEventsSnapshot) {
-                final ArrayList<String> eventIds = new ArrayList<>();
-                final ArrayList<ArrayList<String>> eventGroupIds = new ArrayList<>();
-                for(DataSnapshot event : artistEventsSnapshot.getChildren()){
+            public void onDataChange(DataSnapshot artistSnapshot) {
+                for (DataSnapshot group : artistSnapshot.child(REF_GROUPS).getChildren()) {
+                    String groupId = group.getKey();
+                    String name = group.child("name").getValue().toString();
+                    String[] songIds = new String[(int) group.child("songIds").getChildrenCount()];
+                    int i = 0;
+                    for (DataSnapshot songId : group.child("songIds").getChildren()) {
+                        songIds[i] = songId.getValue().toString();
+                        i++;
+                    }
+                    groups.add(new Group(groupId, name, songIds));
+                }
+                ArrayList<String> eventIds = new ArrayList<>();
+                ArrayList<ArrayList<String>> eventGroupIds = new ArrayList<>();
+                for(DataSnapshot event : artistSnapshot.child(REF_ARTIST_EVENT).getChildren()){
                     eventIds.add(event.getKey());
                     ArrayList<String> groupIds = new ArrayList<>();
                     if(event.hasChildren()){
@@ -102,73 +114,8 @@ public class InitActivity extends AppCompatActivity {
                     }
                     eventGroupIds.add(groupIds);
                 }
-
-                ListenerDatabase = queryEvents.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot eventSnapshot, String previousChildName) {
-                        String id = eventSnapshot.getKey();
-                        for(int i=0; i<eventIds.size(); i++){
-                            if(id.equals(eventIds.get(i))){
-                                String name = eventSnapshot.child("name").getValue().toString();
-                                String place = eventSnapshot.child("place").getValue().toString();
-                                Long init = (long) eventSnapshot.child("start").getValue();
-                                Long end = (long) eventSnapshot.child("end").getValue();
-                                Event event = new Event(id,name, new Date(init), new Date(end), place);
-                                if (eventSnapshot.child("room").exists()) {
-                                    event.setRoom(eventSnapshot.child("room").getValue().toString());
-                                }
-                                if(eventGroupIds.get(i).size() > 0){
-                                    event.setGroupIds(eventGroupIds.get(i));
-                                }
-                                events.add(event);
-                                sortEvents();
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot eventSnapshot, String s) {
-                        String id = eventSnapshot.getKey();
-                        for(int i = 0; i<events.size(); i++){
-                            if(id.equals(events.get(i).getId())){
-                                String name = eventSnapshot.child("name").getValue().toString();
-                                String place = eventSnapshot.child("place").getValue().toString();
-                                Long init = (long) eventSnapshot.child("start").getValue();
-                                Long end = (long) eventSnapshot.child("end").getValue();
-                                events.get(i).setName(name);
-                                events.get(i).setPlace(place);
-                                events.get(i).setStartDate(new Date(init));
-                                events.get(i).setEndDate(new Date(end));
-                                if (eventSnapshot.child("room").exists()) {
-                                    String room = eventSnapshot.child("room").getValue().toString();
-                                    events.get(i).setRoom(room);
-                                }
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot eventSnapshot) {
-                        String id = eventSnapshot.getKey();
-                        for(int i = 0; i<events.size(); i++){
-                            if(id.equals(events.get(i).getId())){
-                                events.remove(i);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-
-                });
+                Query queryFutureEvents = eventRef.orderByChild("end").startAt(currentTimeMillis(), "end");
+                loadArtistEvents(queryFutureEvents,eventIds,eventGroupIds);
             }
 
             @Override
@@ -176,7 +123,38 @@ public class InitActivity extends AppCompatActivity {
 
             }
         });
+    }
 
+    private void loadArtistEvents(final Query queryEvents, final ArrayList<String> eventIds, final ArrayList<ArrayList<String>> eventGroupIds) {
+        queryEvents.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot eventSnapshot) {
+                String id = eventSnapshot.getKey();
+                for(int i=0; i<eventIds.size(); i++){
+                    if(id.equals(eventIds.get(i))){
+                        String name = eventSnapshot.child("name").getValue().toString();
+                        String place = eventSnapshot.child("place").getValue().toString();
+                        Long init = (long) eventSnapshot.child("start").getValue();
+                        Long end = (long) eventSnapshot.child("end").getValue();
+                        Event event = new Event(id,name, new Date(init), new Date(end), place);
+                        if (eventSnapshot.child("room").exists()) {
+                            event.setRoom(eventSnapshot.child("room").getValue().toString());
+                        }
+                        if(eventGroupIds.get(i).size() > 0){
+                            event.setGroupIds(eventGroupIds.get(i));
+                        }
+                        events.add(event);
+                        sortEvents();
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -207,6 +185,15 @@ public class InitActivity extends AppCompatActivity {
             ArrayList<String> groupIds = event.getGroupIds();
             if (groupIds != null) {
                 intent.putExtra("groupIds", groupIds);
+                ArrayList<String> groupNames = new ArrayList<>();
+                for (int i = 0; i < groups.size(); i++) {
+                    for (int j = 0; j < groupIds.size(); j++) {
+                        if (groups.get(i).getId().equals(groupIds.get(j))) {
+                            groupNames.add(groups.get(i).getName());
+                        }
+                    }
+                }
+                intent.putExtra("groupNames", groupNames);
             }
             startActivityForResult(intent, UPDATE_EVENT);
         }
@@ -226,13 +213,10 @@ public class InitActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        database = FirebaseDatabase.getInstance();
-        final DatabaseReference eventRef = database.getReference(REF_EVENTS);
-        final DatabaseReference artistEventRef = database.getReference(REF_ARTIST_EVENT);
-        final DatabaseReference groupRef = database.getReference(REF_GROUPS);
         switch (requestCode){
             case NEW_EVENT:
                 if(resultCode == RESULT_OK){
+                    Log.i("info","New_event");
                     String id = eventRef.push().getKey();
                     String name = data.getStringExtra("name");
                     String place = data.getStringExtra("place");
@@ -266,6 +250,7 @@ public class InitActivity extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                 }
                 else if(resultCode == RESULT_CANCELED) {
+                    Log.i("info","New_event Discard");
                     if (data.hasExtra("groupIds")) {
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
                         for (int i = 0; i < groupIds.size(); i++) {
@@ -275,7 +260,7 @@ public class InitActivity extends AppCompatActivity {
                 }
                 break;
             case UPDATE_EVENT:
-
+                Log.i("info", "Update_event");
                 String eventId = data.getStringExtra("eventId");
                 int pos=-1;
                 for(int i=0; i<events.size(); i++) {
@@ -287,6 +272,7 @@ public class InitActivity extends AppCompatActivity {
                 Event oldEvent = events.get(pos);
 
                 if(resultCode == RESULT_OK){
+                    Log.i("info", "Update save");
                     if(data.hasExtra("delete")){ //Case delete event
                         eventRef.child(eventId).removeValue();
                         artistEventRef.child(eventId).removeValue();
@@ -363,6 +349,7 @@ public class InitActivity extends AppCompatActivity {
                         }
                     }
                     if (data.hasExtra("groupIds")) {
+                        Log.i("info", "Update has Extra groupIds");
                         ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
                         ArrayList<String> oldGroupIds = oldEvent.getGroupIds();
                         updatedEvent.setGroupIds(groupIds);
@@ -406,6 +393,7 @@ public class InitActivity extends AppCompatActivity {
                     }
 
                     if(changed){ //If sth changed during the UPDATE, update list events
+                        Log.i("info", "Update finish with changes");
                         events.set(pos, updatedEvent);
                         sortEvents();
                         adapter.notifyDataSetChanged();
@@ -413,10 +401,13 @@ public class InitActivity extends AppCompatActivity {
                     break;
 
                 }else if(resultCode == RESULT_CANCELED) {
+                    Log.i("info", "Update discard");
                     if (data.hasExtra("groupIds")) {
-                        ArrayList<String> groupIds = new ArrayList<>(data.getStringArrayListExtra("groupIds"));
+                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
                         ArrayList<String> oldGroupIds = new ArrayList<>(oldEvent.getGroupIds());
-                        if(oldGroupIds != null){
+                        oldGroupIds.clear();
+                        if(oldGroupIds.size()<0){
+                            Log.i("info", "Update discard amb oldGroups != null");
                             for (int i = 0; i < groupIds.size(); i++) {
                                 for(int j=0; j < oldGroupIds.size(); j++){
                                     if(groupIds.get(i).equals(oldGroupIds.get(j))){
@@ -437,6 +428,7 @@ public class InitActivity extends AppCompatActivity {
                                 }
                             }
                         }else{
+                            Log.i("info", "Update discard amb oldGroups == null");
                             for(int i=0; i<groupIds.size(); i++){
                                 groupRef.child(groupIds.get(i)).child("eventIds").child(eventId).removeValue();
                             }

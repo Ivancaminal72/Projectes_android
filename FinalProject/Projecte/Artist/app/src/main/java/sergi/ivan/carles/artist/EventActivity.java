@@ -18,18 +18,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
-import static sergi.ivan.carles.artist.InitActivity.REF_GROUPS;
 
 public class EventActivity extends AppCompatActivity {
 
@@ -86,7 +78,9 @@ public class EventActivity extends AppCompatActivity {
             }
             if (intent.hasExtra("groupIds")) {
                 groupIds = intent.getStringArrayListExtra("groupIds");
-                getGroupsFromFirebase();
+                groupNames.clear();
+                groupNames=intent.getStringArrayListExtra("groupNames");
+                adapter.notifyDataSetChanged();
             }
         } else {
             getSupportActionBar().setTitle(R.string.new_event);
@@ -171,6 +165,7 @@ public class EventActivity extends AppCompatActivity {
                     }
                     if (groupIds.size() > 0) {
                         data.putExtra("groupIds", groupIds);
+                        data.putExtra("groupNames", groupNames);
                     }
                     setResult(RESULT_OK, data);
                     finish();
@@ -184,6 +179,7 @@ public class EventActivity extends AppCompatActivity {
                     data.putExtra("eventId", eventId);
                     if (groupIds.size() > 0) {
                         data.putExtra("groupIds", groupIds);
+                        data.putExtra("groupNames", groupNames);
                     }
                     setResult(RESULT_OK, data);
                     finish();
@@ -254,50 +250,6 @@ public class EventActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private ArrayList<String> getEventGroupNames(ArrayList<Group> groups) {
-        ArrayList<String> group_names = new ArrayList<>();
-        for (int i = 0; i < groups.size(); i++) {
-            for (int j = 0; j < groupIds.size(); j++) {
-                if (groups.get(i).getId().equals(groupIds.get(j))) {
-                    group_names.add(groups.get(i).getName());
-                }
-            }
-        }
-        return group_names;
-    }
-
-    private void getGroupsFromFirebase() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference groupRef = database.getReference(REF_GROUPS);
-
-        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot groupsSnapshot) {
-                ArrayList<Group> groups = new ArrayList<>();
-                for (DataSnapshot group : groupsSnapshot.getChildren()) {
-                    String groupId = group.getKey();
-                    String name = group.child("name").getValue().toString();
-                    String[] songIds = new String[(int) group.child("songIds").getChildrenCount()];
-                    int i = 0;
-                    for (DataSnapshot songId : group.child("songIds").getChildren()) {
-                        songIds[i] = songId.getValue().toString();
-                        i++;
-                    }
-                    groups.add(new Group(groupId, name, songIds));
-                }
-                groupNames.clear();
-                groupNames.addAll(getEventGroupNames(groups));
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
     private void newGroup() {
         Intent intent = new Intent(this, AddGroupActivity.class);
         if(eventId != null){
@@ -313,7 +265,8 @@ public class EventActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
                     groupIds.addAll(Ids);
-                    getGroupsFromFirebase();
+                    groupNames.addAll(data.getStringArrayListExtra("groupNames"));
+                    adapter.notifyDataSetChanged();
 
                 }else if(resultCode == RESULT_CANCELED){
                     Log.i("info", "0 groups");

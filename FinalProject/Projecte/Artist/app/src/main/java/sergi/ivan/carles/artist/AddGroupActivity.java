@@ -33,7 +33,6 @@ public class AddGroupActivity extends AppCompatActivity {
     private static final int AUTO_GROUP_NAME_SIZE = 5;
     private ArrayList<Song> songs;
     private EditText edit_group_name;
-    private FirebaseDatabase database;
     private SongAdapter adapter;
     private ArrayList<String> groupIds;
 
@@ -42,7 +41,7 @@ public class AddGroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
         getSupportActionBar().setTitle(getResources().getString(R.string.make_groups));
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference songRef = database.getReference(REF_SONGS);
         final DatabaseReference groupRef = database.getReference(REF_GROUPS);
         groupIds = new ArrayList<>();
