@@ -246,6 +246,7 @@ public class InitActivity extends AppCompatActivity {
                 intent.putExtra("groupNames", groupNames);
                 intent.putExtra("groupSongIds", groupSongIds);
             }
+            intent.putExtra("requestCode", UPDATE_EVENT);
             startActivityForResult(intent, UPDATE_EVENT);
         }
     }
@@ -255,6 +256,7 @@ public class InitActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.op_new:
                 Intent intent = new Intent(this, EventActivity.class);
+                intent.putExtra("requestCode", NEW_EVENT);
                 startActivityForResult(intent, NEW_EVENT);
             default:
                 return super.onOptionsItemSelected(item);

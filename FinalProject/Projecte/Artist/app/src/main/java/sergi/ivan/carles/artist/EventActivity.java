@@ -2,8 +2,10 @@ package sergi.ivan.carles.artist;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
+import static java.lang.System.in;
 
 public class EventActivity extends AppCompatActivity {
 
@@ -67,7 +70,6 @@ public class EventActivity extends AppCompatActivity {
                 groupNames
         );
         group_listview.setAdapter(adapter);
-
         Intent intent = getIntent();
         init = new Date(intent.getLongExtra("start", currentTimeMillis()+ OFFSET_WEEK_MILLIS));
         end = new Date(intent.getLongExtra("end", currentTimeMillis()+ OFFSET_WEEK_MILLIS + durationEvent));
@@ -291,15 +293,70 @@ public class EventActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.i("info", "Back button pressed");
-        Intent data = new Intent();
-        if (eventId != null) {
-            data.putExtra("eventId", eventId);
-        }
-        if(groupIds.size() > 0){
-            data.putExtra("groupIds", groupIds);
-        }
-        setResult(RESULT_CANCELED, data);
-        super.onBackPressed();
-    }
+        Intent intent = getIntent();
+        int requestCode = intent.getIntExtra("requestCode",-1);
+        String name = edit_name.getText().toString();
+        String place = edit_place.getText().toString();
+        String room = edit_room.getText().toString();
+        String intentName = intent.getStringExtra("name");
+        String intentRoom = intent.getStringExtra("room");
+        String intentPlace=intent.getStringExtra("place");
+        boolean changed=false;
+        if(requestCode==1) {
+            if (!name.equals(intentName) || !place.equals(intentPlace)) {
+                changed=true;
+            }else{
+                if(intent.hasExtra("room")){
+                    if(!room.equals(intentRoom)){
+                        changed=true;
+                    }
 
+                }else{
+                    if(!room.equals("")){
+                        changed=true;
+                    }
+                }
+            }
+        }else if(requestCode==0){
+            if (!name.equals("") || !place.equals("") || !room.equals("")) {
+                changed=true;
+            }
+        }
+        if(changed){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.confirm);
+            String msg = getResources().getString(R.string.confirmation);
+            builder.setMessage(msg);
+            builder.setCancelable(false);
+            builder.setPositiveButton(R.string.Discard, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent data = new Intent();
+                    if (eventId != null) {
+                        data.putExtra("eventId", eventId);
+                    }
+                    if (groupIds.size() > 0) {
+                        data.putExtra("groupIds", groupIds);
+                    }
+                    setResult(RESULT_CANCELED, data);
+                    adapter.notifyDataSetChanged();
+                    EventActivity.this.finish();
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, null);
+            builder.create().show();
+        }else{
+            Intent data = new Intent();
+            if (eventId != null) {
+                data.putExtra("eventId", eventId);
+            }
+            if (groupIds.size() > 0) {
+                data.putExtra("groupIds", groupIds);
+            }
+            setResult(RESULT_CANCELED, data);
+            adapter.notifyDataSetChanged();
+            EventActivity.this.finish();
+            super.onBackPressed();
+        }
+    }
 }
