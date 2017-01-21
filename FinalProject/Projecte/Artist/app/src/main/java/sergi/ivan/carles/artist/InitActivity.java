@@ -184,6 +184,7 @@ public class InitActivity extends AppCompatActivity {
         if(event.getStartDate().getTime() <= currentTimeMillis() && event.getGroupIds() != null){
             Intent intent = new Intent(this,ActualEventActivity.class);
             intent.putStringArrayListExtra("groupIds", event.getGroupIds());
+            intent.putExtra("eventId",events.get(pos).getId());
             startActivity(intent);
         }else{
             Intent intent = new Intent(this, EventActivity.class);

@@ -42,7 +42,7 @@ public class ActualEventActivity extends AppCompatActivity {
     public static final String POS_ACT_GROUP = "pos_act";
     public static final String POS_GROUP_SELECTED = "position_group_selected";
     public static final String REF_GROUPS = "groups";
-    private long OFFSET_MILLIS_VOTE = 3600000; //Default time 15 minutes
+    private long OFFSET_MILLIS_VOTE = 36000; //Default time 15 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
     private ListView group_list;
@@ -63,6 +63,7 @@ public class ActualEventActivity extends AppCompatActivity {
     private ValueEventListener ListenerDatabase;
     private FirebaseDatabase database;
     private Date endVoteTime;
+    private String eventId;
 
 
     @Override
@@ -71,7 +72,9 @@ public class ActualEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         songs = new ArrayList<>(InitActivity.songs);
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference actRef = database.getReference("act_group");
+        final DatabaseReference eventRef = database.getReference("events");
+        Intent intent = getIntent();
+        eventId = intent.getStringExtra("eventId");
         setContentView(R.layout.activity_actual_event);
 
         //Load saved data
@@ -128,23 +131,23 @@ public class ActualEventActivity extends AppCompatActivity {
         if (endVoteTime.after(new Date(currentTimeMillis()+500))) { //+500 milliseconds (big offset to make sure timmer can be inicialized)
             Log.i("info", "Votació en curs... inicialització del Timmer");
             setVotingState(true);
-            initializeTimer(actRef);
+            initializeTimer(eventRef.child(eventId).child("act_group"));
         } else {
             Log.i("info", "Votació acabada recollir resultats");
-            showGroup(pos_act, actRef, true);
+            showGroup(pos_act, eventRef.child(eventId).child("act_group"), true);
             setVotingState(false);
         }
 
-        if(pos >= 0){showGroup(pos, actRef, false);}
+        if(pos >= 0){showGroup(pos, eventRef.child(eventId).child("act_group"), false);}
 
         group_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (voting & listening) {
-                    actRef.removeEventListener(ListenerDatabase);
+                    eventRef.child(eventId).child("act_group").removeEventListener(ListenerDatabase);
                     listening = false;
                 }
-                showGroup(position, actRef, false);
+                showGroup(position, eventRef.child(eventId).child("act_group"), false);
                 pos = position;
             }
         });
@@ -164,17 +167,17 @@ public class ActualEventActivity extends AppCompatActivity {
                             Log.i("info", String.format("CurrentMillis: %d", currentTimeMillis()));
                             endVoteTime = new Date(currentTimeMillis() + OFFSET_MILLIS_VOTE);
                             Log.i("info", String.format("EndVoteTime  : %d", endVoteTime.getTime()));
-                            sendGroup(pos, actRef);
+                            sendGroup(pos, eventRef.child(eventId).child("act_group"));
                             Log.i("info", "group sent");
                             setVotingState(true);
-                            initializeTimer(actRef);
+                            initializeTimer(eventRef.child(eventId).child("act_group"));
                             pos_act = pos;
                         }
                     });
                     builder.setNegativeButton(android.R.string.cancel, null);
                     builder.create().show();
                 } else{
-                    if(!listening){showGroup(pos_act, actRef, false);}
+                    if(!listening){showGroup(pos_act, eventRef.child(eventId).child("act_group"), false);}
                     if(pos < 0){  //None group selected
                         Toast.makeText(
                                 ActualEventActivity.this,
@@ -214,7 +217,7 @@ public class ActualEventActivity extends AppCompatActivity {
             songsIds = groups.get(position).getSongIds();
             for (int i = 0; i < GROUP_MAX_SIZE; i++) {
                 for (int j = 0; j < songs.size(); j++) {
-                    if (songs.get(j).getId() == songsIds[i]) {
+                    if (songs.get(j).getId().equals(songsIds[i])) {
                         sNames[i] = songs.get(j).getName();
                         sArtists[i] = songs.get(j).getArtist();
                     }
@@ -254,7 +257,7 @@ public class ActualEventActivity extends AppCompatActivity {
                         long[] findMax = new long[GROUP_MAX_SIZE];
                         arraycopy(actPoints, 0, findMax, 0, GROUP_MAX_SIZE);
                         int[] orderIndex = new int[GROUP_MAX_SIZE];
-                        int max = 0;
+                        int max = -1;
                         int n = 0;
                         while (n < GROUP_MAX_SIZE) {
                             for (int i = 0; i < GROUP_MAX_SIZE; i++) {
@@ -264,7 +267,7 @@ public class ActualEventActivity extends AppCompatActivity {
                             }
                             findMax[max] = -1;
                             orderIndex[n] = max;
-                            max = 0;
+                            max = -1;
                             n += 1;
                         }
                         String[] sIds = groups.get(position).getSongIds();
