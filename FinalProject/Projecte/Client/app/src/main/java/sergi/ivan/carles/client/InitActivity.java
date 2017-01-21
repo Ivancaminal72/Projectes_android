@@ -60,7 +60,7 @@ public class InitActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
                 if(events.get(pos).getStartDate().getTime() <= currentTimeMillis()){
                     Intent intent = new Intent(InitActivity.this, ActualEventActivity.class);
-                    intent.putExtra("id", events.get(pos).getId());
+                    intent.putExtra("eventId", events.get(pos).getId());
                     startActivity(intent);
                 }
                 else{

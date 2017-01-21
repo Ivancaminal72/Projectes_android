@@ -1,5 +1,6 @@
 package sergi.ivan.carles.client;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -47,13 +48,16 @@ public class ActualEventActivity extends AppCompatActivity {
     private Date endVoteTime;
     private Date oldEndVoteTime;
     private boolean voted;
+    private String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actual_event_activiy);
         database = FirebaseDatabase.getInstance();
-        final DatabaseReference actRef = database.getReference("act_group");
+        Intent intent = getIntent();
+        eventId = intent.getStringExtra("eventId");
+        final DatabaseReference eventsRef = database.getReference("events").child(eventId).child("act_group");
         act_group = new ArrayList<>();
         songSelected = -1;
         countdown = (TextView) findViewById(R.id.countdown);
@@ -71,7 +75,7 @@ public class ActualEventActivity extends AppCompatActivity {
             voted = settings.getBoolean(VOTED,false);
         }
 
-        actRef.addValueEventListener(new ValueEventListener()   {
+        eventsRef.addValueEventListener(new ValueEventListener()   {
             @Override
             public void onDataChange(DataSnapshot actGroup) {
                 Log.i("info", "Update actual group");
@@ -168,7 +172,7 @@ public class ActualEventActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(songSelected >= 0 && !voted){
                     Log.i("info", String.format("Voto cancó: %d", songSelected));
-                    DatabaseReference transRef = actRef.child("song"+String.valueOf(
+                    DatabaseReference transRef = eventsRef.child("song"+String.valueOf(
                             act_group.get(songSelected).getGroupPosition()))
                             .child("points");
                     transRef.runTransaction(new Transaction.Handler(){
