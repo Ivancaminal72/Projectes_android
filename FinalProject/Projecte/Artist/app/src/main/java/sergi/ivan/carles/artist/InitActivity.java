@@ -181,44 +181,11 @@ public class InitActivity extends AppCompatActivity {
 
     private void onUpdateEvent(int pos) {
         Event event = events.get(pos);
-        if(event.getStartDate().getTime() <= currentTimeMillis()){
-            if(event.getGroupIds() != null) {
-                Intent intent = new Intent(this,ActualEventActivity.class);
-                intent.putStringArrayListExtra("groupIds", event.getGroupIds());
-                startActivity(intent);
-            }
-            else{
-                Intent intent = new Intent(this, EventActivity.class);
-                intent.putExtra("eventId", event.getId());
-                intent.putExtra("name", event.getName());
-                intent.putExtra("start", event.getStartDate().getTime());
-                intent.putExtra("end", event.getEndDate().getTime());
-                intent.putExtra("place", event.getPlace());
-                String room = event.getRoom();
-                if (room != null) {
-                    intent.putExtra("room", room);
-                }
-                ArrayList<String> groupIds = event.getGroupIds();
-                Log.i("info","Intent Update pos: "+pos);
-                if (groupIds != null) {
-                    intent.putExtra("groupIds", groupIds);
-                    ArrayList<String> groupNames = new ArrayList<>();
-                    ArrayList<String[]> groupSongIds = new ArrayList<>();
-                    for (int i = 0; i < groups.size(); i++) {
-                        for (int j = 0; j < groupIds.size(); j++) {
-                            if (groups.get(i).getId().equals(groupIds.get(j))) {
-                                groupNames.add(groups.get(i).getName());
-                                groupSongIds.add(groups.get(i).getSongIds());
-                            }
-                        }
-                    }
-                    intent.putExtra("groupNames", groupNames);
-                    intent.putExtra("groupSongIds", groupSongIds);
-                }
-                startActivityForResult(intent, UPDATE_EVENT);
-            }
-        }
-        else {
+        if(event.getStartDate().getTime() <= currentTimeMillis() && event.getGroupIds() != null){
+            Intent intent = new Intent(this,ActualEventActivity.class);
+            intent.putStringArrayListExtra("groupIds", event.getGroupIds());
+            startActivity(intent);
+        }else{
             Intent intent = new Intent(this, EventActivity.class);
             intent.putExtra("eventId", event.getId());
             intent.putExtra("name", event.getName());
@@ -289,9 +256,9 @@ public class InitActivity extends AppCompatActivity {
                     }
 
                     if(data.hasExtra("groupIds")){
-                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                        ArrayList<String> groupNames = data.getStringArrayListExtra("groupNames");
-                        ArrayList<String[]> groupSongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
+                        ArrayList<String> groupIds = new ArrayList<>(data.getStringArrayListExtra("groupIds"));
+                        ArrayList<String> groupNames = new ArrayList<>(data.getStringArrayListExtra("groupNames"));
+                        ArrayList<String[]> groupSongIds = new ArrayList<>((ArrayList<String[]>) data.getSerializableExtra("groupSongIds"));
 
                         for(int i=0; i<groupIds.size(); i++){
                             String groupId = groupRef.push().getKey();
@@ -335,6 +302,10 @@ public class InitActivity extends AppCompatActivity {
                         artistEventRef.child(eventId).removeValue();
 
                         if (oldEvent.getGroupIds() != null) {
+                            for(String aparcao : oldEvent.getGroupIds()){
+                                Log.i("info","oldEventIds (que s'han de boorar)!! :    "+aparcao);
+                            }
+
                             for (int i = 0; i < oldEvent.getGroupIds().size(); i++) {
                                 groupRef.child(oldEvent.getGroupIds().get(i)).child("eventIds").child(eventId).removeValue();
                             }
@@ -389,73 +360,70 @@ public class InitActivity extends AppCompatActivity {
                     }
                     if (data.hasExtra("groupIds")) {
                         Log.i("info", "Update has Extra groupIds");
-                        ArrayList<String> groupIds = data.getStringArrayListExtra("groupIds");
-                        ArrayList<String> groupNames = data.getStringArrayListExtra("groupNames");
-                        ArrayList<String[]> groupSongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
-                        for(String[] id : groupSongIds){
-                            Log.i("info", "--1   "+id[0]);
-                            Log.i("info", "--1   "+id[1]);
-                            Log.i("info", "--2   "+id[2]);
-                            Log.i("info", "--3   "+id[3]);
-                        }
-                        ArrayList<String> oldGroupIds = new ArrayList<>();
-                        if(oldEvent.getGroupIds()!=null){
-                            oldGroupIds = oldEvent.getGroupIds();
-                        }
-                        if(!groupIds.equals(oldGroupIds)){
-                            if(oldGroupIds.size() > 0){
-                                for (int i = 0; i < groupIds.size(); i++) {
-                                    for(int j=0; j < oldGroupIds.size(); j++){
-                                        if(groupIds.get(i).equals(oldGroupIds.get(j))){
-                                            groupIds.set(i,"=");
-                                            oldGroupIds.set(j,"=");
-                                        }
-                                    }
-                                }
-                                for(int j=0; j<oldGroupIds.size(); j++){
-                                    if(!oldGroupIds.get(j).equals("=")){
-                                        Log.e("info", "This case is not possible in the current version");
-                                        finish();
-                                    }
-                                }
-                                int num = oldGroupIds.size();
-                                for(int i=0; i<groupIds.size(); i++){
-                                    if(!groupIds.get(i).equals("=")){
-                                        String groupId = groupRef.push().getKey();
+                        ArrayList<String> groupIds = new ArrayList<>(data.getStringArrayListExtra("groupIds"));
+                        ArrayList<String> groupNames = new ArrayList<>(data.getStringArrayListExtra("groupNames"));
+                        ArrayList<String[]> groupSongIds = new ArrayList<>((ArrayList<String[]>) data.getSerializableExtra("groupSongIds"));
+                        if(oldEvent.getGroupIds() != null){
+                            ArrayList<String> oldGroupIds = new ArrayList<>(oldEvent.getGroupIds());
+                            for(String a:oldGroupIds){
+                                Log.i("info","Old group ids: ->"+a);
+                            }
 
-                                        for(int j=0; j<GROUP_MAX_SIZE; j++) {
-                                            groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
-                                                    .setValue(groupSongIds.get(i)[j]);
-                                            Log.i("info","Update groupSongIds: "+groupSongIds.get(i)[j]);
-                                        }
-                                        groupRef.child(groupId).child("name").setValue(groupNames.get(i));
-                                        groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
-                                        artistEventRef.child(eventId).child("groupId"+String.valueOf(num)).setValue(groupId);
-                                        groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
-                                        updatedEvent.addGroupId(groupId);
-                                        changed=true;
-                                        num++;
-                                    }
-                                }
-                            }else{
-                                for(int i=0; i<groupIds.size(); i++){
-                                    if(!groupIds.get(i).equals("=")){
-                                        String groupId = groupRef.push().getKey();
-
-                                        for(int j=0; j<GROUP_MAX_SIZE; j++) {
-                                            groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
-                                                    .setValue(groupSongIds.get(i)[j]);
-                                        }
-                                        groupRef.child(groupId).child("name").setValue(groupNames.get(i));
-                                        groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
-                                        artistEventRef.child(eventId).child("groupId"+String.valueOf(i)).setValue(groupId);
-                                        groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
-                                        updatedEvent.addGroupId(groupId);
-                                        changed=true;
+                            for (int i = 0; i < groupIds.size(); i++) {
+                                for(int j=0; j < oldGroupIds.size(); j++){
+                                    if(groupIds.get(i).equals(oldGroupIds.get(j))){
+                                        updatedEvent.addGroupId(groupIds.get(i));
+                                        groupIds.set(i,"=");
+                                        oldGroupIds.set(j,"=");
                                     }
                                 }
                             }
+
+                            for(int j=0; j<oldGroupIds.size(); j++){
+                                if(!oldGroupIds.get(j).equals("=")){
+                                    Log.e("info", "This case is not possible in the current version");
+                                    finish();
+                                }
+                            }
+
+                            int num = oldGroupIds.size();
+                            for(int i=0; i<groupIds.size(); i++){
+                                if(!groupIds.get(i).equals("=")){
+                                    String groupId = groupRef.push().getKey();
+
+                                    for(int j=0; j<GROUP_MAX_SIZE; j++) {
+                                        groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
+                                                .setValue(groupSongIds.get(i)[j]);
+                                        Log.i("info","Update groupSongIds: "+groupSongIds.get(i)[j]);
+                                    }
+                                    groupRef.child(groupId).child("name").setValue(groupNames.get(i));
+                                    groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
+                                    artistEventRef.child(eventId).child("groupId"+String.valueOf(num)).setValue(groupId);
+                                    groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
+                                    updatedEvent.addGroupId(groupId);
+                                    changed=true;
+                                    num++;
+                                }
+                            }
+                        }else{
+                            for(int i=0; i<groupIds.size(); i++){
+                                if(!groupIds.get(i).equals("=")){
+                                    String groupId = groupRef.push().getKey();
+
+                                    for(int j=0; j<GROUP_MAX_SIZE; j++) {
+                                        groupRef.child(groupId).child("songIds").child("id" + String.valueOf(j + 1))
+                                                .setValue(groupSongIds.get(i)[j]);
+                                    }
+                                    groupRef.child(groupId).child("name").setValue(groupNames.get(i));
+                                    groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
+                                    artistEventRef.child(eventId).child("groupId"+String.valueOf(i)).setValue(groupId);
+                                    groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
+                                    updatedEvent.addGroupId(groupId);
+                                    changed=true;
+                                }
+                            }
                         }
+
                     }else{
                         if(oldEvent.getGroupIds() != null){
                             Log.e("info", "This case is not possible in the current version");

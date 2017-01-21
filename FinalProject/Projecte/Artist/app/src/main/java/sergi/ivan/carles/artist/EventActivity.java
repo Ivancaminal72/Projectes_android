@@ -83,9 +83,9 @@ public class EventActivity extends AppCompatActivity {
                 edit_room.setText((intent.getStringExtra("room")));
             }
             if (intent.hasExtra("groupIds")) {
-                groupIds = intent.getStringArrayListExtra("groupIds");
-                groupNames=intent.getStringArrayListExtra("groupNames");
-                groupSongIds= (ArrayList<String[]>) intent.getSerializableExtra("groupSongIds");
+                groupIds.addAll(intent.getStringArrayListExtra("groupIds"));
+                groupNames.addAll(intent.getStringArrayListExtra("groupNames"));
+                groupSongIds.addAll((ArrayList<String[]>) intent.getSerializableExtra("groupSongIds"));
                 adapter.notifyDataSetChanged();
             }
         } else {
@@ -268,18 +268,9 @@ public class EventActivity extends AppCompatActivity {
         switch (requestCode) {
             case ADD_GROUPS:
                 if (resultCode == RESULT_OK) {
-                    ArrayList<String> Ids = data.getStringArrayListExtra("groupIds");
-                    ArrayList<String> Names = data.getStringArrayListExtra("groupNames");
-                    ArrayList<String[]> SongIds = (ArrayList<String[]>) data.getSerializableExtra("groupSongIds");
-                    for(String[] id : SongIds){
-                        Log.i("info", "1   "+id[0]);
-                        Log.i("info", "1   "+id[1]);
-                        Log.i("info", "2   "+id[2]);
-                        Log.i("info", "3   "+id[3]);
-                    }
-                    groupIds.addAll(Ids);
-                    groupNames.addAll(Names);
-                    groupSongIds.addAll(SongIds);
+                    groupIds.addAll(data.getStringArrayListExtra("groupIds"));
+                    groupNames.addAll(data.getStringArrayListExtra("groupNames"));
+                    groupSongIds.addAll((ArrayList<String[]>) data.getSerializableExtra("groupSongIds"));
                     adapter.notifyDataSetChanged();
                     newGroups = true;
 
@@ -343,7 +334,6 @@ public class EventActivity extends AppCompatActivity {
                         data.putExtra("groupIds", groupIds);
                     }
                     setResult(RESULT_CANCELED, data);
-                    adapter.notifyDataSetChanged();
                     EventActivity.this.finish();
                 }
             });
@@ -358,7 +348,6 @@ public class EventActivity extends AppCompatActivity {
                 data.putExtra("groupIds", groupIds);
             }
             setResult(RESULT_CANCELED, data);
-            adapter.notifyDataSetChanged();
             EventActivity.this.finish();
             super.onBackPressed();
         }

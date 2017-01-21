@@ -74,7 +74,9 @@ public class Event {
         this.room = room;
     }
 
-    public void setGroupIds(ArrayList<String> groupIds) {this.groupIds = groupIds;}
+    public void setGroupIds(ArrayList<String> groupIds) {
+        if(this.groupIds == null){this.groupIds = new ArrayList<>();}
+        this.groupIds = groupIds;}
 
     public void addGroupId(String groupId){
         if(this.groupIds == null){this.groupIds = new ArrayList<>();}

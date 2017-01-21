@@ -16,13 +16,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 
 import static sergi.ivan.carles.artist.InitActivity.GROUP_MAX_SIZE;
-import static sergi.ivan.carles.artist.InitActivity.REF_GROUPS;
 
 public class AddGroupActivity extends AppCompatActivity {
 
@@ -136,8 +132,10 @@ public class AddGroupActivity extends AppCompatActivity {
             }
             data.putExtra("groupSongIds", groupSongIds);
             setResult(RESULT_OK, data);
+            finish();
         }else{
             setResult(RESULT_CANCELED);
+            finish();
         }
 
         super.onBackPressed();
