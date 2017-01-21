@@ -302,10 +302,6 @@ public class InitActivity extends AppCompatActivity {
                         artistEventRef.child(eventId).removeValue();
 
                         if (oldEvent.getGroupIds() != null) {
-                            for(String aparcao : oldEvent.getGroupIds()){
-                                Log.i("info","oldEventIds (que s'han de boorar)!! :    "+aparcao);
-                            }
-
                             for (int i = 0; i < oldEvent.getGroupIds().size(); i++) {
                                 groupRef.child(oldEvent.getGroupIds().get(i)).child("eventIds").child(eventId).removeValue();
                             }
@@ -365,9 +361,6 @@ public class InitActivity extends AppCompatActivity {
                         ArrayList<String[]> groupSongIds = new ArrayList<>((ArrayList<String[]>) data.getSerializableExtra("groupSongIds"));
                         if(oldEvent.getGroupIds() != null){
                             ArrayList<String> oldGroupIds = new ArrayList<>(oldEvent.getGroupIds());
-                            for(String a:oldGroupIds){
-                                Log.i("info","Old group ids: ->"+a);
-                            }
 
                             for (int i = 0; i < groupIds.size(); i++) {
                                 for(int j=0; j < oldGroupIds.size(); j++){

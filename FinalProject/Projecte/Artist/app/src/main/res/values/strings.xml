@@ -42,4 +42,6 @@
     <string name="Group_done">Group done!</string>
     <string name="confirmation">Are you sure you want to discard changes?</string>
     <string name="Discard">Discard</string>
+    <string name="Email">Email</string>
+    <string name="Password">Password</string>
 </resources>
