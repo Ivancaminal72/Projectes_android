@@ -51,4 +51,9 @@
     <string name="phone">Phone number (Optional)</string>
     <string name="empty_fields">It is necessary to complete all obligatory fields</string>
     <string name="short_password">Password is too short</string>
+    <string name="error_email_does_not_exist">The email doesn\'t exist</string>
+    <string name="Pswd">Password</string>
+    <string name="error_email_no_exist">This email does not exist</string>
+    <string name="SignUp">Sign-up</string>
+    <string name="SignIn">Log-in</string>
 </resources>

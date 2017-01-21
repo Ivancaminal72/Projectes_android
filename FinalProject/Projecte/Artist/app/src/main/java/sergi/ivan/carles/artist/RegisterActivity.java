@@ -61,12 +61,18 @@ public class RegisterActivity extends AppCompatActivity {
     private View mLoginFormView;*/
     private ValueEventListener ListenerDatabase;
     private FirebaseDatabase database;
+    public static ArrayList<String> localUsers;
+    public static ArrayList<String> artistIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         database = FirebaseDatabase.getInstance();
+
+        localUsers = new ArrayList<>();
+        artistIds = new ArrayList<>();
+
         final DatabaseReference artistRef = database.getReference("artists");
         final EditText editEmail = (EditText) findViewById(R.id.email);
         final EditText editUser = (EditText) findViewById(R.id.artistic_name);
@@ -114,10 +120,10 @@ public class RegisterActivity extends AppCompatActivity {
                     if(!phone.matches("")){
                         artistRef.child(artistId).child("profile").child("phone").setValue(phone);
                     }
-                    Intent data = new Intent();
-                    data.putExtra("user",email+":"+password);
-                    data.putExtra("id",artistId);
-                    setResult(RESULT_OK,data);
+                    Intent intent = new Intent();
+                    localUsers.add(email+":"+password);
+                    artistIds.add(artistId);
+                    setResult(RESULT_OK,intent);
                     finish();
                 }
             }
