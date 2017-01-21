@@ -45,6 +45,7 @@ public class EventActivity extends AppCompatActivity {
     private ArrayList<String> groupNames;
     private ArrayList<String[]> groupSongIds;
     private ArrayAdapter<String> adapter;
+    private boolean newGroups = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,6 +281,7 @@ public class EventActivity extends AppCompatActivity {
                     groupNames.addAll(Names);
                     groupSongIds.addAll(SongIds);
                     adapter.notifyDataSetChanged();
+                    newGroups = true;
 
                 }else if(resultCode == RESULT_CANCELED){
                     Log.i("info", "0 groups");
@@ -305,7 +307,9 @@ public class EventActivity extends AppCompatActivity {
         if(requestCode==1) {
             if (!name.equals(intentName) || !place.equals(intentPlace)) {
                 changed=true;
-            }else{
+            }
+            else if(newGroups){changed = true;}
+            else{
                 if(intent.hasExtra("room")){
                     if(!room.equals(intentRoom)){
                         changed=true;
