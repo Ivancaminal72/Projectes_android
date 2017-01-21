@@ -37,4 +37,6 @@
     <string name="hint_group_name">Nombre del grupo</string>
     <string name="four_songs">Solo grupos de 4 canciones</string>
     <string name="Group_done">Grupo hecho!</string>
+    <string name="Discard">Descartar</string>
+    <string name="confirmation">Está seguro que desea descartar los cambios realizados?</string>
 </resources>
