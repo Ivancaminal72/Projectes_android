@@ -35,28 +35,24 @@ import static java.lang.System.currentTimeMillis;
 public class ActualEventActivity extends AppCompatActivity {
 
     private static final int GROUP_MAX_SIZE = 4;
-    public static final String END_VOTE_TIME = "endVoteTime";
     public static final String OLD_END_VOTE_TIME = "oldEndVoteTime";
     public static final String VOTED = "voted";
     private MyListAdapter adapter;
     private ArrayList<Song> act_group;
-    private ListView list_songs;
-    private FirebaseDatabase database;
-    private Button buttonVote;
     private TextView countdown;
     private int songSelected;
     private Date endVoteTime;
     private Date oldEndVoteTime;
     private boolean voted;
-    private String eventId;
+    private boolean voting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actual_event_activiy);
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         Intent intent = getIntent();
-        eventId = intent.getStringExtra("eventId");
+        String eventId = intent.getStringExtra("eventId");
         final DatabaseReference eventsRef = database.getReference("events").child(eventId).child("act_group");
         act_group = new ArrayList<>();
         songSelected = -1;
@@ -147,8 +143,10 @@ public class ActualEventActivity extends AppCompatActivity {
                 }
 
                 else{
-                    countdown.setText(R.string.noSongs);
-                    Log.i("info", "No hi ha endVoteTime");
+                    if(act_group.size() == 0) {
+                        countdown.setText(R.string.noSongs);
+                        Log.i("info", "No hi ha endVoteTime");
+                    }
                 }
             }
 
@@ -157,7 +155,7 @@ public class ActualEventActivity extends AppCompatActivity {
         });
 
         adapter = new MyListAdapter();
-        list_songs = (ListView) findViewById(R.id.vote_list);
+        ListView list_songs = (ListView) findViewById(R.id.vote_list);
         list_songs.setAdapter(adapter);
         list_songs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -166,11 +164,12 @@ public class ActualEventActivity extends AppCompatActivity {
             }
         });
 
-        buttonVote = (Button) findViewById(R.id.btn_vote);
+        Button buttonVote = (Button) findViewById(R.id.btn_vote);
         buttonVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(songSelected >= 0 && !voted){
+                if(songSelected >= 0 && !voted && !voting){
+                    voting = true;
                     Log.i("info", String.format("Voto cancó: %d", songSelected));
                     DatabaseReference transRef = eventsRef.child("song"+String.valueOf(
                             act_group.get(songSelected).getGroupPosition()))
@@ -200,6 +199,7 @@ public class ActualEventActivity extends AppCompatActivity {
                             else{
                                 Log.i("info", "Firebase vote song correctly");
                                 voted = true;
+                                voting = false;
                                 Toast.makeText(
                                         ActualEventActivity.this,
                                         getResources().getString(R.string.voted),
