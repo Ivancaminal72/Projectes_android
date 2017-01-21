@@ -3,6 +3,7 @@ package sergi.ivan.carles.artist;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,33 +30,101 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.SAXParserFactory;
+
 import static android.Manifest.permission.READ_CONTACTS;
 
-public class RegisterActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class RegisterActivity extends AppCompatActivity {
 
-    private static final int REQUEST_READ_CONTACTS = 0;
-    private static final String[] DUMMY_CREDENTIALS = new String[]{"foo@example.com:hello", "bar@example.com:world"};
+    //private static final int REQUEST_READ_CONTACTS = 0;
+    //private static final String[] DUMMY_CREDENTIALS = new String[]{"foo@example.com:hello", "bar@example.com:world"};
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    /*private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
-    private View mLoginFormView;
+    private View mLoginFormView;*/
+    private ValueEventListener ListenerDatabase;
+    private FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        database = FirebaseDatabase.getInstance();
+        final DatabaseReference artistRef = database.getReference("artists");
+        final EditText editEmail = (EditText) findViewById(R.id.email);
+        final EditText editUser = (EditText) findViewById(R.id.artistic_name);
+        final EditText editPassword = (EditText) findViewById(R.id.edit_password);
+        final EditText editRepeatPass = (EditText) findViewById(R.id.edit_password_repeat);
+        final EditText editCountry = (EditText) findViewById(R.id.country);
+        final EditText editCity = (EditText) findViewById(R.id.city);
+        Button btn_signup = (Button) findViewById(R.id.btn_signup);
+
+        btn_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = editEmail.getText().toString();
+                String artistic_name = editUser.getText().toString();
+                String password = editPassword.getText().toString();
+                String repeat_pass = editRepeatPass.getText().toString();
+                String country = editCountry.getText().toString();
+                String city = editCity.getText().toString();
+                String phone = editCity.getText().toString();
+                if(email.matches("") || password.matches("") || artistic_name.matches("") || repeat_pass.matches("") || country.matches("") || city.matches("")){
+                    Toast.makeText(
+                            RegisterActivity.this,
+                            getResources().getString(R.string.empty_fields),
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if(password.length() < 8){
+                    Toast.makeText(
+                            RegisterActivity.this,
+                            getResources().getString(R.string.short_password),
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if(!password.equals(repeat_pass)){
+                    Toast.makeText(
+                            RegisterActivity.this,
+                            getResources().getString(R.string.error_incorrect_password),
+                            Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    String artistId = artistRef.push().getKey();
+                    artistRef.child(artistId).child("profile").child("email").setValue(email);
+                    artistRef.child(artistId).child("profile").child("artistic_name").setValue(artistic_name);
+                    artistRef.child(artistId).child("profile").child("password").setValue(password);
+                    artistRef.child(artistId).child("profile").child("country").setValue(country);
+                    artistRef.child(artistId).child("profile").child("city").setValue(city);
+                    if(!phone.matches("")){
+                        artistRef.child(artistId).child("profile").child("phone").setValue(phone);
+                    }
+                    Intent data = new Intent();
+                    data.putExtra("user",email+":"+password);
+                    data.putExtra("id",artistId);
+                    setResult(RESULT_OK,data);
+                    finish();
+                }
+            }
+        });
+
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        /*mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -108,12 +178,13 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         } else {
             requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
         }
-        return false;
+        return false;*/
     }
 
     /**
      * Callback received when a permissions request has been completed.
      */
+    /*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -123,13 +194,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             }
         }
     }
-
+*/
 
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
+    /*
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -176,7 +248,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             mAuthTask.execute((Void) null);
         }
     }
-
+*//*
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");
@@ -186,10 +258,11 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
-
+*/
     /**
      * Shows the progress UI and hides the login form.
      */
+    /*
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -276,11 +349,12 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
     }
-
+*/
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
+    /*
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
@@ -332,6 +406,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             mAuthTask = null;
             showProgress(false);
         }
-    }
+    }*/
 }
 
