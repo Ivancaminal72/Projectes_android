@@ -53,5 +53,8 @@
     <string name="repeat_password">Repeteixi la contrasenya</string>
     <string name="short_password">La contrasenya és massa curta</string>
     <string name="read_error">Error de lectura</string>
-    <string name="register"></string>
+    <string name="register">Registre</string>
+    <string name="error_database">Error de la base de dades</string>
+    <string name="error_internet_connection">No hi ha connexió</string>
+    <string name="error_registered_email">Aquest email ja es troba registrat</string>
 </resources>

@@ -53,4 +53,8 @@
     <string name="repeat_password">Repita la contraseña</string>
     <string name="short_password">La contraseña es demasiado corta</string>
     <string name="read_error">Error de lectura</string>
+    <string name="register">Registro</string>
+    <string name="error_database">Error de la base de datos</string>
+    <string name="error_internet_connection">No hay conexión a internet</string>
+    <string name="error_registered_email">Este email ya se encuentra registrado</string>
 </resources>

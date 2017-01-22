@@ -53,4 +53,8 @@
     <string name="repeat_password">Repeat password</string>
     <string name="short_password">Password is too short</string>
     <string name="read_error">Read error</string>
+    <string name="register">Register</string>
+    <string name="error_database">Database error</string>
+    <string name="error_internet_connection">No internet connection</string>
+    <string name="error_registered_email">This email address is already registered</string>
 </resources>
