@@ -42,7 +42,7 @@ public class ActualEventActivity extends AppCompatActivity {
     public static final String END_VOTE_TIME = "endVoteTime";
     public static final String POS_ACT_GROUP = "pos_act";
     public static final String POS_GROUP_SELECTED = "position_group_selected";
-    private long OFFSET_MILLIS_VOTE = 36000; //Default time 15 minutes
+    private long OFFSET_MILLIS_VOTE = 360000; //Default time 6 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
     private ListView group_list;
