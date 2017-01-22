@@ -39,4 +39,17 @@
     <string name="Group_done">Grup fet!</string>
     <string name="Discard">Descartar</string>
     <string name="confirmation">Està segur que vol descartar els canvis realitzats?</string>
+    <string name="Email">Correu electrònic</string>
+    <string name="Password">Contrasenya (mínim 8 caràcters)</string>
+    <string name="Pswd">Contrasenya</string>
+    <string name="SignIn">Entra</string>
+    <string name="SignUp">Registra\'t</string>
+    <string name="artistic_name">Nom artístic</string>
+    <string name="city">Ciutat</string>
+    <string name="country">País</string>
+    <string name="empty_fields">És necessari omplir tots els camps obligatoris</string>
+    <string name="error_email_no_exist">Aquest email no existeix</string>
+    <string name="phone">Número de telèfon (Opcional)</string>
+    <string name="repeat_password">Repeteixi la contrasenya</string>
+    <string name="short_password">La contrasenya és massa curta</string>
 </resources>

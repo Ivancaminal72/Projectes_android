@@ -39,4 +39,17 @@
     <string name="Group_done">Grupo hecho!</string>
     <string name="Discard">Descartar</string>
     <string name="confirmation">Está seguro que desea descartar los cambios realizados?</string>
+    <string name="Email">Correo electrónico</string>
+    <string name="Password">Contraseña (mínimo 8 carácteres)</string>
+    <string name="Pswd">Contraseña</string>
+    <string name="SignIn">Entra</string>
+    <string name="SignUp">Registrate</string>
+    <string name="artistic_name">Nombre artístico</string>
+    <string name="city">Ciudad</string>
+    <string name="country">País</string>
+    <string name="empty_fields">Es necesario completar todos los campos obligatorios</string>
+    <string name="error_email_no_exist">Este email no existe</string>
+    <string name="phone">Número de teléfono (Opcional)</string>
+    <string name="repeat_password">Repita la contraseña</string>
+    <string name="short_password">La contraseña es demasiado corta</string>
 </resources>

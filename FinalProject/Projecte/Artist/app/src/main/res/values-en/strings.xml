@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">VottyArtist</string>
     <string name="none_group_selected">None group selected</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Sign in or sign up</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="confirm">Confirmation</string>
     <string name="to_a_vote">to a vote?</string>
@@ -39,4 +39,17 @@
     <string name="Group_done">Group done!</string>
     <string name="Discard">Discard</string>
     <string name="confirmation">Are you sure you want to discard changes?</string>
+    <string name="Email">Email</string>
+    <string name="Password">Password (8 characters minimum)</string>
+    <string name="Pswd">Password</string>
+    <string name="SignIn">Log in</string>
+    <string name="SignUp">Sign up</string>
+    <string name="artistic_name">Artistic name</string>
+    <string name="city">City</string>
+    <string name="country">Country</string>
+    <string name="empty_fields">It is necessary to complete all obligatory fields</string>
+    <string name="error_email_no_exist">This email does not exist</string>
+    <string name="phone">Phone number (Optional)</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="short_password">Password is too short</string>
 </resources>
