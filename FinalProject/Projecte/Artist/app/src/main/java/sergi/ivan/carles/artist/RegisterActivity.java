@@ -90,7 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
     private void attemptToRegister() {
 
-        //Runnable to checkConnection after 2s
+        //Runnable to checkConnection after 5s
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -99,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
         };
 
         final Handler handler = new Handler();
-        handler.postDelayed(runnable, 2000);
+        handler.postDelayed(runnable, 5000);
 
         final boolean[] existEmail = {false};
 

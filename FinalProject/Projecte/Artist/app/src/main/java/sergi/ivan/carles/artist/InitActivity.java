@@ -1,6 +1,7 @@
 package sergi.ivan.carles.artist;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,10 +52,13 @@ public class InitActivity extends AppCompatActivity {
     private DatabaseReference artistEventRef;
     private DatabaseReference groupRef;
     private DatabaseReference artistRef;
+    private DatabaseReference songRef;
+    private boolean doubleBackToExitPressedOnce;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        doubleBackToExitPressedOnce=false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
         getSupportActionBar().setTitle(R.string.next_events);
@@ -65,22 +70,17 @@ public class InitActivity extends AppCompatActivity {
         eventRef = database.getReference(REF_EVENTS);
         artistEventRef = database.getReference(REF_ARTISTS).child(artistId).child(REF_EVENTS);
         groupRef = database.getReference(REF_ARTISTS).child(artistId).child(REF_GROUPS);
-        DatabaseReference songRef = database.getReference(REF_ARTISTS).child(artistId).child(REF_SONGS);
+        songRef = database.getReference(REF_ARTISTS).child(artistId).child(REF_SONGS);
 
-        //Push some demo songs to firabase
-        for(int i=0; i<20; i++){
-            String id = songRef.push().getKey();
-            String name = "song"+i;
-            String artist = "artist"+i;
-            songRef.child(id).child("name").setValue(name);
-            songRef.child(id).child("artist").setValue(artist);
-        }
+        //Push some demo songs
+        demoSongs();
 
         songs = new ArrayList<>();
         events = new ArrayList<>();
         groups = new ArrayList<>();
         adapter = new EventAdapter();
 
+        //Load data
         loadArtist();
 
         ListView event_list = (ListView) findViewById(R.id.event_listView);
@@ -94,6 +94,30 @@ public class InitActivity extends AppCompatActivity {
         });
 
     }
+
+    private void demoSongs() {
+        //In case there are no songs push some demo ones
+        artistRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChild("songs")){
+                    for(int i=0; i<20; i++){
+                        String id = songRef.push().getKey();
+                        String name = "song"+i;
+                        String artist = "artist"+i;
+                        songRef.child(id).child("name").setValue(name);
+                        songRef.child(id).child("artist").setValue(artist);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void loadArtist(){
         artistRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -273,7 +297,8 @@ public class InitActivity extends AppCompatActivity {
                             }
                             groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                             groupRef.child(groupId).child("eventIds").child(id).setValue(true);
-                            artistEventRef.child(id).child("groupId"+String.valueOf(i)).setValue(groupId);
+                            String key = artistEventRef.child(id).push().getKey();
+                            artistEventRef.child(id).child(key).setValue(groupId);
                             groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
                             event.addGroupId(groupId);
                         }
@@ -381,8 +406,6 @@ public class InitActivity extends AppCompatActivity {
                                     finish();
                                 }
                             }
-
-                            int num = oldGroupIds.size();
                             for(int i=0; i<groupIds.size(); i++){
                                 if(!groupIds.get(i).equals("=")){
                                     String groupId = groupRef.push().getKey();
@@ -394,11 +417,11 @@ public class InitActivity extends AppCompatActivity {
                                     }
                                     groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                                     groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
-                                    artistEventRef.child(eventId).child("groupId"+String.valueOf(num)).setValue(groupId);
+                                    String key = artistEventRef.child(eventId).push().getKey();
+                                    artistEventRef.child(eventId).child(key).setValue(groupId);
                                     groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
                                     updatedEvent.addGroupId(groupId);
                                     changed=true;
-                                    num++;
                                 }
                             }
                         }else{
@@ -412,7 +435,8 @@ public class InitActivity extends AppCompatActivity {
                                     }
                                     groupRef.child(groupId).child("name").setValue(groupNames.get(i));
                                     groupRef.child(groupId).child("eventIds").child(eventId).setValue(true);
-                                    artistEventRef.child(eventId).child("groupId"+String.valueOf(i)).setValue(groupId);
+                                    String key = artistEventRef.child(eventId).push().getKey();
+                                    artistEventRef.child(eventId).child(key).setValue(groupId);
                                     groups.add(new Group(groupId, groupNames.get(i), groupSongIds.get(i)));
                                     updatedEvent.addGroupId(groupId);
                                     changed=true;
@@ -507,6 +531,28 @@ public class InitActivity extends AppCompatActivity {
             }
             return result;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        doubleBackToExitPressedOnce = true;
+        Toast.makeText(
+                InitActivity.this,
+                R.string.click_back_twice,
+                Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
     private void sortEvents() {

@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         DatabaseReference  userRef = database.getReference(REF_USERS);
 
 
-        //Runnable to checkConnection after 2s
+        //Runnable to checkConnection after 5s
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         final Handler handler = new Handler();
-        handler.postDelayed(runnable, 2000);
+        handler.postDelayed(runnable, 5000);
 
         //Check user credentials
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
