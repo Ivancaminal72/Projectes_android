@@ -30,7 +30,7 @@ import static sergi.ivan.carles.artist.InitActivity.REF_ARTISTS;
 public class LoginActivity extends AppCompatActivity {
 
     public static final int NEW_ARTIST = 0;
-    private static final String REF_USERS = "users";
+    public static final String REF_USERS = "users";
     public static ArrayList<String[]> artists;
     private EditText edit_email;
     private EditText edit_password;
@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (cancel) {
                     focusView.requestFocus();
                 } else {
-                    AttemptToLogin(email,password);
+                    attemptToLogin(email,password);
                 }
             }
         });
@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void AttemptToLogin(final String mEmail, final String mPassword){
+    private void attemptToLogin(final String mEmail, final String mPassword){
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference  userRef = database.getReference(REF_USERS);
@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                checkConnection();
+                checkConnection(LoginActivity.this);
             }
         };
 
@@ -107,27 +107,29 @@ public class LoginActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot usersSnapshot) {
                 handler.removeCallbacks(runnable);
                 boolean found = false;
-                for(DataSnapshot user : usersSnapshot.getChildren()){
-                    if(user.hasChild("email")){
-                        String email = user.child("email").getValue().toString();
-                        if (email.equals(mEmail)) {
-                            found=true;
-                            String password = user.child("password").getValue().toString();
-                            if (password.equals(mPassword)) {
-                                String artistId = user.child("artistId").getValue().toString();
-                                Intent intent = new Intent(LoginActivity.this, InitActivity.class);
-                                intent.putExtra("artistId", artistId);
-                                startActivity(intent);
-                                //saveArtists();
-                                finish();
+                if(usersSnapshot.hasChildren()){
+                    for (DataSnapshot user : usersSnapshot.getChildren()) {
+                        if (user.hasChild("email")) {
+                            String email = user.child("email").getValue().toString();
+                            if (email.equals(mEmail)) {
+                                found = true;
+                                String password = user.child("password").getValue().toString();
+                                if (password.equals(mPassword)) {
+                                    String artistId = user.child("artistId").getValue().toString();
+                                    Intent intent = new Intent(LoginActivity.this, InitActivity.class);
+                                    intent.putExtra("artistId", artistId);
+                                    startActivity(intent);
+                                    //saveArtists();
+                                    finish();
 
-                            } else{
-                                edit_password.setError(getString(R.string.error_incorrect_password));
-                                edit_password.requestFocus();
+                                } else {
+                                    edit_password.setError(getString(R.string.error_incorrect_password));
+                                    edit_password.requestFocus();
+                                }
                             }
+                        } else {
+                            Log.e("info", "User without email!");
                         }
-                    }else{
-                        Log.e("info","User without email!");
                     }
                 }
                 if(!found){
@@ -171,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void checkConnection() {
+    public static void checkConnection(final Context context) {
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -179,8 +181,8 @@ public class LoginActivity extends AppCompatActivity {
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (!connected) {
                     Toast.makeText(
-                            LoginActivity.this,
-                            getResources().getString(R.string.error_internet_connection),
+                            context,
+                            R.string.error_internet_connection,
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -188,8 +190,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError error) {
                 Toast.makeText(
-                        LoginActivity.this,
-                        getResources().getString(R.string.error_database),
+                        context,
+                        R.string.error_database,
                         Toast.LENGTH_SHORT).show();
             }
         });

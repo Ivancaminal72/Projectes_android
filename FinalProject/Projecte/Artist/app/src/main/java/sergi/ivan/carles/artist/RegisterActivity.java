@@ -1,6 +1,7 @@
 package sergi.ivan.carles.artist;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -17,13 +18,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import static sergi.ivan.carles.artist.InitActivity.REF_ARTISTS;
-
+import static sergi.ivan.carles.artist.LoginActivity.REF_USERS;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private DatabaseReference artistRef;
     private DatabaseReference userRef;
-    private boolean found;
+    private String email;
+    private String artistic_name;
+    private String password;
+    private String repeat_pass;
+    private String country;
+    private String city;
+    private String phone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +39,9 @@ public class RegisterActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(R.string.register);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        final DatabaseReference artistRef = database.getReference(REF_ARTISTS);
-        final DatabaseReference userRef = database.getReference("users");
+        userRef = database.getReference(REF_USERS);
+        artistRef = database.getReference(REF_ARTISTS);
+
         final EditText editEmail = (EditText) findViewById(R.id.email);
         final EditText editUser = (EditText) findViewById(R.id.artistic_name);
         final EditText editPassword = (EditText) findViewById(R.id.edit_password);
@@ -46,13 +54,13 @@ public class RegisterActivity extends AppCompatActivity {
         btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = editEmail.getText().toString();
-                String artistic_name = editUser.getText().toString();
-                String password = editPassword.getText().toString();
-                String repeat_pass = editRepeatPass.getText().toString();
-                String country = editCountry.getText().toString();
-                String city = editCity.getText().toString();
-                String phone = editPhone.getText().toString();
+                email = editEmail.getText().toString();
+                artistic_name = editUser.getText().toString();
+                password = editPassword.getText().toString();
+                repeat_pass = editRepeatPass.getText().toString();
+                country = editCountry.getText().toString();
+                city = editCity.getText().toString();
+                phone = editPhone.getText().toString();
                 if (email.matches("") || password.matches("") || artistic_name.matches("") || repeat_pass.matches("") || country.matches("") || city.matches("")) {
                     Toast.makeText(
                             RegisterActivity.this,
@@ -74,34 +82,72 @@ public class RegisterActivity extends AppCompatActivity {
                             getResources().getString(R.string.error_incorrect_password),
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    String artistId = artistRef.push().getKey();
-                    if(findEmail(email)){
-                        Toast.makeText(
-                                RegisterActivity.this,
-                                getResources().getString(R.string.error_registered_email),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        artistRef.child(artistId).child("profile").child("artistic_name").setValue(artistic_name);
-                        artistRef.child(artistId).child("profile").child("country").setValue(country);
-                        artistRef.child(artistId).child("profile").child("city").setValue(city);
-                        userRef.child("email").setValue(email);
-                        userRef.child("password").setValue(password);
-                        userRef.child("artistId").setValue(artistId);
-                        if (!phone.matches("")) {
-                            artistRef.child(artistId).child("profile").child("phone").setValue(phone);
-                        }
-                        Intent intent = new Intent();
-                        intent.putExtra("email", email);
-                        intent.putExtra("password", password);
-                        intent.putExtra("artistId", artistId);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
+                    attemptToRegister();
                 }
             }
         });
 
+    }
+    private void attemptToRegister() {
+
+        //Runnable to checkConnection after 5s
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                LoginActivity.checkConnection(RegisterActivity.this);
+            }
+        };
+
+        final Handler handler = new Handler();
+        handler.postDelayed(runnable, 5000);
+
+        final boolean[] existEmail = {false};
+
+        //Check if is a non duplicated email
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot users) {
+                if (users.hasChildren()){
+                    for (DataSnapshot user : users.getChildren()) {
+                        String existingEmail = user.child("email").getValue().toString();
+                        if (email.equals(existingEmail)) {
+                            existEmail[0] = true;
+                        }
+                    }
+                }
+
+                if(!existEmail[0]){
+                    String key = artistRef.push().getKey();
+                    artistRef.child(key).child("profile").child("artistic_name").setValue(artistic_name);
+                    artistRef.child(key).child("profile").child("country").setValue(country);
+                    artistRef.child(key).child("profile").child("city").setValue(city);
+                    userRef.child("email").setValue(email);
+                    userRef.child("password").setValue(password);
+                    userRef.child("artistId").setValue(key);
+                    if (!phone.matches("")) {
+                        artistRef.child(key).child("profile").child("phone").setValue(phone);
+                    }
+                    Intent intent = new Intent();
+                    intent.putExtra("email", email);
+                    intent.putExtra("password", password);
+                    intent.putExtra("artistId", key);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }else{
+                    Toast.makeText(
+                            RegisterActivity.this,
+                            R.string.error_invalid_email,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(
+                        RegisterActivity.this,
+                        R.string.error_database,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -112,27 +158,4 @@ public class RegisterActivity extends AppCompatActivity {
 
         super.onBackPressed();
     }
-
-    private boolean findEmail(final String email) {
-        found = false;
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot users) {
-                    if (users.hasChildren()){
-                        for (DataSnapshot user : users.getChildren()) {
-                            String existing_email = user.child("email").getValue().toString();
-                            if (email.equals(existing_email)) {
-                                found = true;
-                            }
-                        }
-                    }
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-
-        return found;
-    }
-
 }
