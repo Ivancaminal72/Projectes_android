@@ -52,4 +52,5 @@
     <string name="phone">Número de telèfon (Opcional)</string>
     <string name="repeat_password">Repeteixi la contrasenya</string>
     <string name="short_password">La contrasenya és massa curta</string>
+    <string name="read_error">Error de lectura</string>
 </resources>

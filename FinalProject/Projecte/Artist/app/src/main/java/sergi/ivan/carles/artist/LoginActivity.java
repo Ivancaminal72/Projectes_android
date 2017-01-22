@@ -1,5 +1,6 @@
 package sergi.ivan.carles.artist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +10,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 import java.util.ArrayList;
+
+import static sergi.ivan.carles.artist.InitActivity.REF_ARTISTS;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -26,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         artists = new ArrayList<>();
+        loadArtists();
         edit_email = (EditText) findViewById(R.id.edit_email);
         edit_password = (EditText) findViewById(R.id.edit_password);
         Button btn_login = (Button) findViewById(R.id.btn_login);
@@ -140,7 +150,9 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, InitActivity.class);
                 intent.putExtra("artistId", artistId);
                 startActivity(intent);
-                Log.i("info", "correct sign in!");
+                saveArtists();
+                finish();
+
             } else if(existsEmail){
                 edit_password.setError(getString(R.string.error_incorrect_password));
                 edit_password.requestFocus();
@@ -153,6 +165,48 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onCancelled() {
             LoginTask = null;
+        }
+    }
+
+    private void saveArtists() {
+        try {
+            FileOutputStream fos = openFileOutput(REF_ARTISTS, Context.MODE_PRIVATE);
+            for (int i = 0; i < artists.size(); i++) {
+                String [] artist = artists.get(i);
+                String artist_txt = String.format("%s;%s;%s\n", artist[0], artist[1],artist[2]);
+                fos.write(artist_txt.getBytes());
+            }
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.e("info", "saveArtists: FileNotFoundException");
+        } catch (IOException e) {
+            Log.e("info", "saveArtists: IOException");
+        }
+    }
+
+    private void loadArtists() {
+        ArrayList<String[]> list = new ArrayList<>();
+        try {
+            FileInputStream fis = openFileInput(REF_ARTISTS);
+            try{
+                int fileSize = (int)fis.getChannel().size();
+                byte[] buffer = new byte[fileSize];
+                int nbytes = fis.read(buffer);
+                String content = new String(buffer, 0, nbytes);
+                String[] lines = content.split("\n");
+                for (String line : lines) {
+                    String[] artist = line.split(";");
+                    artists.add(artist);
+                }
+                fis.close();
+            } catch (ClosedChannelException e){
+                Log.e("info", "saveArtists: ClosedChannelException");
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("info", "saveArtists: FileNotFoundException");
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.read_error, Toast.LENGTH_SHORT).show();
+            Log.e("info", "saveArtists: IOException");
         }
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Artist</string>
+    <string name="app_name" translatable="false">VottyArtist</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -52,6 +52,8 @@
     <string name="empty_fields">It is necessary to complete all obligatory fields</string>
     <string name="Pswd">Password</string>
     <string name="error_email_no_exist">This email does not exist</string>
+    <string name="read_error">Read error</string>
     <string name="SignUp">Sign up</string>
     <string name="SignIn">Log in</string>
+    
 </resources>

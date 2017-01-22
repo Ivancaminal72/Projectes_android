@@ -52,4 +52,5 @@
     <string name="phone">Phone number (Optional)</string>
     <string name="repeat_password">Repeat password</string>
     <string name="short_password">Password is too short</string>
+    <string name="read_error">Read error</string>
 </resources>
