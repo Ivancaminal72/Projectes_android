@@ -137,7 +137,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(
                             RegisterActivity.this,
-                            R.string.error_invalid_email,
+                            R.string.error_registered_email,
                             Toast.LENGTH_SHORT).show();
                 }
             }
