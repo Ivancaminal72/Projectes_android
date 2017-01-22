@@ -41,10 +41,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.SAXParserFactory;
-
-import static android.Manifest.permission.READ_CONTACTS;
-
 public class RegisterActivity extends AppCompatActivity {
 
     //private static final int REQUEST_READ_CONTACTS = 0;
@@ -120,10 +116,9 @@ public class RegisterActivity extends AppCompatActivity {
                     if(!phone.matches("")){
                         artistRef.child(artistId).child("profile").child("phone").setValue(phone);
                     }
-                    Intent intent = new Intent();
                     localUsers.add(email+":"+password);
                     artistIds.add(artistId);
-                    setResult(RESULT_OK,intent);
+                    setResult(RESULT_OK);
                     finish();
                 }
             }
@@ -185,6 +180,15 @@ public class RegisterActivity extends AppCompatActivity {
             requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
         }
         return false;*/
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.i("info", "Back button pressed");
+        setResult(RESULT_CANCELED);
+        finish();
+
+        super.onBackPressed();
     }
 
     /**
