@@ -2,6 +2,7 @@ package sergi.ivan.carles.artist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,21 +32,30 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final int NEW_ARTIST = 0;
     public static final String REF_USERS = "users";
-    public static ArrayList<String[]> artists;
+    public static final String LAST_EMAIL = "email";
+    //public static ArrayList<String[]> artists;
     private EditText edit_email;
     private EditText edit_password;
+    private String lastEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        artists = new ArrayList<>();
+        //Load last email
+        SharedPreferences settings = getPreferences(0);
+        lastEmail = settings.getString(LAST_EMAIL,"");
+
+        //artists = new ArrayList<>();
         //loadArtists();
         edit_email = (EditText) findViewById(R.id.edit_email);
         edit_password = (EditText) findViewById(R.id.edit_password);
         Button btn_login = (Button) findViewById(R.id.btn_login);
         Button btn_register = (Button)  findViewById(R.id.btn_register);
+
+        edit_email.setText(lastEmail);
+        edit_password.requestFocus();
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                                 found = true;
                                 String password = user.child("password").getValue().toString();
                                 if (password.equals(mPassword)) {
+                                    lastEmail = email;
                                     String artistId = user.child("artistId").getValue().toString();
                                     Intent intent = new Intent(LoginActivity.this, InitActivity.class);
                                     intent.putExtra("artistId", artistId);
@@ -153,17 +164,19 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == NEW_ARTIST){
             if(resultCode == RESULT_OK){
+
                 //Get extras
                 String email = data.getStringExtra("email");
                 String password = data.getStringExtra("password");
-                String artistId = data.getStringExtra("artistId");
+
+                /*String artistId = data.getStringExtra("artistId");
 
                 //Add artist
                 String [] artist = new String[3];
                 artist[0]=email;
                 artist[1]=password;
                 artist[2]=artistId;
-                artists.add(artist);
+                artists.add(artist);*/
 
                 //Show credentials
                 edit_email.setText(email);
@@ -198,6 +211,18 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(lastEmail != null){
+            SharedPreferences settings = getPreferences(0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString(LAST_EMAIL,lastEmail);
+            editor.commit();
+            Log.i("info", "Settings Saved");
+        }
+    }
+/*
     private void saveArtists() {
         try {
             FileOutputStream fos = openFileOutput(REF_ARTISTS, Context.MODE_PRIVATE);
@@ -238,7 +263,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.read_error, Toast.LENGTH_SHORT).show();
             Log.e("info", "saveArtists: IOException");
         }
-    }
+    }*/
 
 }
 
