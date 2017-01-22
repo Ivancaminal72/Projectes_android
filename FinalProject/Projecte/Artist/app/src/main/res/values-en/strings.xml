@@ -57,4 +57,5 @@
     <string name="error_database">Database error</string>
     <string name="error_internet_connection">No internet connection</string>
     <string name="error_registered_email">This email address is already registered</string>
+    <string name="click_back_twice">Click back again to exit</string>
 </resources>

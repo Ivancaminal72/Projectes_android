@@ -57,4 +57,5 @@
     <string name="error_database">Error de la base de dades</string>
     <string name="error_internet_connection">No hi ha connexió</string>
     <string name="error_registered_email">Aquest email ja es troba registrat</string>
+    <string name="click_back_twice">Torna a clicar per sortir</string>
 </resources>
