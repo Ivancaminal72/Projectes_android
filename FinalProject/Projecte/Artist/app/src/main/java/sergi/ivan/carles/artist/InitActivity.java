@@ -144,26 +144,26 @@ public class InitActivity extends AppCompatActivity {
         queryEvents.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot eventsSnapshot) {
-                int i=0;
-                for(DataSnapshot eventSnapshot : eventsSnapshot.getChildren()){
-                    String id = eventSnapshot.getKey();
-                    if(id.equals(eventIds.get(i))){
-                        String name = eventSnapshot.child("name").getValue().toString();
-                        String place = eventSnapshot.child("place").getValue().toString();
-                        Long init = (long) eventSnapshot.child("start").getValue();
-                        Long end = (long) eventSnapshot.child("end").getValue();
-                        Event event = new Event(id,name, new Date(init), new Date(end), place);
-                        if (eventSnapshot.child("room").exists()) {
-                            event.setRoom(eventSnapshot.child("room").getValue().toString());
+                for(int i=0; i<eventIds.size(); i++){
+                    for(DataSnapshot eventSnapshot : eventsSnapshot.getChildren()){
+                        String id = eventSnapshot.getKey();
+                        if(id.equals(eventIds.get(i))){
+                            String name = eventSnapshot.child("name").getValue().toString();
+                            String place = eventSnapshot.child("place").getValue().toString();
+                            Long init = (long) eventSnapshot.child("start").getValue();
+                            Long end = (long) eventSnapshot.child("end").getValue();
+                            Event event = new Event(id,name, new Date(init), new Date(end), place);
+                            if (eventSnapshot.child("room").exists()) {
+                                event.setRoom(eventSnapshot.child("room").getValue().toString());
+                            }
+                            if(eventGroupIds.get(i).size() > 0){
+                                event.setGroupIds(eventGroupIds.get(i));
+                            }
+                            events.add(event);
+                            sortEvents();
+                            adapter.notifyDataSetChanged();
                         }
-                        if(eventGroupIds.get(i).size() > 0){
-                            event.setGroupIds(eventGroupIds.get(i));
-                        }
-                        events.add(event);
-                        sortEvents();
-                        adapter.notifyDataSetChanged();
                     }
-                    i++;
                 }
             }
 
