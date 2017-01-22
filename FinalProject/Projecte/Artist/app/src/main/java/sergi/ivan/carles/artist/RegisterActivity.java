@@ -1,5 +1,6 @@
 package sergi.ivan.carles.artist;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -12,22 +13,14 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 
 public class RegisterActivity extends AppCompatActivity {
-
-    private FirebaseDatabase database;
-    public static ArrayList<String> localUsers;
-    public static ArrayList<String> artistIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        database = FirebaseDatabase.getInstance();
-
-        localUsers = new ArrayList<>();
-        artistIds = new ArrayList<>();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         final DatabaseReference artistRef = database.getReference("artists");
         final EditText editEmail = (EditText) findViewById(R.id.email);
@@ -74,9 +67,12 @@ public class RegisterActivity extends AppCompatActivity {
                     if (!phone.matches("")) {
                         artistRef.child(artistId).child("profile").child("phone").setValue(phone);
                     }
-                    localUsers.add(email + ":" + password);
-                    artistIds.add(artistId);
-                    setResult(RESULT_OK);
+
+                    Intent intent = new Intent();
+                    intent.putExtra("email",email);
+                    intent.putExtra("password", password);
+                    intent.putExtra("artistId", artistId);
+                    setResult(RESULT_OK,intent);
                     finish();
                 }
             }

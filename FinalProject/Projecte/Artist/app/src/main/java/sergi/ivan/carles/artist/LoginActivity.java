@@ -12,11 +12,10 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-import static sergi.ivan.carles.artist.RegisterActivity.localUsers;
-
 public class LoginActivity extends AppCompatActivity {
 
     public static final int NEW_ARTIST = 0;
+    public static ArrayList<String[]> artists;
     private EditText edit_email;
     private EditText edit_password;
     private LoginActivity.UserLoginTask LoginTask = null;
@@ -26,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        artists = new ArrayList<>();
         edit_email = (EditText) findViewById(R.id.edit_email);
         edit_password = (EditText) findViewById(R.id.edit_password);
         Button btn_login = (Button) findViewById(R.id.btn_login);
@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
                     edit_email.setError(getString(R.string.error_field_required));
                     focusView = edit_email;
                     cancel = true;
-                } else if (email.contains("@")) {
+                } else if (!email.contains("@")) {
                     edit_email.setError(getString(R.string.error_invalid_email));
                     focusView = edit_email;
                     cancel = true;
@@ -81,7 +81,21 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == NEW_ARTIST){
             if(resultCode == RESULT_OK){
-                //?
+                //Get extras
+                String email = data.getStringExtra("email");
+                String password = data.getStringExtra("password");
+                String artistId = data.getStringExtra("artistId");
+
+                //Add artist
+                String [] artist = new String[3];
+                artist[0]=email;
+                artist[1]=password;
+                artist[2]=artistId;
+                artists.add(artist);
+
+                //Show credentials
+                edit_email.setText(email);
+                edit_password.setText(password);
             }
         }else{
             super.onActivityResult(requestCode, resultCode, data);
@@ -111,14 +125,15 @@ public class LoginActivity extends AppCompatActivity {
             } catch (InterruptedException e) {
                 return false;
             }
+
             existsEmail = false;
-            for (int i = 0; i< localUsers.size(); i++) {
-                String credential = localUsers.get(i);
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {// Account exists, return true if the password matches.
+            for (int i = 0; i< artists.size(); i++) {
+                String email = artists.get(i)[0];
+                String password = artists.get(i) [1];
+                if (email.equals(mEmail)) {// Account exists, return true if the password matches.
                     existsEmail=true;
-                    artistId = localUsers.get(i);
-                    return pieces[1].equals(mPassword);
+                    artistId = artists.get(i)[2];
+                    return password.equals(mPassword);
                 }
             }
             return false;

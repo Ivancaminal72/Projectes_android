@@ -28,7 +28,6 @@ import java.util.Comparator;
 import java.util.Date;
 
 import static java.lang.System.currentTimeMillis;
-import static sergi.ivan.carles.artist.AddGroupActivity.NEW_EVENT_KEY;
 
 
 public class InitActivity extends AppCompatActivity {
@@ -39,10 +38,10 @@ public class InitActivity extends AppCompatActivity {
     public static final int MILLIS_MINUTE = 60000;
     public static final int NEW_EVENT = 0;
     public static final int UPDATE_EVENT = 1;
-    public static final String REF_ARTIST_EVENT = "artist_events";
     public static final String REF_EVENTS = "events";
     public static final String REF_GROUPS = "groups";
     public static final String REF_SONGS = "songs";
+    public static String REF_ARTISTS = "artists";
     public static ArrayList<Song> songs;
     public static ArrayList<Event> events;
     public static ArrayList<Group> groups;
@@ -59,20 +58,23 @@ public class InitActivity extends AppCompatActivity {
         setContentView(R.layout.activity_init);
         getSupportActionBar().setTitle(R.string.next_events);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        Intent intent = getIntent();
+        String artistId = intent.getStringExtra("artistId");
+        artistRef = database.getReference(REF_ARTISTS).child(artistId);
         eventRef = database.getReference(REF_EVENTS);
-        artistEventRef = database.getReference(REF_ARTIST_EVENT);
-        groupRef = database.getReference(REF_GROUPS);
-        artistRef = database.getReference();
-        DatabaseReference songRef = database.getReference(REF_SONGS);
+        artistEventRef = database.getReference(REF_ARTISTS).child(artistId).child(REF_EVENTS);
+        groupRef = database.getReference(REF_ARTISTS).child(artistId).child(REF_GROUPS);
+        DatabaseReference songRef = database.getReference(REF_ARTISTS).child(artistId).child(REF_SONGS);
 
         //Push some demo songs to firabase
-        /*for(int i=0; i<20; i++){
+        for(int i=0; i<20; i++){
             String id = songRef.push().getKey();
             String name = "song"+i;
             String artist = "artist"+i;
             songRef.child(id).child("name").setValue(name);
             songRef.child(id).child("artist").setValue(artist);
-        }*/
+        }
 
         songs = new ArrayList<>();
         events = new ArrayList<>();
@@ -114,7 +116,7 @@ public class InitActivity extends AppCompatActivity {
                 }
                 ArrayList<String> eventIds = new ArrayList<>();
                 ArrayList<ArrayList<String>> eventGroupIds = new ArrayList<>();
-                for(DataSnapshot event : artistSnapshot.child(REF_ARTIST_EVENT).getChildren()){
+                for(DataSnapshot event : artistSnapshot.child(REF_EVENTS).getChildren()){
                     eventIds.add(event.getKey());
                     ArrayList<String> groupIds = new ArrayList<>();
                     if(event.hasChildren()){

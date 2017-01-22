@@ -34,6 +34,7 @@ import static android.R.color.holo_orange_dark;
 import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
 import static sergi.ivan.carles.artist.InitActivity.GROUP_MAX_SIZE;
+import static sergi.ivan.carles.artist.InitActivity.REF_EVENTS;
 
 
 public class ActualEventActivity extends AppCompatActivity {
@@ -41,7 +42,6 @@ public class ActualEventActivity extends AppCompatActivity {
     public static final String END_VOTE_TIME = "endVoteTime";
     public static final String POS_ACT_GROUP = "pos_act";
     public static final String POS_GROUP_SELECTED = "position_group_selected";
-    public static final String REF_GROUPS = "groups";
     private long OFFSET_MILLIS_VOTE = 36000; //Default time 15 minutes
     private ArrayList<Group> groups;
     private ArrayList<Song> songs;
@@ -61,7 +61,6 @@ public class ActualEventActivity extends AppCompatActivity {
     private boolean voting;
     private boolean listening;
     private ValueEventListener ListenerDatabase;
-    private FirebaseDatabase database;
     private Date endVoteTime;
     private String eventId;
 
@@ -71,8 +70,8 @@ public class ActualEventActivity extends AppCompatActivity {
         Log.i("info", "onCreate");
         super.onCreate(savedInstanceState);
         songs = new ArrayList<>(InitActivity.songs);
-        database = FirebaseDatabase.getInstance();
-        final DatabaseReference eventRef = database.getReference("events");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference eventRef = database.getReference(REF_EVENTS);
         Intent intent = getIntent();
         eventId = intent.getStringExtra("eventId");
         setContentView(R.layout.activity_actual_event);
@@ -95,20 +94,6 @@ public class ActualEventActivity extends AppCompatActivity {
             pos=-1;
         }
         listening = false;
-
-        /*//Random songs generation
-        songs = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            Song importedSong = new Song(String.valueOf(i), String.format("Cancion%d", i), String.format("Artista%d", i));
-            songs.add(importedSong);
-        }
-
-        //Random voting groups generation
-        groups = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            String[] songIds = new String[]{String.valueOf(i+1), String.valueOf(i+2), String.valueOf(i+3), String.valueOf(i+4)};
-            groups.add(new Group("patata",getResources().getString(R.string.group_to_select)+String.format(" %d", i), songIds));
-        }*/
 
         //Set layout
         view_group = (TextView) findViewById(R.id.view_group);
