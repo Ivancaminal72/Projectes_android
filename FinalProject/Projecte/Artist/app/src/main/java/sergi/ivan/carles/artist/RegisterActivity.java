@@ -23,7 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private DatabaseReference artistRef;
     private DatabaseReference userRef;
-    private boolean finded;
+    private boolean found;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean findEmail(final String email) {
-        finded = false;
+        found = false;
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot users) {
@@ -122,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
                         for (DataSnapshot user : users.getChildren()) {
                             String existing_email = user.child("email").getValue().toString();
                             if (email.equals(existing_email)) {
-                                finded = true;
+                                found = true;
                             }
                         }
                     }
@@ -132,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
 
-        return finded;
+        return found;
     }
 
 }

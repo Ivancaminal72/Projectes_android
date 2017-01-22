@@ -41,7 +41,7 @@ public class InitActivity extends AppCompatActivity {
     public static final String REF_EVENTS = "events";
     public static final String REF_GROUPS = "groups";
     public static final String REF_SONGS = "songs";
-    public static String REF_ARTISTS = "artists";
+    public static final String REF_ARTISTS = "artists";
     public static ArrayList<Song> songs;
     public static ArrayList<Event> events;
     public static ArrayList<Group> groups;

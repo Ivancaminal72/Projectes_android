@@ -2,7 +2,7 @@ package sergi.ivan.carles.artist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,6 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,10 +30,10 @@ import static sergi.ivan.carles.artist.InitActivity.REF_ARTISTS;
 public class LoginActivity extends AppCompatActivity {
 
     public static final int NEW_ARTIST = 0;
+    private static final String REF_USERS = "users";
     public static ArrayList<String[]> artists;
     private EditText edit_email;
     private EditText edit_password;
-    private LoginActivity.UserLoginTask LoginTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         artists = new ArrayList<>();
-        loadArtists();
+        //loadArtists();
         edit_email = (EditText) findViewById(R.id.edit_email);
         edit_password = (EditText) findViewById(R.id.edit_password);
         Button btn_login = (Button) findViewById(R.id.btn_login);
@@ -65,8 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (cancel) {
                     focusView.requestFocus();
                 } else {
-                    LoginTask = new LoginActivity.UserLoginTask(email, password);
-                    LoginTask.execute((Void) null);
+                    AttemptToLogin(email,password);
                 }
             }
         });
@@ -76,6 +81,67 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivityForResult(intent, NEW_ARTIST);
+            }
+        });
+    }
+
+    private void AttemptToLogin(final String mEmail, final String mPassword){
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference  userRef = database.getReference(REF_USERS);
+
+        //Runnable to checkConnection after 5s
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                checkConnection();
+            }
+        };
+
+        final Handler handler = new Handler();
+        handler.postDelayed(runnable, 5000);
+
+        //Check user credentials
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot usersSnapshot) {
+                handler.removeCallbacks(runnable);
+                boolean found = false;
+                for(DataSnapshot user : usersSnapshot.getChildren()){
+                    if(user.hasChild("email")){
+                        String email = user.child("email").getValue().toString();
+                        if (email.equals(mEmail)) {
+                            found=true;
+                            String password = user.child("password").getValue().toString();
+                            if (password.equals(mPassword)) {
+                                String artistId = user.child("artistId").getValue().toString();
+                                Intent intent = new Intent(LoginActivity.this, InitActivity.class);
+                                intent.putExtra("artistId", artistId);
+                                startActivity(intent);
+                                //saveArtists();
+                                finish();
+
+                            } else{
+                                edit_password.setError(getString(R.string.error_incorrect_password));
+                                edit_password.requestFocus();
+                            }
+                        }
+                    }else{
+                        Log.e("info","User without email!");
+                    }
+                }
+                if(!found){
+                    edit_email.setError(getString(R.string.error_email_no_exist));
+                    edit_email.requestFocus();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(
+                        LoginActivity.this,
+                        R.string.error_database,
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -105,67 +171,28 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-        private boolean existsEmail;
-        private String artistId;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void...Params) {
-
-            // TODO: V0.8 check credentials firebase
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            existsEmail = false;
-            for (int i = 0; i< artists.size(); i++) {
-                String email = artists.get(i)[0];
-                String password = artists.get(i) [1];
-                if (email.equals(mEmail)) {// Account exists, return true if the password matches.
-                    existsEmail=true;
-                    artistId = artists.get(i)[2];
-                    return password.equals(mPassword);
+    public void checkConnection() {
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (!connected) {
+                    Toast.makeText(
+                            LoginActivity.this,
+                            getResources().getString(R.string.error_internet_connection),
+                            Toast.LENGTH_SHORT).show();
                 }
             }
-            return false;
-        }
 
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            LoginTask = null;
-
-            if (success && existsEmail) {
-                Intent intent = new Intent(LoginActivity.this, InitActivity.class);
-                intent.putExtra("artistId", artistId);
-                startActivity(intent);
-                saveArtists();
-                finish();
-
-            } else if(existsEmail){
-                edit_password.setError(getString(R.string.error_incorrect_password));
-                edit_password.requestFocus();
-            }else{
-                edit_email.setError(getString(R.string.error_email_no_exist));
-                edit_email.requestFocus();
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(
+                        LoginActivity.this,
+                        getResources().getString(R.string.error_database),
+                        Toast.LENGTH_SHORT).show();
             }
-        }
-
-        @Override
-        protected void onCancelled() {
-            LoginTask = null;
-        }
+        });
     }
 
     private void saveArtists() {
@@ -209,5 +236,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("info", "saveArtists: IOException");
         }
     }
+
 }
 
