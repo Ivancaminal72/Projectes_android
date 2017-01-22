@@ -52,13 +52,6 @@ public class LoginActivity extends AppCompatActivity {
                     cancel = true;
                 }
 
-                // Check for a valid password
-                if (password.length() < 8) {
-                    edit_password.setError(getString(R.string.error_invalid_password));
-                    focusView = edit_password;
-                    cancel = true;
-                }
-
                 if (cancel) {
                     focusView.requestFocus();
                 } else {

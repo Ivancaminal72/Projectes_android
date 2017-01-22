@@ -50,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (password.length() < 8) {
                     Toast.makeText(
                             RegisterActivity.this,
-                            getResources().getString(R.string.short_password),
+                            getResources().getString(R.string.error_invalid_password),
                             Toast.LENGTH_SHORT).show();
                 } else if (!password.equals(repeat_pass)) {
                     Toast.makeText(
