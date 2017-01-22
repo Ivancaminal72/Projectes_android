@@ -90,7 +90,8 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference  userRef = database.getReference(REF_USERS);
 
-        //Runnable to checkConnection after 5s
+
+        //Runnable to checkConnection after 2s
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -99,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         final Handler handler = new Handler();
-        handler.postDelayed(runnable, 5000);
+        handler.postDelayed(runnable, 2000);
 
         //Check user credentials
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -175,7 +176,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public static void checkConnection(final Context context) {
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
+        connectedRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 boolean connected = snapshot.getValue(Boolean.class);

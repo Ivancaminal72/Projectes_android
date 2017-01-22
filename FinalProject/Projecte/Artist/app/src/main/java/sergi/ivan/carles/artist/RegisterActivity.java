@@ -90,7 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
     private void attemptToRegister() {
 
-        //Runnable to checkConnection after 5s
+        //Runnable to checkConnection after 2s
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -99,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
         };
 
         final Handler handler = new Handler();
-        handler.postDelayed(runnable, 5000);
+        handler.postDelayed(runnable, 2000);
 
         final boolean[] existEmail = {false};
 
@@ -117,20 +117,21 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 if(!existEmail[0]){
-                    String key = artistRef.push().getKey();
-                    artistRef.child(key).child("profile").child("artistic_name").setValue(artistic_name);
-                    artistRef.child(key).child("profile").child("country").setValue(country);
-                    artistRef.child(key).child("profile").child("city").setValue(city);
-                    userRef.child("email").setValue(email);
-                    userRef.child("password").setValue(password);
-                    userRef.child("artistId").setValue(key);
+                    String artistId = artistRef.push().getKey();
+                    artistRef.child(artistId).child("profile").child("artistic_name").setValue(artistic_name);
+                    artistRef.child(artistId).child("profile").child("country").setValue(country);
+                    artistRef.child(artistId).child("profile").child("city").setValue(city);
+                    String key = userRef.push().getKey();
+                    userRef.child(key).child("email").setValue(email);
+                    userRef.child(key).child("password").setValue(password);
+                    userRef.child(key).child("artistId").setValue(artistId);
                     if (!phone.matches("")) {
-                        artistRef.child(key).child("profile").child("phone").setValue(phone);
+                        artistRef.child(artistId).child("profile").child("phone").setValue(phone);
                     }
                     Intent intent = new Intent();
                     intent.putExtra("email", email);
                     intent.putExtra("password", password);
-                    intent.putExtra("artistId", key);
+                    intent.putExtra("artistId", artistId);
                     setResult(RESULT_OK, intent);
                     finish();
                 }else{
