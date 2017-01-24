@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">VottyClient</string>
+    <string name="app_name" translatable="false">Votty</string>
     <string name="finishedTime">Votty finished!</string>
     <string name="countdown">Countdown</string>
     <string name="noSongs">None songs available</string>

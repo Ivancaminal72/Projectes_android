@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">VottyClient</string>
     <string name="countdown">Cuenta atrás</string>
     <string name="finishedTime">Votty acabada!</string>
     <string name="noSongs">Ninguna canción disponible</string>
