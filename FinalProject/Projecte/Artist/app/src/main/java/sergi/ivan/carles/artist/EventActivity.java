@@ -176,8 +176,10 @@ public class EventActivity extends AppCompatActivity {
                     }
                     setResult(RESULT_OK, data);
                     finish();
-                    return true;
                 }
+                // Si entraves a "incomplete information" passava
+                // al següent case perquè no hi havia break!
+                return true;
 
             case R.id.delete_event:
                 Intent data = new Intent();
