@@ -1,2 +1,3 @@
-# Projectes_android
-Projectes android
+# Votty
+Votty project is divided into Artist and Client apps.
+
